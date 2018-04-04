@@ -1,0 +1,26 @@
+.rightmenu {
+    display:none; position: absolute; z-index: 999;
+    background-color: #fff;
+    border:1px solid #c6c6c6;
+    border-radius: 2px;
+    padding: 5px 12px 5px 12px;
+}
+.logo{
+    width: 30px;
+    height: auto;
+    padding-right: 20px;
+}
+
+.admin-side-toggle,.admin-side-full{
+    position: absolute;
+    cursor: pointer;
+    z-index: 19940201;
+    left: 175px;
+    color: white;
+    text-align: center;
+    width: 25px;
+    height: 25px;
+    background-color: #1AA094;
+    line-height: 25px;
+    top: 30%;
+}

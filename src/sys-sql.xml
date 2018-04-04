@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqlGroup name="sys">
+	<sql id="getModuleList">
+		select mf.* from sys_function mf
+		inner join sys_roleFunc rf on rf.FuncID = mf.FuncID
+		where mf.FuncType='module' and mf.intState=1 and rf.RoleID=?
+		order by mf.FuncCode
+	</sql>
+</sqlGroup>
+

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>文档详情</title>
+    <link href="/asset/font-awesome/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/asset/layui/css/layui.css">
+    <style>
+        body{
+            padding: 3px; /*overflow-y: scroll;*/
+        }
+        .layui-tree-skin-as .layui-tree-leaf{color: #2D2D2D;} /* 树形-叶节点 */
+        .layui-tree-skin-as .layui-tree-branch{color: #2D2D2D;} /* 树形-枝节点 */
+    </style>
+</head>
+<body>
+<div>
+    <div class="layui-collapse">
+        <div class="layui-colla-item">
+            <h2 class="layui-colla-title">${(doc.title)}</h2>
+            <div class="layui-colla-content">${(doc.desc)}</div>
+        </div>
+    </div>
+    <div class="layui-container" style="width:100%; margin-top: 5px; float:left;">
+        <div class="layui-row">
+            <div class="layui-col-md3">
+                <div class="layui-btn-group">
+                    <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="addPage()">
+                        <i class="layui-icon">&#xe61f;</i>
+                    </a>
+                    <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="editPage()">
+                        <i class="layui-icon">&#xe642;</i>
+                    </a>
+                    <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="delPage()">
+                        <i class="layui-icon">&#xe640;</i>
+                    </a>
+                </div>
+                <div class="layui-btn-group">
+                    <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="up()">
+                        <i class="layui-icon">&#xe619;</i>
+                    </a>
+                    <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="down()">
+                        <i class="layui-icon">&#xe61a;</i>
+                    </a>
+                </div>
+                <div class="layui-tree layui-bg-gray layui-side-scroll" id="pageTree" style="width: 95%; height: 433px; overflow:auto; margin-top: 2px;">
+                </div>
+            </div>
+
+            <div class="layui-col-md9" style="bottom: 0; border-left: solid 2px #1AA094;" >
+                <iframe style="margin:3px; height: 100%; width: 100%; " frameborder="0" id="page" scrolling="no" src="">
+
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/asset/layui/layui.js" charset="utf-8"></script>
+<script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
+<script>
+    var sel_item, doc_id = '${(doc.id)}';
+    var layer, tree;
+    layui.use(['layer','element','tree'], function(){
+        layer = layui.layer; //弹层
+        tree = layui.tree;
+        var $ = layui.$;
+
+        $.ajax({
+            url: "/docs/getPageTree",
+            data: {doc_id: doc_id},
+            success: function (data) {
+                layui.tree({
+                    elem: '#pageTree' //指定元素
+                    //,check: 'checkbox' //勾选风格
+                    , skin: 'as' //设定皮肤
+                    //,target: '_blank' //是否新选项卡打开（比如节点返回href才有效）
+                    , drag: false
+                    , click: function (item) { //点击节点回调
+                        sel_item = item;
+                        $('#page').attr("src", '/docs/editPage?page_id='+item.id) ;
+                        var h = $(window).height() -50 -15;
+                        $('#page').css("height", h+"px");
+                    }
+                    , nodes: data.data
+                });
+            },
+            error: function () {
+            }
+        });
+    });
+
+    function addPage() {
+        var parent_id;
+        if(sel_item){
+            parent_id = sel_item.id;
+        }else{
+            parent_id = 0;
+        }
+        layer.prompt({
+            title: '新增章节',
+            formType: 2
+        }, function(value, index){
+            //插入doc_page
+            $.ajax({
+                url: "/docs/addPage",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    title: value,
+                    doc_id: doc_id,
+                    pid: parent_id
+                },
+                success: function(data) {
+                    //刷新树
+                    if(data.code ==1){
+                        location.reload();
+                    }
+                    layer.close(index);
+                }
+            });
+        });
+    }
+
+    function editPage() {
+        if(sel_item == null){
+            layer.msg("请选择操作的章节！");
+            return;
+        }
+        layer.prompt({
+            title: '修改章节',
+            formType: 2
+            ,value: sel_item.name
+        }, function(value, index){
+            $.ajax({
+                url: "/docs/modifyPage",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    page_id: sel_item.id,
+                    name: value
+                },
+                success: function(data) {
+                    if(data.code == 1){
+                        //修改节点自身
+                        location.reload();
+                    }
+                }
+            });
+            layer.close(index);
+        });
+    }
+
+    function delPage() {
+        if(sel_item == null){
+            layer.msg("请选择操作的章节！");
+            return;
+        }
+        layer.confirm('确定删除?', {icon: 3, title:'提示'}, function(index){
+            //do something
+            $.ajax({
+                url: "/docs/delPage",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    page_id: sel_item.id
+                },
+                success: function(data) {
+                    if(data.code == 1){
+                        //删除节点自身
+                        location.reload();
+                    }
+                }
+            });
+            layer.close(index);
+        });
+    }
+
+
+</script>
+</body>
+</html>
