@@ -35,6 +35,7 @@
 		   overflowToDisk="true" timeToIdleSeconds="600" timeToLiveSeconds="0"
 		   diskPersistent="true" memoryStoreEvictionPolicy="LFU" />
 
+	<!-- 扫码登陆用的cache -->
 	<cache name="AccountScanCache" maxElementsInMemory="10000" maxElementsOnDisk="100000" eternal="false"
 		   overflowToDisk="true" timeToIdleSeconds="60" timeToLiveSeconds="0"
 		   diskPersistent="true" memoryStoreEvictionPolicy="LFU" />

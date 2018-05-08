@@ -19,19 +19,19 @@
       </div>
       <!-- 头部区域（可配合layui已有的水平导航） -->
       <ul style="margin-left: 30px;" class="layui-nav layui-layout-left">
-          <#list menuList as menu>
+          #for(menu : menuList)
               <li class="layui-nav-item">
-                  <a href="javascript:;" onclick="loadMenu(this)" data-id="${(menu.FuncID)}">
-                      <i class="${(menu.FuncCSS)}"></i>${(menu.FuncName)}
+                  <a href="javascript:;" onclick="loadMenu(this)" data-id="#(menu.FuncID)">
+                      <i class="#(menu.FunCSS)"></i>#(menu.FuncName)
                   </a>
               </li>
-          </#list>
+          #end
       </ul>
       <ul class="layui-nav layui-layout-right">
         <li class="layui-nav-item">
           <a href="javascript:;">
-            <img src="${(userInfo.AvatarURL)!}" onerror="this.src='/asset/image/user_default.png'" class="layui-nav-img">
-            ${(userInfo.Caption)!}
+            <img src="#(userInfo.AvatarURL)" onerror="this.src='/asset/image/user_default.png'" class="layui-nav-img">
+            #(userInfo.Caption)
           </a>
           <dl class="layui-nav-child">
             <dd><a href=""><i class="iconfont icon-accountcircle" aria-hidden="true"></i> 用户信息</a></dd>

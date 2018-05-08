@@ -2,6 +2,7 @@ package com.sagacity.docs.wxss.user;
 
 import com.jfinal.aop.Before;
 import com.jfinal.ext.plugin.sqlinxml.SqlKit;
+import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.tx.Tx;
 import com.sagacity.docs.extend.ResponseCode;
@@ -19,6 +20,7 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.render.JsonRender;
 import com.jfinal.upload.UploadFile;
 import freemarker.template.utility.DateUtil;
+import net.sf.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +54,7 @@ public class UserController extends WXSSBaseController {
         responseData.put("user", WXUser.dao.findFirst("select * from wx_user where open_id=?", token));
         //各项业务数据
         Map<String,Object> user_data = new HashMap<String, Object>();
-        user_data.put("scan_code_title", "扫一扫，登录网页版创建知库");
+        user_data.put("scan_code_title", "登录网页版");
         user_data.put("docCount", Db.findFirst("select count(di.id) count \n" +
                 "from doc_info di\n" +
                 "left join sys_users u on u.UserID=di.user_id\n" +
@@ -169,6 +171,34 @@ public class UserController extends WXSSBaseController {
         }
         responseData.put(ResponseCode.CODE, r? 1:0);
         renderJson(responseData);
+    }
+
+    public void getPayList(){
+        int page = getParaToInt("page"); //数据分页
+        String token = getPara("token");
+
+        String sql_select = "select pay.*";
+        String sql_from = "from (\n" +
+                "select pi.pay_id,pi.cost,'doc' type,pi.data_id,di.title,pi.order_code,pi.created_at,di.user_id\n" +
+                "from pay_info pi\n" +
+                "left join doc_info di on di.id=pi.data_id\n" +
+                "where pi.state=2 and pi.data_type='doc'\n" +
+                "UNION\n" +
+                "select pi.pay_id,pi.cost,'video' type,pi.data_id,vi.title,pi.order_code,pi.created_at,vi.user_id\n" +
+                "from pay_info pi\n" +
+                "left join video_info vi on vi.id=pi.data_id\n" +
+                "where pi.state=2 and pi.data_type='video' ) pay\n"+
+                "left join sys_users u on u.UserID=pay.user_id\n" +
+                "where u.OpenID=?";
+        sql_from += " order by pay.created_at Desc";
+        if (StringTool.notNull(getPara("page")) && !StringTool.isBlank(getPara("page"))){
+            Page<Record> dataList = Db.paginate(page, getParaToInt("pageSize", 12)
+                    , sql_select, sql_from, token);
+            renderJson(dataList);
+        }else {
+            renderJson(ResponseCode.LIST, Db.find(sql_select + "\n" + sql_from, token));
+        }
+
     }
 
 }

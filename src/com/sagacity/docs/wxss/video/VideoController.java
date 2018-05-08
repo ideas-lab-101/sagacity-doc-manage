@@ -58,8 +58,9 @@ public class VideoController extends WXSSBaseController {
         int page = getParaToInt("page"); //数据分页
         int isHot = getParaToInt("is_hot", 1);
 
-        String sqlSelect = "select ci.id,ci.cover,ci.view_count,ci.title,ci.desc,source,is_live";
+        String sqlSelect = "select ci.id,ci.cover,ci.view_count,ci.title,ci.desc,source,is_live,u.Caption";
         String sqlFrom = "from video_info ci\n" +
+                "left join sys_users u on u.UserID=ci.user_id\n"+
                 "where ci.state=1 and ci.is_hot=?";
         sqlFrom += " order by ci.created_at DESC";
         //分页
@@ -75,15 +76,15 @@ public class VideoController extends WXSSBaseController {
         int page = getParaToInt("page"); //数据分页
         int class_id = getParaToInt("class_id", 0);
 
-        String sqlSelect = "select ci.id,ci.cover,ci.view_count,ci.title,ci.desc,source,is_live";
+        String sqlSelect = "select ci.id,ci.cover,ci.view_count,ci.title,ci.desc,source,is_live,u.Caption";
         String sqlFrom = "from video_info ci\n" +
+                "left join sys_users u on u.UserID=ci.user_id\n"+
                 "where ci.state=1";
         if(class_id == -1){//特殊处理
-            sqlFrom += " and DATEDIFF(now(),ci.created_at)<7";
+            sqlFrom += " and ci.view_count>200 order by ci.view_count DESC";
         }else{
-            sqlFrom += " and ci.video_class_id="+class_id;
+            sqlFrom += " and ci.video_class_id="+class_id+" order by ci.created_at DESC";
         }
-        sqlFrom += " order by ci.created_at DESC";
         //分页
         if (StringTool.notNull(getPara("page")) && !StringTool.isBlank(getPara("page"))){
             renderJson(Db.paginate(page,  getParaToInt("pageSize", 12),
@@ -139,14 +140,22 @@ public class VideoController extends WXSSBaseController {
                 "from user_like ul\n" +
                 "left join wx_user user on user.open_id=ul.open_id\n" +
                 "where ul.data_id=? and ul.type=?\n" +
-                "order by ul.created_at DESC limit 20", videoID, "video"));
-        //相关课程
-        String sqlRC = "select ci.id,ci.cover,ci.title,ci.desc,ci.view_count,ci.source,ci.is_live\n" +
+                "order by ul.created_at DESC", videoID, "video"));
+        //相关视频
+        String sqlRC = "select ci.id,ci.cover,ci.title,ci.desc,ci.view_count,ci.source,ci.is_live,u.Caption\n" +
                 "from video_info ci\n" +
                 "left join video_info cl on cl.video_class_id=ci.video_class_id\n" +
+                "left join sys_users u on u.UserID=ci.user_id\n"+
                 "where ci.state=1 and cl.id=? and ci.id != ?\n" +
                 "limit 6";
         responseData.put("relatedVideos", Db.find(sqlRC, videoID, videoID));
         renderJson(responseData);
+    }
+
+    /**
+     * 订阅列表
+     */
+    public void getSubscribeList(){
+        String token = getPara("token");
     }
 }

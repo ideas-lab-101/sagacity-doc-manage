@@ -19,7 +19,7 @@
         <div class="layui-form-item layui-form-text">
             <div class="layui-input-block" id="editormd">
                 <textarea id="my-editormd-markdown-doc" name="my-editormd-markdown-doc"
-                          style="display:none;">${(page.content)}</textarea>
+                          style="display:none;">#(page.content)</textarea>
                 <!-- 注意：name属性的值-->
             </div>
         </div>
@@ -63,14 +63,16 @@
             flowChart : true,
             imageUpload : true,
             imageFormats : [ "jpg", "jpeg", "gif", "png", "bmp", "webp" ],
-            imageUploadURL : "/docs/uploadImg?doc_id=${(page.doc_id)}",
+            imageUploadURL : "/docs/uploadImg?doc_id=#(page.doc_id)",
             toolbarIcons : function() {
                 // Or return editormd.toolbarModes[name]; // full, simple, mini
                 // Using "||" set icons align right.
-                return ["saveIcon", "|", "undo", "redo", "|", "bold", "code", "hr", "link", "reference-link", "image" ,"|", "preview", "watch"]
+                return ["saveIcon", "|", "undo", "redo", "|", "bold", "code", "hr", "link", "reference-link", "|", "image", "musicIcon", "videoIcon" ,"|", "preview", "watch"]
             },
             toolbarIconsClass : {
-                saveIcon : "fa-save"  // 指定一个FontAawsome的图标类
+                saveIcon : "fa-save",  // 指定一个FontAawsome的图标类
+                musicIcon: "fa-music",
+                videoIcon: "fa-file-video-o",
             },
             toolbarHandlers : {
                 /**
@@ -94,7 +96,7 @@
                         type: "POST",
                         dataType: "json",
                         data: {
-                            page_id: '${(page.id)}',
+                            page_id: '#(page.id)',
                             content: content
                         },
                         success: function(data) {
@@ -103,6 +105,64 @@
                             }
                         }
                     });
+                },
+
+                videoIcon: function (cm, icon, cursor, selection) {
+                    layer.open({
+                        type: 1,
+                        title:'插入视频',
+                        skin:'layui-layer-rim',
+                        area:['430px', 'auto'],
+
+                        content: ' <div class="layui-form-pane1 layui-inline" style="width: 400px; magin-right:30px; margin-top:10px;">'
+                        +'<div class="layui-form-item">'
+                        +'  <span class="layui-form-label">视频URL</span>'
+                        +'  <div class="layui-input-block">'
+                        +'      <input class="layui-input" id="video_url" type="text" placeholder="请输入视频URL">'
+                        +'  </div>'
+                        +'</div>'
+                        +'</div>'
+                        ,
+                        btn:['确认', '取消'],
+                        yes: function (index,layero) {
+                            var video_url = '<video src="'+$("#video_url").val()+'" controls="controls">'+'</video>';
+                            if(video_url == ''){
+                                layer.msg('请输入有效的视频URL');
+                            }else{
+                                cm.replaceSelection(video_url);
+                                // 如果当前没有选中的文本，将光标移到要输入的位置
+                                if (selection == "") {
+                                    cm.setCursor(cursor.line, cursor.ch + 1);
+                                }
+                                layer.closeAll();
+                            }
+                        },
+                        btn2:function (index, layero) {
+                            layer.close(index);
+                        }
+
+                    });
+                },
+
+                musicIcon: function (cm, icon, cursor, selection) {
+                    layer.open({
+                        type: 2 //此处以iframe举例
+                        , title: '背景音乐选择'
+                        , area: ['400px', '380px']
+                        , shade: 0
+                        , maxmin: false
+                        , content: '/docs/musicSelect?page_id=#(page.id)'
+                        , btn: ['确定', '关闭'] //只是为了演示
+                        , yes: function (index, layero) {
+                            var iframeWin = window[layero.find('iframe')[0]['name']];
+                            var flag = iframeWin.doSave();
+                            return flag;
+                        }
+                        , btn2: function () {
+                            layer.closeAll();
+                        }
+                    });
+
                 }
             }
         });

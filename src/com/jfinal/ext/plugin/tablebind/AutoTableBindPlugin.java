@@ -26,10 +26,7 @@ import com.jfinal.ext.kit.Reflect;
 import com.jfinal.kit.PathKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.log.Log;
-import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
-import com.jfinal.plugin.activerecord.DbKit;
-import com.jfinal.plugin.activerecord.IDataSourceProvider;
-import com.jfinal.plugin.activerecord.Model;
+import com.jfinal.plugin.activerecord.*;
 
 public class AutoTableBindPlugin extends ActiveRecordPlugin {
 
@@ -174,24 +171,25 @@ public class AutoTableBindPlugin extends ActiveRecordPlugin {
             }
             tb = (TableBind) modelClass.getAnnotation(TableBind.class);
             String tableName;
-            String arpConfName = Reflect.on(this).get("configName");
+//            String arpConfName = Reflect.on(this).get("configName");
+            Config arpConfig = Reflect.on(this).get("config");
             if (tb == null) {
                 if (!autoScan) {
                     continue;
                 }
                 tableName = nameStyle.name(modelClass.getSimpleName());
                 this.addMapping(tableName, modelClass);
-                log.debug(arpConfName + " addMapping(" + tableName + ", " + modelClass.getName() + ")");
+                log.debug(arpConfig.getName() + " addMapping(" + tableName + ", " + modelClass.getName() + ")");
             } else {
                 String tbConfName = tb.configName();
-                if (StrKit.notBlank(tbConfName) && !tbConfName.equals(arpConfName)) continue;
+                if (StrKit.notBlank(tbConfName) && !tbConfName.equals(arpConfig.getName())) continue;
                 tableName = tb.tableName();
                 if (StrKit.notBlank(tb.pkName())) {
                     this.addMapping(tableName, tb.pkName(), modelClass);
-                    log.debug(arpConfName + " addMapping(" + tableName + ", " + tb.pkName() + "," + modelClass.getName() + ")");
+                    log.debug(arpConfig.getName() + " addMapping(" + tableName + ", " + tb.pkName() + "," + modelClass.getName() + ")");
                 } else {
                     this.addMapping(tableName, modelClass);
-                    log.debug(arpConfName + " addMapping(" + tableName + ", " + modelClass.getName() + ")");
+                    log.debug(arpConfig.getName() + " addMapping(" + tableName + ", " + modelClass.getName() + ")");
                 }
             }
         }

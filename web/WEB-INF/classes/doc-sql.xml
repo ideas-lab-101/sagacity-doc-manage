@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqlGroup name="doc">
 	<sql id="getMainList">
-        select m.id, m.title, m.page, m.cover, m.type_id, m.open_type
+        select m.id, m.name, m.title, m.page, m.cover, m.type_id, m.open_type
         from main m
         where m.state=1 and m.type_id=?
         order by m.order DESC

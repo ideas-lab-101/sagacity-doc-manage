@@ -67,16 +67,15 @@ public class DocController extends WXSSBaseController {
         int page = getParaToInt("page"); //数据分页
         int classID = getParaToInt("class_id");
 
-        String sql_select = "select di.id,di.cover,di.title,di.desc,is_end, ifNULL(dc.view_count,0) view_count";
+        String sql_select = "select di.id,di.cover,di.title,di.desc,is_end,ifNULL(dc.view_count,0) view_count";
         String sql_from = "from doc_info di\n" +
                 "left join (select sum(view_count) view_count, doc_id from doc_page group by doc_id) dc on dc.doc_id=di.id\n" +
                 "where di.state=1";
         if(classID == -1){//特殊处理
-            sql_from += " and DATEDIFF(now(),di.created_at)<30";
+            sql_from += " and DATEDIFF(now(),di.updated_at)<20 order by di.updated_at DESC";
         }else{
-            sql_from += " and di.doc_class_id="+classID;
+            sql_from += " and di.doc_class_id="+classID+" order by di.created_at DESC";
         }
-        sql_from += " order by di.created_at DESC";
 
         Page<Record> docList = Db.paginate(page,  getParaToInt("pageSize", 12),
                 sql_select, sql_from);
@@ -125,7 +124,7 @@ public class DocController extends WXSSBaseController {
                 "from user_like ul\n" +
                 "left join wx_user user on user.open_id=ul.open_id\n" +
                 "where ul.data_id=? and ul.type=?\n" +
-                "order by ul.created_at DESC limit 20", docID, "doc"));
+                "order by ul.created_at DESC", docID, "doc"));
         //问答数据
         String qs_select = "select qs.id, qs.title,qs.desc,qs.created_at,user.nick_name,ul.title level_title,user.gender,user.avatar_url,ifNULL(qrc.reply_count,0) reply_count\n";
         String qs_from = "from question qs\n" +
@@ -192,7 +191,7 @@ public class DocController extends WXSSBaseController {
         String sql = "select dp.id,dp.doc_id,dp.title,dp.menu_title,dp.order,dp.parent_id\n" +
                 "from doc_page dp\n" +
                 "where dp.doc_id=?\n" +
-                "order by dp.order";
+                "order by dp.order DESC";
         List<Record> ms = Db.find(sql, page.get("doc_id"));
         responseData.put("menu", ms);
         renderJson(responseData);

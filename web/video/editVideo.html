@@ -20,19 +20,19 @@
             <div class="layui-inline">
                 <label class="layui-form-label">视频标题</label>
                 <div class="layui-input-block">
-                    <input type="hidden" name="video.id" value="${(video.id)}" lay-verify="required" required>
-                    <input style="width: 280px;" type="text" name="video.title" value="${(video.title)}" lay-verify="required|title" required placeholder="请输入标题" autocomplete="off" class="layui-input">
+                    <input type="hidden" name="video.id" value="#(video.id)" lay-verify="required" required>
+                    <input style="width: 280px;" type="text" name="video.title" value="#(video.title)" lay-verify="required|title" required placeholder="请输入标题" autocomplete="off" class="layui-input">
                 </div>
             </div>
             <div class="layui-inline">
                 <div style="margin-left: 20px;">
-                    <#if video.is_live == true>
+                    #if(video.is_live)
                         <input type="radio" name="video.is_live" value="0" title="录播">
                         <input type="radio" name="video.is_live" value="1" title="直播" checked>
-                    <#else>
+                    #else
                         <input type="radio" name="video.is_live" value="0" title="录播" checked>
                         <input type="radio" name="video.is_live" value="1" title="直播">
-                    </#if>
+                    #end
                 </div>
             </div>
         </div>
@@ -48,20 +48,20 @@
             <div class="layui-inline">
                 <label class="layui-form-label">视频来源</label>
                 <div class="layui-input-block">
-                    <input type="text" name="video.source" value="${(video.source)}" lay-verify="required|source" placeholder="请输入来源" autocomplete="off" class="layui-input">
+                    <input type="text" name="video.source" value="#(video.source)" lay-verify="required|source" placeholder="请输入来源" autocomplete="off" class="layui-input">
                 </div>
             </div>
         </div>
         <div class="layui-form-item">
             <label class="layui-form-label">视频源URI</label>
             <div class="layui-input-block">
-                <input style="width: 470px;" type="text" name="video.source_url" value="${(video.source_url)}" lay-verify="required|title" required placeholder="请输入URL" autocomplete="off" class="layui-input">
+                <input style="width: 470px;" type="text" name="video.source_url" value="#(video.source_url)" lay-verify="required|title" required placeholder="请输入URL" autocomplete="off" class="layui-input">
             </div>
         </div>
         <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">视频描述</label>
             <div class="layui-input-block">
-                <textarea name="video.desc" style="width: 470px; height: 60px;" placeholder="请输入描述信息" class="layui-textarea">${(video.desc)}</textarea>
+                <textarea name="video.desc" style="width: 470px; height: 60px;" placeholder="请输入描述信息" class="layui-textarea">#(video.desc)</textarea>
             </div>
         </div>
         <div class="layui-form-item">
@@ -72,7 +72,7 @@
         </div>
     </form>
     <div class="layui-inline" style="margin-left: 20px; margin-top:30px; vertical-align: top; text-align: center;">
-        <img id="video_cover" src="${(video.cover)}" onerror="this.src='/asset/image/video_cover.png'" style="width:120px; height:auto; border: #1AA094 solid 1px;">
+        <img id="video_cover" src="#(video.cover)" onerror="this.src='/asset/image/video_cover.png'" style="width:120px; height:auto; border: #1AA094 solid 1px;">
         <div style="margin-top: 10px;">
             <button type="button" class="layui-btn" id="cover">
                 <i class="layui-icon">&#xe67c;</i>上传封面
@@ -107,7 +107,7 @@
             ,accept: 'images'
             ,field: 'coverFile'
             ,data:{
-                video_id: '${(video.id)}'
+                video_id: '#(video.id)'
             }
             ,done: function(data){
                 //上传完毕回调
@@ -125,7 +125,7 @@
     })
 
     function getVideoClass() {
-        var sel_class_id = '${(video.video_class_id)}';
+        var sel_class_id = '#(video.video_class_id)';
         $.ajax({
             url: "../system/getTagList",
             success: function (data) {

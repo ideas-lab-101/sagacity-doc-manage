@@ -153,6 +153,11 @@
         });
     });
 
+    $("body").on("mousedown", ".layui-tree a cite", function(){
+        $(".layui-tree a cite").css('color','#2f2f2f')
+        $(this).css('color','blue')
+    })
+
     function setForm(id) {
         $.ajax({
             url: "/system/getClassInfo",

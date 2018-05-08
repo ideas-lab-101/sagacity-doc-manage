@@ -20,6 +20,7 @@ import com.sagacity.docs.openapi.Qiniu;
 import com.sagacity.docs.utility.DateUtils;
 import com.sagacity.docs.utility.PropertiesFactoryHelper;
 import com.sagacity.docs.utility.StringTool;
+import com.sagacity.docs.video.VideoInfo;
 import freemarker.template.utility.DateUtil;
 import net.sf.json.JSONObject;
 
@@ -240,8 +241,11 @@ public class DocController extends WebBaseController {
 
     @Before(Tx.class)
     public void saveContent(){
-        int pageID = getParaToInt("page_id");
-        boolean r = DocPage.dao.findById(pageID).set("content", getPara("content")).update();
+        DocPage dp = DocPage.dao.findById(getParaToInt("page_id"));
+        boolean r = dp.set("content", getPara("content")).update();
+        //修改文档本身的修改时间
+        r = DocInfo.dao.findFirst("select * from doc_info where id=?", dp.get("doc_id"))
+                .set("updated_at", DateUtils.nowDateTime()).update();
         if(r){
             responseData.put(ResponseCode.MSG, "章节保存成功！");
         }else{
@@ -312,6 +316,27 @@ public class DocController extends WebBaseController {
             responseData.put(ResponseCode.MSG, "设置失败！");
         }
         responseData.put(ResponseCode.CODE, r? 1:0);
+        renderJson(responseData);
+    }
+
+    /**
+     * 背景音乐选择
+     */
+    public void musicSelect(){
+        int page_id = getParaToInt("page_id");
+        setAttr("page", DocPage.dao.findById(page_id));
+        render("musicSelect.html");
+    }
+
+    @Before(Tx.class)
+    public void setMusic(){
+        boolean r = DocPage.dao.findById(getPara("page_id")).set("music_id", getPara("music_id")).update();
+        if(r){
+            responseData.put(ResponseCode.MSG, "背景音乐设置成功！");
+        }else{
+            responseData.put(ResponseCode.MSG, "背景音乐设置失败！");
+        }
+        responseData.put(ResponseCode.CODE,r? 1:0);
         renderJson(responseData);
     }
 

@@ -29,6 +29,7 @@
     <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
     <a class="layui-icon" lay-event="file" style="margin-left: 5px;">&#xe62f;</a>
+    <a class="layui-icon" lay-event="play" style="margin-left: 5px;">&#xe623;</a>
 </script>
 
 <script src="/asset/layui/layui.js" charset="utf-8"></script>
@@ -58,18 +59,23 @@
             ,limit: 10
             ,cols: [[
                 {field:'id', title:'ID', width:60, fixed: 'left', unresize: true, sort: true}
-                ,{field:'title', title:'音乐名称', width:220,  edit: 'text'}
-                ,{field:'cover_url', title:'封面', width:180,  edit: 'text'}
+                ,{field:'title', title:'音乐名称', width:200,  edit: 'text'}
+                ,{field:'cover_url', title:'封面地址', width:180,  edit: 'text'}
                 ,{field:'resource_url', title:'资源地址', width:180, edit: 'text'}
                 ,{field:'created_at', title:'加入日期', width:120}
+                ,{field:'Caption', title:'上传用户', width:120}
                 ,{field:'state', title:'状态', width:85, templet: '#switchTpl', unresize: true}
-                ,{fixed: 'right', title:'操作', toolbar: '#toolbar', width:150}
+                ,{fixed: 'right', title:'操作', toolbar: '#toolbar', width:170}
             ]]
         });
 
         //监听表格复选框选择
         table.on('checkbox(docList)', function(obj){
             console.log(obj)
+        });
+
+        form.on('click(play)', function (obj) {
+            layer.msg(obj);
         });
 
         //监听性别操作
@@ -120,7 +126,7 @@
                     });
                     layer.close(index);
                 });
-            } else if(obj.event === 'edit'){//编辑
+            } else if(obj.event === 'edit') {//编辑
                 $.ajax({
                     url: "/system/editMusic",
                     type: "POST",
@@ -128,14 +134,22 @@
                     data: {
                         data: JSON.stringify(data)
                     },
-                    success: function(data) {
-                        if(data.code == 1){
+                    success: function (data) {
+                        if (data.code == 1) {
                             table.reload('musicList');
                         }
                         layer.msg(data.msg);
                     }
                 });
                 layer.close();
+            } else if(obj.event === 'play'){ //播放
+                var data = obj.data;
+                layer.open({
+                    title: '音乐播放',
+                    type: 2,
+                    area: ['420px', '180px'],
+                    content: ['/system/playMusic?music_id='+data.id, 'no']
+                });
             } else if(obj.event === 'file'){//上传
                 upload.render({
                     elem: '#musicFile' //绑定元素

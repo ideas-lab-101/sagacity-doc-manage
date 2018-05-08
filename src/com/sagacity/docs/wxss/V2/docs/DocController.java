@@ -123,7 +123,7 @@ public class DocController extends WXSSBaseController {
                 "from user_like ul\n" +
                 "left join wx_user user on user.open_id=ul.open_id\n" +
                 "where ul.data_id=? and ul.type=?\n" +
-                "order by ul.created_at DESC limit 20", docID, "doc"));
+                "order by ul.created_at DESC", docID, "doc"));
         //相关文档
         String sqlRC = "select di.id,di.cover,di.title,di.desc,di.is_end, ifNULL(dc.view_count,0) view_count\n" +
                 "from doc_info di\n" +
@@ -172,11 +172,16 @@ public class DocController extends WXSSBaseController {
         DocPage page = DocPage.dao.findById(pageID);
         page.set("view_count", page.getInt("view_count")+1).update();
         responseData.put("page", page);
+        responseData.put("likes", Db.find("select user.open_id,user.avatar_url,user.nick_name " +
+                "from user_like ul\n" +
+                "left join wx_user user on user.open_id=ul.open_id\n" +
+                "where ul.data_id=? and ul.type=?\n" +
+                "order by ul.created_at DESC", pageID, "page"));
         //菜单
         String sql = "select dp.id,dp.doc_id,dp.title,dp.menu_title,dp.order,dp.parent_id\n" +
                 "from doc_page dp\n" +
                 "where dp.doc_id=?\n" +
-                "order by dp.order";
+                "order by dp.order DESC";
         List<Record> ms = Db.find(sql, page.get("doc_id"));
         responseData.put("menu", ms);
         renderJson(responseData);

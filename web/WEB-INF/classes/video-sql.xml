@@ -10,10 +10,11 @@
         left join sys_users u on u.UserID=video.user_id
     </sql>
     <sql id="getVideoInfo">
-        select ci.id,ci.title,ci.desc,ci.cover,ci.video_class_id,ci.user_id,IFNULL(u.Caption,'未知') Caption
-        ,ci.is_live,ci.source,ci.source_url,ci.state
+        select ci.id,ci.title,ci.desc,ci.cover,ci.video_class_id,ci.user_id,u.Caption,'未知'
+        ,up.AvatarURL,ci.is_live,ci.source,ci.source_url,ci.state
         from video_info ci
         left join sys_users u on u.UserID=ci.user_id
+        left join sys_userProfile up on up.UserID=u.UserID
         where ci.id=?
     </sql>
 </sqlGroup>

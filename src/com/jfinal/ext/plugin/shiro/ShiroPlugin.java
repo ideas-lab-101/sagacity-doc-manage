@@ -83,11 +83,10 @@ public class ShiroPlugin implements IPlugin {
 		ConcurrentMap<String, AuthzHandler> authzMaps = new ConcurrentHashMap<String, AuthzHandler>();
 		//逐个访问所有注册的Controller，解析Controller及action上的所有Shiro注解。
 		//并依据这些注解，actionKey提前构建好权限检查处理器。
-		for (Entry<String, Class<? extends Controller>> entry : routes
-				.getEntrySet()) {
-			Class<? extends Controller> controllerClass = entry.getValue();
+		for (Routes.Route route : routes.getRouteItemList()) {
+			Class<? extends Controller> controllerClass = route.getControllerClass();
 
-			String controllerKey = entry.getKey();
+			String controllerKey = route.getControllerKey();
 
 			// 获取Controller的所有Shiro注解。
 			List<Annotation> controllerAnnotations = getAuthzAnnotations(controllerClass);
@@ -254,7 +253,6 @@ public class ShiroPlugin implements IPlugin {
 	/**
 	 * 返回该Controller的所有访问控制注解
 	 *
-	 * @param method
 	 * @return
 	 */
 	private List<Annotation> getAuthzAnnotations(

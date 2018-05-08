@@ -18,10 +18,23 @@ public class MusicController extends WXSSBaseController{
      * 随机从音乐库中获取一首音乐
      */
     public void getBackMusic(){
-        int doc_id = getParaToInt("doc_id");
+        int page_id = getParaToInt("page_id", 0);
 
-        String sql = "select * from music where state=1 ORDER BY RAND() LIMIT 1";
+        String sql = "select m.* from music m left join doc_page dp on dp.music_id=m.id where dp.id=?";
+        if(Db.findFirst(sql, page_id) != null){
+            renderJson(ResponseCode.DATA, Db.findFirst(sql, page_id));
+        }else{
+            sql = "select * from music where state=1 ORDER BY RAND() LIMIT 1";
+            renderJson(ResponseCode.DATA, Db.findFirst(sql));
+        }
 
-        renderJson(ResponseCode.DATA, Db.findFirst(sql));
+    }
+
+    public void getPageMusic(){
+        int page_id = getParaToInt("page_id", 0);
+
+        String sql = "select m.* from music m left join doc_page dp on dp.music_id=m.id where dp.id=?";
+        renderJson(ResponseCode.DATA, Db.findFirst(sql, page_id));
+
     }
 }

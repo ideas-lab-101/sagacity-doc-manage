@@ -85,7 +85,7 @@ public class ExceptionInterceptor implements Interceptor {
 
         @Override
         public void render() {
-            RenderFactory.me().getRender(view).setContext(request, response).render();
+            new RenderFactory().getRender(view).setContext(request, response).render();
         }
 
     }

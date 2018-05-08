@@ -4,6 +4,7 @@ import com.jfinal.aop.Before;
 import com.jfinal.aop.Enhancer;
 import com.jfinal.ext.route.ControllerBind;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.tx.Tx;
 import com.jfinal.plugin.ehcache.CacheKit;
 import com.jfinal.weixin.sdk.utils.HttpUtils;
@@ -29,9 +30,7 @@ import net.sf.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by mulaliu on 16/4/15.
@@ -69,7 +68,7 @@ public class SystemController extends WXSSBaseController {
                 .getConfig("wxss.appsecret"));
         params.put("js_code", code);
         JSONObject res = JSONObject.fromObject(HttpUtils.get(getApiUrl, params));
-        System.out.println(res.toString());
+//        System.out.println(res.toString());
         openid = res.getString("openid");
 
         WXUser wxUser = Enhancer.enhance(WXUser.class).createUser(openid, userInfo);
@@ -213,6 +212,47 @@ public class SystemController extends WXSSBaseController {
                 "group by ds.name\n" +
                 "order by searchCount DESC";
         renderJson(ResponseCode.LIST, Db.find(sql));
+    }
+
+    public void getClassList(){
+
+        //文档分类
+        String sqlDoc = "select dc.*\n" +
+                "from doc_class dc\n" +
+                "where dc.state=1 and dc.parent_id = ?\n" +
+                "order by dc.order DESC";
+        List<Record> dc = new ArrayList<Record>();
+        for (Record p : Db.find(sqlDoc, 0)){
+            List<Record> d1 = Db.find(sqlDoc, p.get("id"));
+            for (Record c : d1){
+                c.set("son", Db.find(sqlDoc, c.get("id")));
+            }
+            dc.addAll(d1);
+        }
+        responseData.put("doc", dc);
+        //视频分类
+        String sqlVideo = "select * from video_class";
+        if(StringTool.notNull(getPara("token")) && !StringTool.isBlank(getPara("token"))){
+            //传入token,判断用户权限，设置可打开内容，后续优化
+            WXUser user = WXUser.dao.findFirst("select * from wx_user where open_id=?", getPara("token"));
+            if (user != null){
+                switch (user.getInt("level_id")){
+                    case 1: //初级用户
+                        sqlVideo += " where state=1";
+                        break;
+                    case 2: //中级用户
+                        sqlVideo += " where 1=1";
+                    default:
+                        break;
+                }
+            }else{
+                sqlVideo += " where state=1";
+            }
+        }else{
+            sqlVideo += " where state=1";
+        }
+        responseData.put("video", Db.find(sqlVideo));
+        renderJson(responseData);
     }
 
 }

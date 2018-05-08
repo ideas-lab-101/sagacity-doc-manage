@@ -18,8 +18,8 @@
 <div>
     <div class="layui-collapse">
         <div class="layui-colla-item">
-            <h2 class="layui-colla-title">${(doc.title)}</h2>
-            <div class="layui-colla-content">${(doc.desc)}</div>
+            <h2 class="layui-colla-title">#(doc.title)</h2>
+            <div class="layui-colla-content">#(doc.desc)</div>
         </div>
     </div>
     <div class="layui-container" style="width:100%; margin-top: 5px; float:left;">
@@ -60,7 +60,7 @@
 <script src="/asset/layui/layui.js" charset="utf-8"></script>
 <script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
 <script>
-    var sel_item, doc_id = '${(doc.id)}';
+    var sel_item, doc_id = '#(doc.id)';
     var layer, tree;
     layui.use(['layer','element','tree'], function(){
         layer = layui.layer; //弹层
@@ -90,6 +90,11 @@
             }
         });
     });
+
+    $("body").on("mousedown", ".layui-tree a cite", function(){
+        $(".layui-tree a cite").css('color','#2f2f2f')
+        $(this).css('color','blue')
+    })
 
     function addPage() {
         var parent_id;

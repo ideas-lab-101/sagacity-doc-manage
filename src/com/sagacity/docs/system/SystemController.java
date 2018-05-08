@@ -3,10 +3,7 @@ package com.sagacity.docs.system;
 import com.jfinal.aop.Before;
 import com.jfinal.ext.kit.ModelKit;
 import com.jfinal.ext.route.ControllerBind;
-import com.jfinal.plugin.activerecord.CPI;
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.Model;
-import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.activerecord.*;
 import com.jfinal.plugin.activerecord.tx.Tx;
 import com.jfinal.upload.UploadFile;
 import com.sagacity.docs.common.WebBaseController;
@@ -17,7 +14,9 @@ import com.sagacity.docs.openapi.Qiniu;
 import com.sagacity.docs.utility.ConvertUtil;
 import com.sagacity.docs.utility.DateUtils;
 import com.sagacity.docs.utility.PropertiesFactoryHelper;
+import com.sagacity.docs.utility.StringTool;
 import com.sagacity.docs.video.VideoInfo;
+import net.sf.json.JSONObject;
 
 import java.io.File;
 import java.util.List;
@@ -29,14 +28,6 @@ public class SystemController extends WebBaseController{
     public void index(){
 
     }
-
-//    public void getDocClass(){
-//        String sql = "select dc.id, dc.parent_id, dc.title, dc.desc, dc.icon\n" +
-//                "from doc_class dc\n" +
-//                "where dc.state=1\n" +
-//                "order by dc.order";
-//        renderJson(ResponseCode.LIST, Db.find(sql));
-//    }
 
     /**
      * 获得树形结构数据
@@ -290,11 +281,18 @@ public class SystemController extends WebBaseController{
      */
 
     public void getMusicList(){
-        String sql = "select id,title,cover_url,resource_url,state,created_at from music\n" +
+        String sql_select = "select id,title,cover_url,resource_url,state,created_at,u.Caption\n";
+        String sql_from = "from music m\n" +
+                "left join sys_users u on u.UserID=m.user_id\n" +
                 "where 1=1 order by created_at DESC";
-        responseData.put(ResponseCode.CODE, 0);
-        responseData.put(ResponseCode.DATA, Db.find(sql));
-        renderJson(responseData);
+
+        if (StringTool.notNull(getPara("pageIndex")) && !StringTool.isBlank(getPara("pageIndex"))){
+            Page<Record> noticeList = Db.paginate(getParaToInt("pageIndex", 1),
+                    getParaToInt("pageSize", 10), sql_select, sql_from);
+            renderJson(convertPageData(noticeList));
+        }else {
+            renderJson(ResponseCode.LIST, Db.find(sql_select + "\n" + sql_from));
+        }
     }
 
     @Before(Tx.class)
@@ -315,6 +313,7 @@ public class SystemController extends WebBaseController{
     public void editMusic(){
 
         Record data = new Record().setColumns(ConvertUtil.jsonStrToMap(getPara("data")));
+        data.remove("Caption");
         boolean r = Db.update("music", data);
         if(r){
             responseData.put(ResponseCode.MSG, "更新成功！");
@@ -328,14 +327,35 @@ public class SystemController extends WebBaseController{
     @Before(Tx.class)
     public void addMusic(){
         boolean r = false;
+        JSONObject jo = getCurrentUser();
 
-        r = new Music().set("title", getPara("name"))
-                .set("created_at", DateUtils.nowDateTime())
-                .set("state", 1).save();
+        r = new Music().set("title", getPara("name")).set("cover_url", "/assets/images/music_cover.png")
+                .set("created_at", DateUtils.nowDateTime()).set("state", 0)
+                .set("user_id", jo.get("UserID")).save();
         if(r){
             responseData.put(ResponseCode.MSG, "新增成功！");
         }else{
             responseData.put(ResponseCode.MSG, "新增失败！");
+        }
+        responseData.put(ResponseCode.CODE,r? 1:0);
+        renderJson(responseData);
+    }
+
+    @Before(Tx.class)
+    public void delMusic(){
+        boolean r = false;
+        JSONObject jo = getCurrentUser();
+
+        Music m =  Music.dao.findById(getParaToInt("music_id"));
+        if(m.getStr("user_id").equals(jo.getString("UserID"))){
+            r = m.delete();
+            if(r){
+                responseData.put(ResponseCode.MSG, "删除成功！");
+            }else{
+                responseData.put(ResponseCode.MSG, "删除失败！");
+            }
+        }else{
+            responseData.put(ResponseCode.MSG, "非创建人不能删除！");
         }
         responseData.put(ResponseCode.CODE,r? 1:0);
         renderJson(responseData);
@@ -375,6 +395,12 @@ public class SystemController extends WebBaseController{
         }
         responseData.put(ResponseCode.CODE, r?1:0);
         renderJson(responseData);
+    }
+
+    public void playMusic(){
+        int music_id = getParaToInt("music_id");
+        setAttr("audio", Music.dao.findById(music_id));
+        render("/system/audioPlayer.html");
     }
 
 }

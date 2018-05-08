@@ -69,9 +69,9 @@ public class UserController extends WebBaseController{
                 "where pi.state=2 and pi.data_type='video' ) pay where pay.user_id=?";
         sql_from += " order by pay.created_at Desc";
         if (StringTool.notNull(getPara("pageIndex")) && !StringTool.isBlank(getPara("pageIndex"))){
-            Page<Record> noticeList = Db.paginate(getParaToInt("pageIndex", 1),
+            Page<Record> dataList = Db.paginate(getParaToInt("pageIndex", 1),
                     getParaToInt("pageSize", 10), sql_select, sql_from, jo.get("UserID"));
-            renderJson(convertPageData(noticeList));
+            renderJson(convertPageData(dataList));
         }else {
             renderJson(ResponseCode.LIST, Db.find(sql_select + "\n" + sql_from, jo.get("UserID")));
         }

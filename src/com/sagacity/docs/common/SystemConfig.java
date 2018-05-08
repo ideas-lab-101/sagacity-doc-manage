@@ -11,6 +11,7 @@ import com.jfinal.ext.plugin.tablebind.SimpleNameStyles;
 import com.jfinal.ext.route.AutoBindRoutes;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.plugin.ehcache.EhCachePlugin;
+import com.jfinal.template.Engine;
 
 /**
  * API引导式配置
@@ -43,6 +44,13 @@ public class SystemConfig extends JFinalConfig {
 		AutoBindRoutes route = new AutoBindRoutes();
 		route.includeAllJarsInLib(false);
 		me.add(route);
+	}
+
+	/**
+	 * 配置Template Engine
+	 */
+	public void configEngine(Engine me) {
+		me.setDevMode(true);
 	}
 	
 	/**
