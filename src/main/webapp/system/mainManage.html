@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>首页管理</title>
+    <link rel="stylesheet" href="/asset/layui/css/layui.css">
+
+    <style>
+        body{padding: 20px; /*overflow-y: scroll;*/}
+    </style>
+</head>
+<body>
+
+<div class="layui-btn-group">
+    <a class="layui-btn  layui-btn-sm" onclick="addData()">
+        <i class="layui-icon">&#xe654;</i>新增
+    </a>
+    <!--<a class="layui-btn layui-btn-sm" onclick="setHot()">-->
+    <!--<i class="layui-icon">&#xe756;</i>设置热门-->
+    <!--</a>-->
+</div>
+<button id="cover" style="display: none;" lay-data="{url: '/system/uploadMainCover', field: 'coverFile'}"></button>
+
+<table id="mainList" lay-filter="mainList"></table>
+<script type="text/html" id="switchTpl">
+    <input type="checkbox" name="state" value="{{d.id}}" lay-skin="switch" lay-text="启用|停用" lay-filter="stateFilter" {{ d.state == 1 ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="toolbar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-icon" lay-event="cover" style="margin-left: 5px;">&#xe62f;</a>
+</script>
+
+<script src="/asset/layui/layui.js" charset="utf-8"></script>
+<script>
+
+    var layer, table, form, upload;
+    layui.use(['layer', 'table', 'form', 'upload'], function(){
+        layer = layui.layer;
+        table = layui.table;
+        form = layui.form;
+        upload = layui.upload;
+        var $ = layui.$;
+
+        table.render({
+            id:'mainList'
+            ,elem: '#mainList'
+            ,url: '/system/getMainList'
+            ,page: false
+            ,request: {
+
+            }
+            ,cols: [[
+                {field:'id', title:'ID', width:60, fixed: 'left', unresize: true, sort: true}
+                ,{field:'name', title:'栏目名称', width:120,  edit: 'text'}
+                ,{field:'title', title:'栏目说明', width:120,  edit: 'text'}
+                ,{field:'main_type', title:'分类', width:100, sort: true}
+                ,{field:'page', title:'模块地址', width:200,  edit: 'text'}
+                ,{field:'cover', title:'封面地址', width:160, edit: 'text'}
+                ,{field:'create_date', title:'创建日期', width:120}
+                ,{field:'state', title:'状态', width:85, templet: '#switchTpl', unresize: true}
+                ,{fixed: 'right', title:'操作', toolbar: '#toolbar', width:150}
+            ]]
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(docList)', function(obj){
+            console.log(obj)
+        });
+
+        //监听性别操作
+        form.on('switch(stateFilter)', function(obj){
+            // layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+            $.ajax({
+                url: "/system/setMainState",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    main_id: this.value,
+                    state: obj.elem.checked
+                },
+                success: function(data) {
+                    layer.msg(data.msg, {time:1000});
+                }
+            });
+            layer.close();
+        });
+
+        //监听单元格编辑
+        table.on('edit(mainList)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+
+        });
+
+        //监听工具条
+        table.on('tool(mainList)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){//删除
+                layer.confirm('确认删除此项目？', function(index){
+                    $.ajax({
+                        url: "/system/delMain",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            main_id: data.id
+                        },
+                        success: function(data) {
+                            if(data.code == 1){
+                                table.reload('mainList');
+                            }else{
+                                layer.msg(data.msg);
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){//编辑
+                $.ajax({
+                    url: "/system/editMain",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        data: JSON.stringify(data)
+                    },
+                    success: function(data) {
+                        if(data.code == 1){
+                            table.reload('mainList');
+                        }
+                        layer.msg(data.msg);
+                    }
+                });
+                layer.close();
+            } else if(obj.event === 'cover'){//上传
+                upload.render({
+                    elem: '#cover' //绑定元素
+                    ,accept: 'images'
+                    ,data: {main_id: data.id}
+                    ,done: function(res, index, upload){
+                        layer.alert(res.msg, function(index){
+                            if(res.code ==1) {
+                                self.location.reload();
+                            }
+                        });
+                    }
+                    ,error: function(){
+                        //请求异常回调
+                        layer.msg('上传出错！');
+                    }
+                });
+                var cover = document.getElementById("cover");
+                cover.click();
+            }
+
+        });
+
+        //监听排序
+        table.on('sort(mainList)', function(obj){
+            console.log(this, obj.field, obj.type)
+            return;
+            //服务端排序
+            // table.reload('docList', {
+            //   initSort: obj
+            //   //,page: {curr: 1} //重新从第一页开始
+            //   ,where: { //重新请求服务端
+            //     key: obj.field //排序字段
+            //     ,order: obj.type //排序方式
+            //   }
+            // });
+        });
+
+    });
+
+
+    function addData() {
+
+        layer.open({
+            title: '新增首页项',
+            type: 2,
+            area: ['620px', '320px'],
+            content: ['addMain.html', 'no'],
+            yes: function () {
+                table.reload('mainList');
+            },
+            end: function () {
+                table.reload('mainList');
+            }
+        });
+    }
+</script>
+</body>
+</html>

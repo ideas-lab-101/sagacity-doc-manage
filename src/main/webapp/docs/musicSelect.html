@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>背景音乐设置</title>
+    <link rel="stylesheet" href="/asset/layui/css/layui.css">
+    <style>
+        body{
+            padding: 10px; /*overflow-y: scroll;*/
+        }
+        .layui-form-select dl { max-height:200px; }
+    </style>
+</head>
+<body>
+<div>
+    <form class="layui-form layui-form-pane1 layui-inline">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">背景音乐</label>
+                <div class="layui-input-block">
+                    <select name="page.music_id" id="music_id" lay-verify="required" lay-verType="tips" lay-search>
+                        <option value="">请选择背景音乐</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<script src="/asset/layui/layui.js" charset="utf-8"></script>
+<script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
+<script>
+    var layer, form;
+    layui.use(['layer','form'], function(){
+        layer = layui.layer; //弹层
+        form = layui.form;
+        var $ = layui.$;
+
+        getMusicList();
+
+    })
+
+    function getMusicList() {
+        var sel_music_id = '#(page.music_id)';
+        $.ajax({
+            url: "../system/getMusicList?state=1",
+            success: function (data) {
+                for(var i =0;i<data.list.length;i++){
+                    var opt = data.list[i];
+                    if (opt.id == sel_music_id){
+                        $("#music_id").append("<option selected value='"+opt.id+"'>"+opt.title+"</option>");
+                    }else{
+                        $("#music_id").append("<option value='"+opt.id+"'>"+opt.title+"</option>");
+                    }
+                }
+                form.render('select');
+            },
+            error: function () {
+            }
+        });
+    }
+
+    function doSave() {
+        $.ajax({
+            url: "/docs/setMusic",
+            type: "POST",
+            dataType: "json",
+            data: {
+                page_id: '#(page.id)' ,
+                music_id: $("#music_id").val()
+            },
+            success: function(data) {
+                layer.msg(data.msg);
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

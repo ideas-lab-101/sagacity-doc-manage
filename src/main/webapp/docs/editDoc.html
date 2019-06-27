@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>编辑文档</title>
+    <link rel="stylesheet" href="/asset/layui/css/layui.css">
+    <style>
+        body{
+            padding: 10px; /*overflow-y: scroll;*/
+        }
+        /**treeselect*/
+        .layui-form-select .layui-tree {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 42px;
+            padding: 5px 0;
+            z-index: 999;
+            min-width: 100%;
+            border: 1px solid #d2d2d2;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #fff;
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,.12);
+            box-sizing: border-box;
+        }
+        .layui-form-selected .layui-tree {
+            display: block;
+            max-height:200px;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <form class="layui-form layui-form-pane1 layui-inline">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">文档标题</label>
+                <div class="layui-input-block">
+                    <input type="hidden" name="doc.id" value="#(doc.id)" lay-verify="required" required>
+                    <input style="width: 400px;" type="text" name="doc.title" value="#(doc.title)" lay-verify="required|title" required placeholder="请输入标题" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <input type="checkbox" lay-filter="endFilter"  lay-skin="switch" lay-text="完结|连载" #(doc.is_end ? 'checked' : '')>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">文档分类</label>
+                <div class="layui-input-block">
+                    <input type="text" name="doc.doc_class_id" value="#(doc.doc_class_id)" id="class_id" lay-verify="required" placeholder="请选择分类" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">文档来源</label>
+                <div class="layui-input-block">
+                    <input type="text" name="doc.source" value="#(doc.source)" lay-verify="required|source" placeholder="请输入来源" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">文档描述</label>
+            <div class="layui-input-block">
+                <textarea name="doc.desc" style="width: 470px; height: 80px;" placeholder="请输入描述信息" class="layui-textarea">#(doc.desc)</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="*">保存修改</button>
+                <a class="layui-btn layui-btn-primary" onclick="doEdit()">进入编辑</a>
+            </div>
+        </div>
+    </form>
+    <div class="layui-inline" style="margin-left: 20px; margin-top:30px; vertical-align: top; text-align: center;">
+        <img id="doc_cover" src="#(doc.cover)" onerror="this.src='/asset/image/doc_cover.png'" style="width:120px; height:auto; border: #1AA094 solid 1px;">
+        <div style="margin-top: 10px;">
+            <button type="button" class="layui-btn" id="cover">
+                <i class="layui-icon">&#xe67c;</i>上传封面
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="/asset/layui/layui.js" charset="utf-8"></script>
+<script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
+<script>
+    var layer, form, upload, treeselect;
+    layui.config({
+        base: '/asset/layui/extend/' //这是自定义模块的路径了
+    }).use(['layer','form', 'upload', 'treeselect'], function(){
+        layer = layui.layer; //弹层
+        form = layui.form;
+        upload = layui.upload;
+        treeselect = layui.treeselect;
+        var $ = layui.$;
+
+        $.ajax({
+            url: "/system/getClassTree",
+            data: {},
+            success: function (data) {
+                treeselect.render({
+                    elem: '#class_id' //指定元素
+                    , data: data.data
+                });
+            },
+            error: function () {
+            }
+        })
+
+        //监听表单提交
+        form.on('submit(*)', function(data){
+            // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            doSave(data.field);
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        form.on('switch(endFilter)', function(obj){
+            $.ajax({
+                url: "/docs/setProperty",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    doc_id: '#(doc.id)',
+                    property: obj.elem.checked,
+                    type: 'end'
+                },
+                success: function(data) {
+                    layer.msg(data.msg, {time:1000});
+                }
+            });
+        });
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#cover' //绑定元素
+            ,url: '/docs/uploadCover' //上传接口
+            ,accept: 'images'
+            ,field: 'coverFile'
+            ,data:{
+                doc_id: '#(doc.id)'
+            }
+            ,done: function(data){
+                //上传完毕回调
+                if(data.code ==1){
+                    //修改图片url
+                    $("#doc_cover").attr("src",data.url);
+                    layer.msg(data.msg);
+                }
+            }
+            ,error: function(){
+                //请求异常回调
+                layer.msg('上传出错！');
+            }
+        });
+    })
+
+    function doSave(formData) {
+        $.ajax({
+            url: "/docs/saveDoc",
+            type: "POST",
+            dataType: "json",
+            data: formData,
+            success: function(data) {
+                layer.msg(data.msg);
+            }
+        });
+    }
+
+    function doEdit() {
+        //关闭弹窗，并向父窗口的tabs中加入新页
+        var index = parent.layer.getFrameIndex(window.name);
+        parent.layer.close(index);
+        var url = "/docs/docDetail?doc_id=#(doc.id)";
+        parent.parent.active.tabAdd('#(doc.title)', url, 'doc_#(doc.id)');
+        parent.parent.active.tabChange('doc_#(doc.id)');
+    }
+
+</script>
+</body>
+</html>

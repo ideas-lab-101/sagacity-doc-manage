@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../sagacity_base/jfinal_ext/jfinal-ext.iml" filepath="$PROJECT_DIR$/../sagacity_base/jfinal_ext/jfinal-ext.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../sagacity_base/sagacity-base.iml" filepath="$PROJECT_DIR$/../sagacity_base/sagacity-base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../sagacity_base/sagacity_utility/sagacity-utility.iml" filepath="$PROJECT_DIR$/../sagacity_base/sagacity_utility/sagacity-utility.iml" />
       <module fileurl="file://$PROJECT_DIR$/sagacity_docs.iml" filepath="$PROJECT_DIR$/sagacity_docs.iml" />
     </modules>
   </component>
