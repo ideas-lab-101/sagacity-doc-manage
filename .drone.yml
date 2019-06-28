@@ -3,7 +3,7 @@ workspace:
   path: src/
 pipeline:
   build:
-    image: hub.cdqidi.cn/maven
+    image: maven
     volumes:
       - /data/Drone/maven:/root/.m2
     commands:
