@@ -7,4 +7,6 @@ target/
 .project
 .settings/
 .classpath
+*.yml
+Dockerfile
 
