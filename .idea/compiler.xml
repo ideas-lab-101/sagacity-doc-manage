@@ -15,7 +15,7 @@
       <module name="jfinal-ext" target="1.7" />
       <module name="sagacity-base" target="1.7" />
       <module name="sagacity-utility" target="1.7" />
-      <module name="sagacity_docs" target="1.7" />
+      <module name="sagacity_docs" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

@@ -9,7 +9,7 @@
         <element id="directory" name="lib">
           <element id="library" level="project" name="Maven: com.jfinal:jfinal:4.2" />
           <element id="library" level="project" name="Maven: com.jfinal:jfinal-weixin:2.3" />
-          <element id="archive" name="jfinal-ext-1.0-SNAPSHOT.jar">
+          <element id="archive" name="jfinal-ext-3.1.jar">
             <element id="module-output" name="jfinal-ext" />
           </element>
           <element id="library" level="project" name="Maven: com.google.guava:guava:27.0-jre" />
@@ -58,7 +58,7 @@
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-nop:1.7.25" />
           <element id="library" level="project" name="Maven: org.bouncycastle:bcprov-jdk15on:1.60" />
           <element id="library" level="project" name="Maven: mysql:mysql-connector-java:6.0.6" />
-          <element id="archive" name="sagacity-utility-1.0-SNAPSHOT.jar">
+          <element id="archive" name="sagacity-utility-1.0.jar">
             <element id="module-output" name="sagacity-utility" />
           </element>
           <element id="library" level="project" name="Maven: com.belerweb:pinyin4j:2.5.1" />
