@@ -1,0 +1,34 @@
+workspace:
+  base: /sagacity-docs
+  path: src/
+pipeline:
+  build:
+    image: hub.cdqidi.cn/maven:qd
+    volumes:
+      - /data/Drone/maven:/root/.m2
+    commands:
+      - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+  publish:
+    image: plugins/docker
+    repo: hub.cdqidi.cn/sagacity-docs
+    dockerfile: ./Dockerfile
+    tags: ${DRONE_COMMIT_SHA}
+    secrets: [ docker_username, docker_password ]
+  deploy:
+    image: hub.cdqidi.cn/drone-k8s
+    #kubernetes_server: https://rancher.cdqidi.cn/k8s/clusters/c-nqgw6
+    #kubernetes_cert: ${KUBERNETES_CERT_STAGING}
+    #kubernetes_token: 
+    secrets: [ kubernetes_server, kubernetes_token ]
+    # 注意:将kubernetes_server和kubernetes_token的参数放在secrets里的变量中,并且名字一定要相同，就可以使用secrets指令来传参了
+    deployment: sagacity-docs
+    repo: hub.cdqidi.cn/sagacity-docs
+    container: sagacity-docs
+    namespace: production
+    tag:
+      - ${DRONE_COMMIT_SHA}
+    # when:
+    #   branch: dev
+    #   event: [push, tag, deployment]
+    #   ref:
+    #   - refs/tags/dev*
