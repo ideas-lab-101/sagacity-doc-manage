@@ -159,14 +159,5 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <distributionManagement>
-        <repository>
-            <id>cdqidi</id>
-            <url>
-                http://repo.dev.cdqidi.cn/repository/maven-releases/
-            </url>
-        </repository>
-    </distributionManagement>
     
 </project>
