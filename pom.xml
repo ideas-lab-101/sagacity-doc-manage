@@ -24,7 +24,12 @@
     <dependencies>
         <dependency>
             <groupId>com.sagacity</groupId>
-            <artifactId>sagacity-base</artifactId>
+            <artifactId>jfinal-ext</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sagacity</groupId>
+            <artifactId>sagacity-utility</artifactId>
             <version>1.0</version>
         </dependency>
         <dependency>
@@ -42,11 +47,6 @@
             <groupId>com.jfinal</groupId>
             <artifactId>jfinal-weixin</artifactId>
             <version>2.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sagacity</groupId>
-            <artifactId>jfinal-ext</artifactId>
-            <version>3.1</version>
         </dependency>
         <dependency>
             <groupId>net.sf.json-lib</groupId>
@@ -85,11 +85,6 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>6.0.6</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sagacity</groupId>
-            <artifactId>sagacity-utility</artifactId>
-            <version>1.0</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
