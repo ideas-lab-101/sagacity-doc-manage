@@ -188,7 +188,7 @@ public class DocController extends WXSSBaseController {
                 "left join doc_page dp1 on dp1.id=dp.parent_id\n" +
                 "where dp.doc_id=?\n" +
                 "order by dp.level,ifnull(dp1.order,dp.order),dp.order";
-        List<Record> ms = Db.find(sql, page.get("doc_id"));
+        List<Record> ms = Db.find(sql, page.getInt("doc_id"));
         responseData.put("menu", ms);
         renderJson(responseData);
     }

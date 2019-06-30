@@ -1,9 +1,0 @@
-#jdbcUrl = jdbc:mysql://127.0.0.1/cloud_docs?zeroDateTimeBehavior=convertToNull&autoReconnect=true&rewriteBatchedStatements=true
-#user = root
-#password = sagacity
-
-jdbcUrl = jdbc:mysql://118.190.112.145/cloud_docs?zeroDateTimeBehavior=convertToNull&autoReconnect=true&rewriteBatchedStatements=true
-user = root
-password = Sagacity@db1
-
-devMode = true

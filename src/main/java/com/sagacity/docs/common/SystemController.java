@@ -13,7 +13,6 @@ import com.sagacity.docs.extend.ResponseCode;
 import com.sagacity.docs.extend.RoleType;
 import com.sagacity.docs.user.UserInfo;
 import com.sagacity.utility.DateUtils;
-import com.sagacity.utility.PropertiesFactoryHelper;
 import net.sf.json.JSONObject;
 
 import java.util.List;
@@ -35,8 +34,8 @@ public class SystemController extends WebBaseController {
     public void index(){
         JSONObject userInfo = getCurrentUser();
         setAttr("userInfo", userInfo);
-        setAttr("resourceUrl", PropertiesFactoryHelper.getInstance()
-                .getConfig("resource.url"));
+//        setAttr("resourceUrl", PropertiesFactoryHelper.getInstance()
+//                .getConfig("resource.url"));
         //加载一级模块
         setAttr("menuList", Db.find(SqlKit.sql("sys.getModuleList"), userInfo.get("RoleID")));
         render("index.html");

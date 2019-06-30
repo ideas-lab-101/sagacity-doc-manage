@@ -4,6 +4,7 @@ import com.jfinal.aop.Before;
 import com.jfinal.aop.Duang;
 import com.jfinal.aop.Enhancer;
 import com.jfinal.ext.route.ControllerBind;
+import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.tx.Tx;
@@ -26,7 +27,6 @@ import com.sagacity.docs.weixin.WXUser;
 import com.sagacity.docs.wxss.WXSSBaseController;
 import com.sagacity.utility.DateUtils;
 import com.sagacity.utility.PinyinUtil;
-import com.sagacity.utility.PropertiesFactoryHelper;
 import com.sagacity.utility.StringTool;
 import net.sf.json.JSONObject;
 
@@ -107,11 +107,11 @@ public class SystemController extends WXSSBaseController {
             InputStream inputStream = HttpUtils.download(getApiUrl, JsonUtils.toJson(params));
 
             String fileName = System.currentTimeMillis()+".png";
-            File f2 = new File(PropertiesFactoryHelper.getInstance().getConfig("resource.dir")+"qr_code/");
+            File f2 = new File(PropKit.get("resource.dir")+"qr_code/");
             if (!f2.exists()) {
                 f2.mkdirs();
             }
-            File file = new File(PropertiesFactoryHelper.getInstance().getConfig("resource.dir")+"qr_code/"+fileName);
+            File file = new File(PropKit.get("resource.dir")+"qr_code/"+fileName);
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -140,8 +140,8 @@ public class SystemController extends WXSSBaseController {
                 message = vi.getStr("title");
                 bgImg = vi.getStr("cover");
             }
-            qrCode = PropertiesFactoryHelper.getInstance().getConfig("resource.url")+"qr_code/"+fileName;
-            responseData.put("qr_code", PropertiesFactoryHelper.getInstance().getConfig("resource.url")+"qr_code/"+  mergeImage(bgImg, qrCode, message));
+            qrCode = PropKit.get("resource.url")+"qr_code/"+fileName;
+            responseData.put("qr_code", PropKit.get("resource.url")+"qr_code/"+  mergeImage(bgImg, qrCode, message));
             r = true;
         }catch (Exception ex){
             ex.printStackTrace();
@@ -187,7 +187,7 @@ public class SystemController extends WXSSBaseController {
             g2d.setFont(new Font("宋体", Font.PLAIN, 20));
             g2d.drawString(message, 10, bufferImgHeight + 60);
             g2d.dispose();// 释放图形上下文使用的系统资源
-            ImageIO.write(bg, "PNG", new FileOutputStream(PropertiesFactoryHelper.getInstance().getConfig("resource.dir")+"qr_code/"+coverImg));
+            ImageIO.write(bg, "PNG", new FileOutputStream(PropKit.get("resource.dir")+"qr_code/"+coverImg));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -205,7 +205,7 @@ public class SystemController extends WXSSBaseController {
         boolean r = false;
         String msg = "";
 
-        String url = PropertiesFactoryHelper.getInstance().getConfig("base.url");
+        String url = PropKit.get("base.url");
         String token = getPara("token");
         String key = getPara("key");
         String password = StringTool.generateMixString(6);
@@ -289,9 +289,9 @@ public class SystemController extends WXSSBaseController {
                 "order by dc.order DESC";
         List<Record> dc = new ArrayList<Record>();
         for (Record p : Db.find(sqlDoc, 0)){
-            List<Record> d1 = Db.find(sqlDoc, p.get("id"));
+            List<Record> d1 = Db.find(sqlDoc, p.getInt("id"));
             for (Record c : d1){
-                c.set("son", Db.find(sqlDoc, c.get("id")));
+                c.set("son", Db.find(sqlDoc, c.getInt("id")));
             }
             dc.addAll(d1);
         }

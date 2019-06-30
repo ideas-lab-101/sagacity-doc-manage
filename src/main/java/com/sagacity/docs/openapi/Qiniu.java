@@ -1,6 +1,7 @@
 package com.sagacity.docs.openapi;
 
 import com.google.gson.Gson;
+import com.jfinal.kit.PropKit;
 import com.qiniu.common.QiniuException;
 import com.qiniu.common.Zone;
 import com.qiniu.http.Response;
@@ -9,7 +10,6 @@ import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 import com.sagacity.utility.DateUtils;
-import com.sagacity.utility.PropertiesFactoryHelper;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,12 +21,9 @@ public class Qiniu {
 
     public String getUploadToken(){
         //获取7牛的参数
-        String accessKey = PropertiesFactoryHelper.getInstance()
-                .getConfig("qiniu.accessKey");
-        String secretKey = PropertiesFactoryHelper.getInstance()
-                .getConfig("qiniu.secretKey");
-        String bucket = PropertiesFactoryHelper.getInstance()
-                .getConfig("qiniu.bucket");
+        String accessKey = PropKit.get("qiniu.accessKey");
+        String secretKey = PropKit.get("qiniu.secretKey");
+        String bucket = PropKit.get("qiniu.bucket");
 
         Auth auth = Auth.create(accessKey, secretKey);
         //自定义返回参数

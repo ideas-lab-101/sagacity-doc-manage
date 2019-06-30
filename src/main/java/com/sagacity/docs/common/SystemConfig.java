@@ -9,6 +9,7 @@ import com.jfinal.ext.plugin.sqlinxml.SqlInXmlPlugin;
 import com.jfinal.ext.plugin.tablebind.AutoTableBindPlugin;
 import com.jfinal.ext.plugin.tablebind.SimpleNameStyles;
 import com.jfinal.ext.route.AutoBindRoutes;
+import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.druid.DruidPlugin;
 import com.jfinal.plugin.ehcache.EhCachePlugin;
 import com.jfinal.template.Engine;
@@ -16,7 +17,6 @@ import com.jfinal.weixin.sdk.api.ApiConfig;
 import com.jfinal.weixin.sdk.api.ApiConfigKit;
 import com.jfinal.wxaapp.WxaConfig;
 import com.jfinal.wxaapp.WxaConfigKit;
-import com.sagacity.utility.PropertiesFactoryHelper;
 
 /**
  * API引导式配置
@@ -28,8 +28,13 @@ public class SystemConfig extends JFinalConfig {
 	 */
 	public void configConstant(Constants me) {
 		// 加载少量必要配置，随后可用getProperty(...)获取值
-		loadPropertyFile("mysql_config.txt");
-		me.setDevMode(getPropertyToBoolean("devMode", false));
+//		loadPropertyFile("mysql_config.txt");
+//		me.setDevMode(getPropertyToBoolean("devMode", false));
+
+        PropKit.use("application.properties");
+        boolean dev = PropKit.getBoolean("devMode");
+        PropKit.useless("application.properties");
+        PropKit.use(dev ? "application-dev.properties" : "application-pro.properties");
 
 		//默认10M,此处设置为最大1000M
 		me.setMaxPostSize(100 * Const.DEFAULT_MAX_POST_SIZE);
@@ -67,7 +72,7 @@ public class SystemConfig extends JFinalConfig {
 //		me.add(c3p0Plugin);
 
 		// 配置Druid数据库连接池
-        DruidPlugin druidPlugin = new DruidPlugin(getProperty("jdbcUrl"), getProperty("user"), getProperty("password"));
+        DruidPlugin druidPlugin = new DruidPlugin(PropKit.get("jdbcUrl"), PropKit.get("user"), PropKit.get("password"));
         druidPlugin.setFilters("stat,log4j");
 		me.add(druidPlugin);
 
@@ -105,10 +110,8 @@ public class SystemConfig extends JFinalConfig {
 
 		//小程序参数
 		WxaConfig wc = new WxaConfig();
-		wc.setAppId(PropertiesFactoryHelper.getInstance()
-				.getConfig("wxss.appid"));
-		wc.setAppSecret(PropertiesFactoryHelper.getInstance()
-				.getConfig("wxss.appsecret"));
+		wc.setAppId(PropKit.get("wxss.appid"));
+		wc.setAppSecret(PropKit.get("wxss.appsecret"));
 		WxaConfigKit.setWxaConfig(wc);
 	}
 	

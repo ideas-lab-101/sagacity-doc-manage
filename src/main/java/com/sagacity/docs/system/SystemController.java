@@ -3,6 +3,7 @@ package com.sagacity.docs.system;
 import com.jfinal.aop.Before;
 import com.jfinal.ext.kit.ModelKit;
 import com.jfinal.ext.route.ControllerBind;
+import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.*;
 import com.jfinal.plugin.activerecord.tx.Tx;
 import com.jfinal.upload.UploadFile;
@@ -14,7 +15,6 @@ import com.sagacity.docs.openapi.Qiniu;
 import com.sagacity.docs.video.VideoInfo;
 import com.sagacity.utility.ConvertUtil;
 import com.sagacity.utility.DateUtils;
-import com.sagacity.utility.PropertiesFactoryHelper;
 import com.sagacity.utility.StringTool;
 import net.sf.json.JSONObject;
 
@@ -156,8 +156,8 @@ public class SystemController extends WebBaseController{
     public void uploadMainCover(){
         String filePath = "";
         String upToken = Qiniu.dao.getUploadToken(); //7牛上传token
-        String qiniu_url = PropertiesFactoryHelper.getInstance().getConfig("qiniu.url");
-        String config_dir = PropertiesFactoryHelper.getInstance().getConfig("resource.dir");
+        String qiniu_url = PropKit.get("qiniu.url");
+        String config_dir = PropKit.get("resource.dir");
         boolean r= true;
 
         File f1 = new File(config_dir+"/imgTemp/");
@@ -374,8 +374,8 @@ public class SystemController extends WebBaseController{
 
         String filePath = "";
         String upToken = Qiniu.dao.getUploadToken(); //7牛上传token
-        String qiniu_url = PropertiesFactoryHelper.getInstance().getConfig("qiniu.url");
-        String config_dir = PropertiesFactoryHelper.getInstance().getConfig("resource.dir");
+        String qiniu_url = PropKit.get("qiniu.url");
+        String config_dir = PropKit.get("resource.dir");
         boolean r= true;
 
         File f1 = new File(config_dir+"/fileTemp/");

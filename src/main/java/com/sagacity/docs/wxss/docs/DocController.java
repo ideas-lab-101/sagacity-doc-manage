@@ -42,7 +42,7 @@ public class DocController extends WXSSBaseController {
             List<Record> ds = Db.find("select doc.id, doc.title, IFNULL(dc.view_count,0) view_count, doc.desc, doc.cover, doc.is_hot, doc.is_end, doc.doc_class_id\n" +
                     "from doc_info doc\n" +
                     "left join (select sum(view_count) view_count, doc_id from doc_page group by doc_id) dc on dc.doc_id=doc.id\n" +
-                    "where doc.state=1 and doc.is_hot=1 and doc.doc_class_id=?", dc.get("id"));
+                    "where doc.state=1 and doc.is_hot=1 and doc.doc_class_id=?", dc.getInt("id"));
             dc.set("doc", ds);
         }
         responseData.put("doc", dcs);

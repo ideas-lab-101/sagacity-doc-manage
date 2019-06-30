@@ -4,6 +4,7 @@ import com.jfinal.aop.Before;
 import com.jfinal.ext.route.ControllerBind;
 import com.jfinal.kit.HttpKit;
 import com.jfinal.kit.PathKit;
+import com.jfinal.kit.PropKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -20,7 +21,6 @@ import com.sagacity.docs.order.PayInfo;
 import com.sagacity.docs.wxss.WXSSBaseController;
 import com.sagacity.utility.DateUtils;
 import com.sagacity.utility.IPUtil;
-import com.sagacity.utility.PropertiesFactoryHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,18 +28,12 @@ import java.util.Map;
 @ControllerBind(controllerKey = "/wxss/pay", viewPath = "/wxss")
 public class PayController extends WXSSBaseController{
 
-    private static String appid = PropertiesFactoryHelper.getInstance()
-            .getConfig("wxss.appid");
-    private static String partner = PropertiesFactoryHelper.getInstance()
-            .getConfig("wxPay.partner");
-    private static String partnerKey = PropertiesFactoryHelper.getInstance()
-            .getConfig("wxPay.partnerKey");
-    private static String certPath = PathKit.getWebRootPath() + PropertiesFactoryHelper.getInstance()
-            .getConfig("wxPay.certPath");
-    private static String certPass = PropertiesFactoryHelper.getInstance()
-            .getConfig("wxPay.certPass");
-    private static String notify_url = PropertiesFactoryHelper.getInstance()
-            .getConfig("base.url")+"wxss/pay/pay_notify";
+    private static String appid = PropKit.get("wxss.appid");
+    private static String partner = PropKit.get("wxPay.partner");
+    private static String partnerKey = PropKit.get("wxPay.partnerKey");
+    private static String certPath = PropKit.get("wxPay.certPath");
+    private static String certPass = PropKit.get("wxPay.certPass");
+    private static String notify_url = PropKit.get("base.url")+"wxss/pay/pay_notify";
 
     @Override
     public void index() {
