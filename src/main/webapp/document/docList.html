@@ -59,7 +59,7 @@
         table.render({
             id:'docList'
             ,elem: '#docList'
-            ,url: '/docs/getDocList'
+            ,url: '/document/getDocList'
             ,page: true
             ,request: {
                 pageName: 'pageIndex' //页码的参数名称，默认：page
@@ -93,7 +93,7 @@
         form.on('switch(stateFilter)', function(obj){
             // layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
             $.ajax({
-                url: "/docs/setProperty",
+                url: "/document/setProperty",
                 type: "POST",
                 dataType: "json",
                 data: {
@@ -112,7 +112,7 @@
         form.on('checkbox(hotFilter)', function(obj){
             // layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
             $.ajax({
-                url: "/docs/setProperty",
+                url: "/document/setProperty",
                 type: "POST",
                 dataType: "json",
                 data: {
@@ -130,7 +130,7 @@
         form.on('checkbox(adFilter)', function(obj){
             // layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
             $.ajax({
-                url: "/docs/setProperty",
+                url: "/document/setProperty",
                 type: "POST",
                 dataType: "json",
                 data: {
@@ -159,7 +159,7 @@
             if(obj.event === 'del'){//删除
                 layer.confirm('确认删除此文档？', function(index){
                     $.ajax({
-                        url: "/docs/delDoc",
+                        url: "/document/delDoc",
                         type: "POST",
                         dataType: "json",
                         data: {
@@ -176,7 +176,7 @@
                     layer.close(index);
               });
             } else if(obj.event === 'edit'){//编辑
-                var url = '/docs/editDoc?doc_id='+data.id;
+                var url = '/document/editDoc?doc_id='+data.id;
                 layer.open({
                     title: '编辑文档',
                     type: 2,

@@ -119,7 +119,7 @@
 
         form.on('switch(endFilter)', function(obj){
             $.ajax({
-                url: "/docs/setProperty",
+                url: "/document/setProperty",
                 type: "POST",
                 dataType: "json",
                 data: {
@@ -136,7 +136,7 @@
         //执行实例
         var uploadInst = upload.render({
             elem: '#cover' //绑定元素
-            ,url: '/docs/uploadCover' //上传接口
+            ,url: '/document/uploadCover' //上传接口
             ,accept: 'images'
             ,field: 'coverFile'
             ,data:{
@@ -159,7 +159,7 @@
 
     function doSave(formData) {
         $.ajax({
-            url: "/docs/saveDoc",
+            url: "/document/saveDoc",
             type: "POST",
             dataType: "json",
             data: formData,
@@ -173,7 +173,7 @@
         //关闭弹窗，并向父窗口的tabs中加入新页
         var index = parent.layer.getFrameIndex(window.name);
         parent.layer.close(index);
-        var url = "/docs/docDetail?doc_id=#(doc.id)";
+        var url = "/document/docDetail?doc_id=#(doc.id)";
         parent.parent.active.tabAdd('#(doc.title)', url, 'doc_#(doc.id)');
         parent.parent.active.tabChange('doc_#(doc.id)');
     }

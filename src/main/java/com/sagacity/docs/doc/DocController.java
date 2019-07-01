@@ -38,7 +38,7 @@ import java.util.List;
  *
  */
 
-@ControllerBind(controllerKey = "/docs")
+@ControllerBind(controllerKey = "/document")
 public class DocController extends WebBaseController {
 
     @Override

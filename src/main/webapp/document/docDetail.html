@@ -67,7 +67,7 @@
         var $ = layui.$;
 
         $.ajax({
-            url: "/docs/getPageTree",
+            url: "/document/getPageTree",
             data: {doc_id: doc_id},
             success: function (data) {
                 layui.tree({
@@ -78,7 +78,7 @@
                     , drag: false
                     , click: function (item) { //点击节点回调
                         sel_item = item;
-                        $('#page').attr("src", '/docs/editPage?page_id='+item.id) ;
+                        $('#page').attr("src", '/document/editPage?page_id='+item.id) ;
                         var h = $(window).height() -50 -15;
                         $('#page').css("height", h+"px");
                     }
@@ -110,7 +110,7 @@
         }, function(value, index){
             //插入doc_page
             $.ajax({
-                url: "/docs/addPage",
+                url: "/document/addPage",
                 type: "POST",
                 dataType: "json",
                 data: {
@@ -141,7 +141,7 @@
             ,value: sel_item.name
         }, function(value, index){
             $.ajax({
-                url: "/docs/modifyPage",
+                url: "/document/modifyPage",
                 type: "POST",
                 dataType: "json",
                 data: {
@@ -167,7 +167,7 @@
         layer.confirm('确定删除?', {icon: 3, title:'提示'}, function(index){
             //do something
             $.ajax({
-                url: "/docs/delPage",
+                url: "/document/delPage",
                 type: "POST",
                 dataType: "json",
                 data: {
@@ -195,7 +195,7 @@
             return;
         }
         $.ajax({
-            url: "/docs/pageOrder",
+            url: "/document/pageOrder",
             type: "POST",
             dataType: "json",
             data: {
@@ -221,7 +221,7 @@
             return;
         }
         $.ajax({
-            url: "/docs/pageOrder",
+            url: "/document/pageOrder",
             type: "POST",
             dataType: "json",
             data: {

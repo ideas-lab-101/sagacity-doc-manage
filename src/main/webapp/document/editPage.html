@@ -64,7 +64,7 @@
             flowChart : true,
             imageUpload : true,
             imageFormats : [ "jpg", "jpeg", "gif", "png", "bmp", "webp" ],
-            imageUploadURL : "/docs/uploadImg?doc_id=#(page.doc_id)",
+            imageUploadURL : "/document/uploadImg?doc_id=#(page.doc_id)",
             toolbarIcons : function() {
                 // Or return editormd.toolbarModes[name]; // full, simple, mini
                 // Using "||" set icons align right.
@@ -93,7 +93,7 @@
                     // }
                     var content = cm.getValue();
                     $.ajax({
-                        url: "/docs/saveContent",
+                        url: "/document/saveContent",
                         type: "POST",
                         dataType: "json",
                         data: {
@@ -152,7 +152,7 @@
                         , area: ['400px', '380px']
                         , shade: 0
                         , maxmin: false
-                        , content: '/docs/musicSelect?page_id=#(page.id)'
+                        , content: '/document/musicSelect?page_id=#(page.id)'
                         , btn: ['确定', '关闭'] //只是为了演示
                         , yes: function (index, layero) {
                             var iframeWin = window[layero.find('iframe')[0]['name']];
