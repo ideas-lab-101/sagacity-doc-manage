@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.sagacity</groupId>
             <artifactId>sagacity-utility</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
