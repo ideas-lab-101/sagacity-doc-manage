@@ -12,7 +12,7 @@
 
     <artifactId>sagacity-docs</artifactId>
     <groupId>com.sagacity</groupId>
-    <version>1.0</version>
+    <version>1.0.2</version>
     <packaging>war</packaging>
 
     <properties>
