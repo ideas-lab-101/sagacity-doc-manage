@@ -180,8 +180,9 @@ public class SystemController extends WXSSBaseController {
             g2d.drawImage(waterImg, bufferImgWidth-120, bufferImgHeight+10, 100, 100, null);
             //写文字信息
             g2d.setColor(Color.BLACK);
-            Font df = FontUtil.loadFont(PathKit.getWebRootPath() +"/asset/fonts/simsun.ttc", 20);
-            g2d.setFont(df);
+//            Font df = FontUtil.loadFont(PathKit.getWebRootPath() +"/asset/fonts/simsun.ttc", 20);
+//            g2d.setFont(df);
+            g2d.setFont(new Font("宋体", Font.PLAIN, 20));
             g2d.drawString(message, 10, bufferImgHeight + 60);
             g2d.dispose();// 释放图形上下文使用的系统资源
             ImageIO.write(bg, "PNG", new FileOutputStream(PropKit.get("resource.dir")+"qr_code/"+coverImg));
