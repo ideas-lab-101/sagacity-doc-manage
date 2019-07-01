@@ -1,6 +1,5 @@
 package com.sagacity.docs.wxss.system;
 
-import com.itextpdf.text.pdf.BaseFont;
 import com.jfinal.aop.Before;
 import com.jfinal.aop.Duang;
 import com.jfinal.aop.Enhancer;
@@ -28,6 +27,7 @@ import com.sagacity.docs.video.VideoInfo;
 import com.sagacity.docs.weixin.WXUser;
 import com.sagacity.docs.wxss.WXSSBaseController;
 import com.sagacity.utility.DateUtils;
+import com.sagacity.utility.FontUtil;
 import com.sagacity.utility.PinyinUtil;
 import com.sagacity.utility.StringTool;
 import net.sf.json.JSONObject;
@@ -184,9 +184,8 @@ public class SystemController extends WXSSBaseController {
             g2d.drawImage(waterImg, bufferImgWidth-120, bufferImgHeight+10, 100, 100, null);
             //写文字信息
             g2d.setColor(Color.BLACK);
-            BaseFont bf = BaseFont.createFont(PathKit.getWebRootPath() +"/asset/fonts/simsun.ttc,1",
-                    BaseFont.IDENTITY_H,BaseFont.NOT_EMBEDDED);
-            g2d.setFont(new Font("宋体", Font.PLAIN, 20));
+            Font df = FontUtil.loadFont(PathKit.getWebRootPath() +"/asset/fonts/simsun.ttc", 20);
+            g2d.setFont(df);
             g2d.drawString(message, 10, bufferImgHeight + 60);
             g2d.dispose();// 释放图形上下文使用的系统资源
             ImageIO.write(bg, "PNG", new FileOutputStream(PropKit.get("resource.dir")+"qr_code/"+coverImg));
