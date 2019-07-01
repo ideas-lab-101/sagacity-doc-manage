@@ -1,9 +1,11 @@
 package com.sagacity.docs.wxss.system;
 
+import com.itextpdf.text.pdf.BaseFont;
 import com.jfinal.aop.Before;
 import com.jfinal.aop.Duang;
 import com.jfinal.aop.Enhancer;
 import com.jfinal.ext.route.ControllerBind;
+import com.jfinal.kit.PathKit;
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -182,8 +184,8 @@ public class SystemController extends WXSSBaseController {
             g2d.drawImage(waterImg, bufferImgWidth-120, bufferImgHeight+10, 100, 100, null);
             //写文字信息
             g2d.setColor(Color.BLACK);
-//            BaseFont bf = BaseFont.createFont(PathKit.getWebRootPath() +"/assets/fonts/simsun.ttc,1",
-//                    BaseFont.IDENTITY_H,BaseFont.NOT_EMBEDDED);
+            BaseFont bf = BaseFont.createFont(PathKit.getWebRootPath() +"/asset/fonts/simsun.ttc,1",
+                    BaseFont.IDENTITY_H,BaseFont.NOT_EMBEDDED);
             g2d.setFont(new Font("宋体", Font.PLAIN, 20));
             g2d.drawString(message, 10, bufferImgHeight + 60);
             g2d.dispose();// 释放图形上下文使用的系统资源
