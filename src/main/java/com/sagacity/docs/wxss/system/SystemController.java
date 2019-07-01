@@ -97,17 +97,10 @@ public class SystemController extends WXSSBaseController {
      */
     public void getWXSSCode(){
         boolean r = false;
-        //菊花码地址
-//        String getApiUrl = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token="+ WxaAccessTokenApi.getAccessToken();
-//        Map<String, Object> params = new HashMap<String, Object>();
         String type = getPara("type"); // d- 文档；c- 课程； p- 单页；
         String dataID = getPara("data_id");
-//        params.put("scene", type+"_"+dataID);
-//        params.put("path", "pages/index/index");
-//        params.put("width", 430);
-        //生成图片
         try {
-//            InputStream inputStream = HttpUtils.download(getApiUrl, JsonUtils.toJson(params));
+            //生成菊花码
             WxaQrcodeApi wxaQrcodeApi = Duang.duang(WxaQrcodeApi.class);
             InputStream inputStream = wxaQrcodeApi.getUnLimit(type+"_"+dataID, "pages/index/index", 430);
 
