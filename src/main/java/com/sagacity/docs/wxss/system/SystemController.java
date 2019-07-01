@@ -14,6 +14,7 @@ import com.jfinal.weixin.sdk.api.ApiResult;
 import com.jfinal.weixin.sdk.utils.HttpUtils;
 import com.jfinal.weixin.sdk.utils.JsonUtils;
 import com.jfinal.wxaapp.api.WxaAccessTokenApi;
+import com.jfinal.wxaapp.api.WxaQrcodeApi;
 import com.jfinal.wxaapp.api.WxaUserApi;
 import com.sagacity.docs.doc.DocInfo;
 import com.sagacity.docs.doc.DocPage;
@@ -97,16 +98,18 @@ public class SystemController extends WXSSBaseController {
     public void getWXSSCode(){
         boolean r = false;
         //菊花码地址
-        String getApiUrl = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token="+ WxaAccessTokenApi.getAccessToken();
-        Map<String, Object> params = new HashMap<String, Object>();
+//        String getApiUrl = "https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token="+ WxaAccessTokenApi.getAccessToken();
+//        Map<String, Object> params = new HashMap<String, Object>();
         String type = getPara("type"); // d- 文档；c- 课程； p- 单页；
         String dataID = getPara("data_id");
-        params.put("scene", type+"_"+dataID);
-        params.put("path", "pages/index/index");
-        params.put("width", 430);
+//        params.put("scene", type+"_"+dataID);
+//        params.put("path", "pages/index/index");
+//        params.put("width", 430);
         //生成图片
         try {
-            InputStream inputStream = HttpUtils.download(getApiUrl, JsonUtils.toJson(params));
+//            InputStream inputStream = HttpUtils.download(getApiUrl, JsonUtils.toJson(params));
+            WxaQrcodeApi wxaQrcodeApi = Duang.duang(WxaQrcodeApi.class);
+            InputStream inputStream = wxaQrcodeApi.getUnLimit(type+"_"+dataID, "pages/index/index", 430);
 
             String fileName = System.currentTimeMillis()+".png";
             File f2 = new File(PropKit.get("resource.dir")+"qr_code/");
