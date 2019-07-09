@@ -39,7 +39,7 @@
 <script type="text/html" id="toolbar">
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-    <a class="layui-btn layui-btn-xs" lay-event="url">链接</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="url">链接</a>
 </script>
 
 <script src="/asset/layui/layui.js" charset="utf-8"></script>
@@ -179,18 +179,8 @@
               });
             } else if(obj.event === 'edit'){//编辑
                 var url = '/video/editVideo?video_id='+data.id;
-                layer.open({
-                    title: '编辑视频',
-                    type: 2,
-                    area: ['800px', '410px'],
-                    content: [url, 'no'],
-                    cancel: function () {
-                        table.reload('videoList');
-                    },
-                    end: function () {
-                        table.reload('videoList');
-                    }
-                });
+                parent.active.tabAdd(data.title, url, "video_"+data.id);
+                parent.active.tabChange("video_"+data.id);
                 // layer.prompt({
                 //     formType: 2
                 //     ,value: data.title

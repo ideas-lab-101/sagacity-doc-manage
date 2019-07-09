@@ -34,6 +34,9 @@
                     <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="delPage()">
                         <i class="layui-icon">&#xe640;</i>
                     </a>
+                    <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="exportPage()">
+                        <i class="layui-icon">&#xe601;</i>
+                    </a>
                 </div>
                 <div class="layui-btn-group">
                     <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="up()">
@@ -43,7 +46,7 @@
                         <i class="layui-icon">&#xe61a;</i>
                     </a>
                 </div>
-                <div class="layui-tree layui-bg-gray layui-side-scroll" id="pageTree" style="width: 95%; height: 433px; overflow:auto; margin-top: 2px;">
+                <div class="layui-tree layui-bg-gray layui-side-scroll" id="pageTree" style="width: 99%; height: 433px; overflow:auto; margin-top: 2px;">
                 </div>
             </div>
 
@@ -184,6 +187,10 @@
             });
             layer.close(index);
         });
+    }
+    
+    function exportPage() {
+        layer.msg("导出到MD文件！");
     }
 
     /**

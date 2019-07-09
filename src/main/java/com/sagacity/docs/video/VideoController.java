@@ -14,14 +14,38 @@ import com.sagacity.docs.video.VideoInfo;
 import com.sagacity.docs.extend.ResponseCode;
 import com.sagacity.docs.extend.RoleType;
 import com.sagacity.docs.openapi.Qiniu;
+import com.sagacity.utility.ConvertUtil;
 import com.sagacity.utility.DateUtils;
 import com.sagacity.utility.StringTool;
 import net.sf.json.JSONObject;
 
 import java.io.File;
+import java.util.List;
 
 @ControllerBind(controllerKey = "/video")
 public class VideoController extends WebBaseController{
+
+    @Before(Tx.class)
+    public void initVideoEpisode(){
+        boolean r = false;
+        List<VideoInfo> vl = VideoInfo.dao.find("select * from video_info");
+        for(VideoInfo v : vl){
+            VideoEpisode ve = new VideoEpisode().set("video_id", v.get("id"))
+                    .set("episode_title", "01").set("source_url", v.get("source_url"))
+                    .set("created_at", DateUtils.nowDateTime()).set("view_count",0)
+                    .set("state", 1);
+            r = ve.save();
+            r = ve.set("order", ve.get("id")).update();
+        }
+        if(r){
+            responseData.put(ResponseCode.MSG, "初始化成功！");
+        }else{
+            responseData.put(ResponseCode.MSG, "初始化失败！");
+        }
+        responseData.put(ResponseCode.CODE,r? 1:0);
+        renderJson(responseData);
+
+    }
 
     @Override
     public void index(){
@@ -53,6 +77,81 @@ public class VideoController extends WebBaseController{
         String sql = SqlKit.sql("video.getVideoInfo");
         setAttr("video", Db.findFirst(sql, video_id));
         render("editVideo.html");
+    }
+
+    /**
+     * 获得视频集
+     */
+    public void getEpisodeList(){
+        int video_id = getParaToInt("video_id");
+
+        String sql = "select ed.* from video_episode ed where video_id=? order by ed.order";
+        responseData.put(ResponseCode.CODE, 0);
+        responseData.put(ResponseCode.DATA, Db.find(sql, video_id));
+        renderJson(responseData);
+    }
+
+    @Before(Tx.class)
+    public void setEpisodeState(){
+        boolean r = false;
+        int state = getParaToBoolean("state")? 1:0;
+        r = VideoEpisode.dao.findById(getPara("id")).set("state", state)
+                .set("updated_at", DateUtils.nowDateTime()).update();
+        if(r){
+            responseData.put(ResponseCode.MSG, "设置成功！");
+        }else{
+            responseData.put(ResponseCode.MSG, "设置失败！");
+        }
+        responseData.put(ResponseCode.CODE, r? 1:0);
+        renderJson(responseData);
+    }
+
+    @Before(Tx.class)
+    public void addEpisode(){
+        boolean r = false;
+        JSONObject userInfo = getCurrentUser();
+
+        VideoEpisode ve = new VideoEpisode().set("video_id",getPara("video_id"))
+                .set("episode_title", "新分集").set("view_count",0).set("state", 1).set("created_at", DateUtils.nowDateTime());
+        r = ve.save();
+        r = ve.set("order", ve.get("id")).update();
+        if (r) {
+            responseData.put(ResponseCode.MSG, "新增成功！");
+        }else{
+            responseData.put(ResponseCode.MSG, "新增失败！");
+        }
+        responseData.put(ResponseCode.CODE, r? 1:0);
+        renderJson(responseData);
+    }
+
+    @Before(Tx.class)
+    public void delEpisode(){
+        boolean r = false;
+        JSONObject jo = getCurrentUser();
+        VideoEpisode m =  VideoEpisode.dao.findById(getParaToInt("id"));
+        r = m.delete();
+        if(r){
+            responseData.put(ResponseCode.MSG, "删除成功！");
+        }else{
+            responseData.put(ResponseCode.MSG, "删除失败！");
+        }
+
+        responseData.put(ResponseCode.CODE,r? 1:0);
+        renderJson(responseData);
+    }
+
+    @Before(Tx.class)
+    public void saveEpisode(){
+        Record data = new Record().setColumns(ConvertUtil.jsonStrToMap(getPara("data")));
+
+        boolean r = Db.update("video_episode", data.set("updated_at", DateUtils.nowDateTime()));
+        if(r){
+            responseData.put(ResponseCode.MSG, "修改成功！");
+        }else{
+            responseData.put(ResponseCode.MSG, "修改失败！");
+        }
+        responseData.put(ResponseCode.CODE,r? 1:0);
+        renderJson(responseData);
     }
 
     @Before(Tx.class)

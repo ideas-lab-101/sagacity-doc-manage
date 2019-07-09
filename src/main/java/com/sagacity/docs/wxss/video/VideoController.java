@@ -131,7 +131,10 @@ public class VideoController extends WXSSBaseController {
             d.set("color", ColorUtil.getColorRandom());
         }
         responseData.put("danmus", dl);
-
+        //分集
+        String sql2 = "select ed.id,ed.episode_title,ed.source_url from video_episode ed where ed.state=1 and ed.video_id=? order by ed.order";
+        responseData.put("episodes", Db.find(sql2, videoID));
+        //更新查看次数
         Db.update("update video_info set view_count=view_count+1 where id=?", videoID);
         //是否已订阅频道
         video.set("is_follow", false);
