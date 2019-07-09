@@ -51,7 +51,7 @@ public class SystemController extends WebBaseController{
                 "where dc.parent_id=?\n" +
                 "order by dc.order DESC";
         for(Record m : ms){ //循环找到下级
-            List<Record> subs = Db.find(sql, m.get("id"));
+            List<Record> subs = Db.find(sql, m.getInt("id"));
             m.set("children", subs);
             if(tl > 2){ //控制展开的层级
                 m.set("spread", false);
