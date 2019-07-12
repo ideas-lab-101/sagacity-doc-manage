@@ -3,7 +3,7 @@
 <ehcache updateCheck="false" dynamicConfig="false">
 	<!-- <diskStore>元素：指定一个文件目录，当EHCache把数据写到硬盘上时，将把数据写到这个文件目录下。 user.home – 
 		用户主目录 user.dir – 用户当前工作目录 java.io.tmpdir – 默认临时文件路径 -->
-	<diskStore path="/Volumes/DATA/resource/docs/tmpdir" />
+	<diskStore path="java.io.tmpdir" />
 
 	<cacheManagerEventListenerFactory
 		class="" properties="" />
@@ -43,10 +43,6 @@
     <!-- web端登陆用的cache -->
 	<cache name="WebCache" maxElementsInMemory="10000" maxElementsOnDisk="100000" eternal="false"
 		   overflowToDisk="true" timeToIdleSeconds="1800" timeToLiveSeconds="0"
-		   diskPersistent="true" memoryStoreEvictionPolicy="LFU" />
-	<!-- AccessToken用的cache -->
-	<cache name="AccessTokenCache" maxElementsInMemory="10000" maxElementsOnDisk="100000" eternal="false"
-		   overflowToDisk="true" timeToIdleSeconds="0" timeToLiveSeconds="7200"
 		   diskPersistent="true" memoryStoreEvictionPolicy="LFU" />
 	<!-- 小程序用户所用的cache -->
 	<cache name="WXSSCache" maxElementsInMemory="10000" maxElementsOnDisk="100000" eternal="false"

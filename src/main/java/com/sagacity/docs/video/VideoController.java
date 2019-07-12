@@ -62,6 +62,9 @@ public class VideoController extends WebBaseController{
         }else{
             sqlFrom += " where video.user_id='"+userInfo.get("UserID")+"'";
         }
+        if(StringTool.notNull(getPara("key")) && StringTool.notBlank(getPara("key"))){
+            sqlFrom += " and video.title like '%"+getPara("key")+"%'";
+        }
         sqlFrom += " order by video.created_at Desc";
         if (StringTool.notNull(getPara("pageIndex")) && !StringTool.isBlank(getPara("pageIndex"))){
             Page<Record> noticeList = Db.paginate(getParaToInt("pageIndex", 1),

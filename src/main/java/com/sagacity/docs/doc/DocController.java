@@ -56,6 +56,9 @@ public class DocController extends WebBaseController {
         }else{
             sqlFrom += " where doc.user_id='"+userInfo.get("UserID")+"'";
         }
+        if(StringTool.notNull(getPara("key")) && StringTool.notBlank(getPara("key"))){
+            sqlFrom += " and doc.title like '%"+getPara("key")+"%'";
+        }
         sqlFrom += " order by doc.created_at Desc";
         if (StringTool.notNull(getPara("pageIndex")) && !StringTool.isBlank(getPara("pageIndex"))){
             Page<Record> noticeList = Db.paginate(getParaToInt("pageIndex", 1),

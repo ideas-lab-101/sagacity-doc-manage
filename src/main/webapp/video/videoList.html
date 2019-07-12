@@ -13,14 +13,20 @@
 </head>
 <body>
 
-<div class="layui-btn-group">
+<div class="layui-inline">
+    <input style="width:220px;" type="text" id="key" autocomplete="off" placeholder="视频名" class="layui-input">
+</div>
+<div class="layui-inline">
+    <button class="layui-btn layui-btn-sm layui-btn-primary" onclick="query()" lay-event="query">
+        <i class="layui-icon">&#xe615;</i>查询
+    </button>
+</div>
+<div class="layui-inline layui-btn-group">
     <a class="layui-btn  layui-btn-sm" onclick="addData()">
         <i class="layui-icon">&#xe654;</i>新增
     </a>
-    <!--<a class="layui-btn layui-btn-sm" onclick="setHot()">-->
-        <!--<i class="layui-icon">&#xe756;</i>设置热门-->
-    <!--</a>-->
 </div>
+
 <button id="clip" style="display: none;" data-clipboard-text=""></button>
 
 <table id="videoList" lay-filter="videoList"></table>
@@ -43,6 +49,7 @@
 </script>
 
 <script src="/asset/layui/layui.js" charset="utf-8"></script>
+<script src="/asset/jquery/jquery-2.1.4.min.js"></script>
 <script src="/asset/js/clipboard.min.js"></script>
 <script>
     var clipboard = new ClipboardJS('#clip');
@@ -62,6 +69,7 @@
             id:'videoList'
             ,elem: '#videoList'
             ,url: '/video/getVideoList'
+            ,method: 'POST'
             ,page: true
             ,request: {
                 pageName: 'pageIndex' //页码的参数名称，默认：page
@@ -226,6 +234,17 @@
             },
             end: function () {
                 table.reload('videoList');
+            }
+        });
+    }
+    
+    function query() {
+        table.reload('videoList', {
+            page: {
+                curr: 1 //重新从第 1 页开始
+            }
+            ,where: {
+                key: $("#key").val()
             }
         });
     }
