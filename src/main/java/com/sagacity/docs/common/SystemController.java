@@ -87,7 +87,7 @@ public class SystemController extends WebBaseController {
         renderJson(responseData);
     }
 
-    private String AccountScanCacheName = "AccountScanCacheName";
+    private String AccountScanCacheName = "AccountScanCache";
 
     @Clear(WebLoginInterceptor.class)
     public void scanLogin(){

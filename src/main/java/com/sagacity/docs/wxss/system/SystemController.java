@@ -198,7 +198,7 @@ public class SystemController extends WXSSBaseController {
     /**
      * 扫描二维码登陆网页
      */
-    private String AccountScanCacheName = "AccountScanCacheName";
+    private String AccountScanCacheName = "AccountScanCache";
     public void scanLogin(){
         boolean r = false;
         String msg = "";

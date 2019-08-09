@@ -136,8 +136,8 @@
                             type: "POST",
                             dataType: "json",
                             data: {
-                                username: data.data.LoginName,
-                                password: data.data.Password
+                                username: data.user.LoginName,
+                                password: data.user.Password
                             },
                             success: function (data) {
                                 if (data.result) {
