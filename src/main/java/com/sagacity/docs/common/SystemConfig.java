@@ -36,6 +36,7 @@ public class SystemConfig extends JFinalConfig {
         boolean dev = PropKit.getBoolean("devMode");
         PropKit.useless("application.properties");
         PropKit.use(dev ? "application-dev.properties" : "application-pro.properties");
+		me.setDevMode(dev);
 
 		//默认10M,此处设置为最大1000M
 		me.setMaxPostSize(100 * Const.DEFAULT_MAX_POST_SIZE);
@@ -107,7 +108,6 @@ public class SystemConfig extends JFinalConfig {
 	}
 
 	public void afterJFinalStart() {
-
 
 		//小程序参数
 		WxaConfig wc = new WxaConfig();

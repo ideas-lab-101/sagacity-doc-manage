@@ -4,12 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!--<parent>-->
-        <!--<groupId>com.sagacity</groupId>-->
-        <!--<artifactId>sagacity-base</artifactId>-->
-        <!--<version>1.0</version>-->
-    <!--</parent>-->
-
     <artifactId>sagacity-docs</artifactId>
     <groupId>com.sagacity</groupId>
     <version>1.0.2</version>
@@ -25,7 +19,7 @@
         <dependency>
             <groupId>com.sagacity</groupId>
             <artifactId>jfinal-ext</artifactId>
-            <version>3.1</version>
+            <version>3.2</version>
         </dependency>
         <dependency>
             <groupId>com.sagacity</groupId>
@@ -70,16 +64,16 @@
             <version>1.1.17</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-nop</artifactId>
             <version>1.7.25</version>
             <!-- 打包前改成 provided，此处使用 compile 仅为支持 IDEA -->
             <!--<scope>compile</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
