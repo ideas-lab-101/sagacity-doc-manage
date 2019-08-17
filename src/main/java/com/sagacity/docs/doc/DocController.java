@@ -258,7 +258,7 @@ public class DocController extends WebBaseController {
         if(adjustType.equals("up")){
             String sqlUp = "select dp.* \n" +
                     "from doc_page dp\n" +
-                    "left join doc_page dp1 on dp1.level=dp.level and dp1.doc_id=dp.doc_id\n" +
+                    "left join doc_page dp1 on dp1.parent_id=dp.parent_id and dp1.doc_id=dp.doc_id\n" +
                     "where dp1.id=? and dp1.order > dp.order order by dp.order DESC limit 1";
             targetPage = DocPage.dao.findFirst(sqlUp, pageID);
             if(targetPage != null){
@@ -269,7 +269,7 @@ public class DocController extends WebBaseController {
         }else if(adjustType.equals("down")){
             String sqlDown = "select dp.* \n" +
                     "from doc_page dp\n" +
-                    "left join doc_page dp1 on dp1.level=dp.level and dp1.doc_id=dp.doc_id\n" +
+                    "left join doc_page dp1 on dp1.parent_id=dp.parent_id and dp1.doc_id=dp.doc_id\n" +
                     "where dp1.id=? and dp1.order < dp.order order by dp.order ASC limit 1";
             targetPage = DocPage.dao.findFirst(sqlDown, pageID);
             if(targetPage != null){
@@ -301,7 +301,7 @@ public class DocController extends WebBaseController {
         DocPage dp = DocPage.dao.findById(getParaToInt("page_id"));
         boolean r = dp.set("content", getPara("content")).update();
         //修改文档本身的修改时间
-        r = DocInfo.dao.findFirst("select * from doc_info where id=?", dp.get("doc_id"))
+        r = DocInfo.dao.findFirst("select * from doc_info where id=?", dp.getInt("doc_id"))
                 .set("updated_at", DateUtils.nowDateTime()).update();
         if(r){
             responseData.put(ResponseCode.MSG, "章节保存成功！");

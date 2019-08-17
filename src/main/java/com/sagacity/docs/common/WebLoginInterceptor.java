@@ -23,7 +23,7 @@ public class WebLoginInterceptor implements Interceptor {
 	/**
 	 * 绕过拦截器的方法名(注意:包括命名空间)
 	 */
-	private String[] throughMethods = { ""};
+	private String[] throughMethods = {""};
 
 	/**
 	 * @方法名:intercept

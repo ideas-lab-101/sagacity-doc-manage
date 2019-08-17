@@ -1,6 +1,6 @@
 FROM hub.cdqidi.cn/tomcat:8.5-alpine-utf8
 LABEL MAINTAINER="flash520@163.com"
-# 更新镜像作者信息
+# 拷贝执行文件
 COPY ./target/sagacity-docs/. /usr/local/tomcat/webapps/ROOT/
 
 # 安装自定义中文字体
