@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>音乐库</title>
+    <link rel="stylesheet" href="/asset/layui/css/layui.css">
+
+    <style>
+        body{padding: 20px; /*overflow-y: scroll;*/}
+    </style>
+</head>
+<body>
+
+<div class="layui-btn-group">
+    <div class="layui-btn-group">
+        <a class="layui-btn  layui-btn-sm layui-btn-primary" onclick="addData()">
+            <i class="layui-icon">&#xe654;</i>新增
+        </a>
+    </div>
+    <div class="layui-btn-group">
+        <button type="button" class="layui-btn layui-btn-sm" id="musicFile" >
+            <i class="layui-icon">&#xe67c;</i>上传
+        </button>
+    </div>
+</div>
+
+<table id="musicList" lay-filter="musicList"></table>
+<script type="text/html" id="switchTpl">
+    <input type="checkbox" name="state" value="{{d.id}}" lay-skin="switch" lay-text="启用|停用" lay-filter="stateFilter" {{ d.state == 1 ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="toolbar">
+    <a class="layui-btn-sm" lay-event="edit">
+        <i class="layui-icon">&#xe642;</i></a>
+    <a class="layui-btn-sm" lay-event="del">
+        <i class="layui-icon">&#xe640;</i></a>
+    <a class="layui-btn-sm" lay-event="play">
+        <i class="layui-icon">&#xe652;</i></a>
+</script>
+
+<script src="/asset/layui/layui.js" charset="utf-8"></script>
+<script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
+<script>
+    var loading;
+    var layer, table, form, upload;
+    layui.use(['layer', 'table', 'form', 'upload'], function(){
+        layer = layui.layer;
+        table = layui.table;
+        form = layui.form;
+        upload = layui.upload;
+        var $ = layui.$;
+
+        table.render({
+            id:'musicList'
+            ,elem: '#musicList'
+            ,url: 'getMusicList'
+            ,page: true
+            ,request: {
+                pageName: 'pageIndex' //页码的参数名称，默认：page
+                ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            }
+            ,response: {
+                countName: 'totalRow' //数据总数的字段名称，默认：count
+            }
+            ,limit: 10
+            ,cols: [[
+                {field:'id', title:'ID', width:60, fixed: 'left', unresize: true, sort: true}
+                ,{field:'title', title:'音乐名称', width:200,  edit: 'text'}
+                ,{field:'cover_url', title:'封面地址', width:180,  edit: 'text'}
+                ,{field:'resource_url', title:'资源地址', width:180, edit: 'text'}
+                ,{field:'created_at', title:'加入日期', width:120}
+                ,{field:'Caption', title:'上传用户', width:120}
+                ,{field:'state', title:'状态', width:85, templet: '#switchTpl', unresize: true}
+                ,{fixed: 'right', title:'操作', toolbar: '#toolbar', width:170}
+            ]]
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(docList)', function(obj){
+            console.log(obj)
+        });
+
+        form.on('click(play)', function (obj) {
+            layer.msg(obj);
+        });
+
+        //监听性别操作
+        form.on('switch(stateFilter)', function(obj){
+            // layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+            $.ajax({
+                url: "setMusicState",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    music_id: this.value,
+                    state: obj.elem.checked
+                },
+                success: function(data) {
+                    layer.msg(data.msg, {time:1000});
+                }
+            });
+            layer.close();
+        });
+
+        //监听单元格编辑
+        table.on('edit(musicList)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+
+        });
+
+        //监听工具条
+        table.on('tool(musicList)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){//删除
+                layer.confirm('确认删除此项目？', function(index){
+                    $.ajax({
+                        url: "delMusic",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            music_id: data.id
+                        },
+                        success: function(data) {
+                            if(data.code == 1){
+                                table.reload('musicList');
+                            }else{
+                                layer.msg(data.msg);
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit') {//编辑
+                $.ajax({
+                    url: "editMusic",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        data: JSON.stringify(data)
+                    },
+                    success: function (data) {
+                        if (data.code == 1) {
+                            table.reload('musicList');
+                        }
+                        layer.msg(data.msg);
+                    }
+                });
+                layer.close();
+            } else if(obj.event === 'play'){ //播放
+                var data = obj.data;
+                layer.open({
+                    title: '音乐播放',
+                    type: 2,
+                    area: ['420px', '180px'],
+                    content: ['playMusic?music_id='+data.id, 'no']
+                });
+            }
+
+        });
+
+        var uploadInst = upload.render({
+            elem: '#musicFile' //绑定元素
+            ,url: 'uploadMusicFile' //上传接口
+            ,accept: 'audio'
+            ,field: 'musicFile'
+            ,data:{}
+            ,before: function (object) {
+                loading = layer.load(1, {
+                    shade: [0.1,'#fff'] //0.1透明度的白色背景
+                });
+            }
+            ,done: function(res, index, upload){
+                layer.close(loading);
+                layer.alert(res.msg, function(index){
+                    if(res.code ==1) {
+                        table.reload('musicList');
+                    }
+                });
+            }
+            ,error: function(){
+                //请求异常回调
+                layer.close(loading);
+                layer.msg('上传出错！');
+            }
+        });
+
+        //监听排序
+        table.on('sort(mainList)', function(obj){
+            console.log(this, obj.field, obj.type)
+            return;
+            //服务端排序
+            // table.reload('docList', {
+            //   initSort: obj
+            //   //,page: {curr: 1} //重新从第一页开始
+            //   ,where: { //重新请求服务端
+            //     key: obj.field //排序字段
+            //     ,order: obj.type //排序方式
+            //   }
+            // });
+        });
+
+    });
+
+
+    function addData() {
+
+        layer.prompt({
+            title: '新增音乐',
+            formType: 0
+            ,value: '音乐名称'
+        }, function(value, index){
+            $.ajax({
+                url: "addMusic",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    name: value
+                },
+                success: function(data) {
+                    if(data.code == 1){
+                        table.reload('musicList');
+                    }else{
+                        layer.msg(data.msg);
+                    }
+                }
+            });
+            layer.close(index);
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>文档列表</title>
+    <link rel="stylesheet" href="/asset/layui/css/layui.css">
+
+    <style>
+        body{padding: 20px; /*overflow-y: scroll;*/}
+    </style>
+</head>
+<body>
+
+<div class="layui-inline">
+    <input style="width:220px;" type="text" id="key" autocomplete="off" placeholder="文档名" class="layui-input">
+</div>
+<div class="layui-inline">
+    <button class="layui-btn layui-btn-sm layui-btn-primary" onclick="query()" lay-event="query">
+        <i class="layui-icon">&#xe615;</i>查询
+    </button>
+</div>
+<div class="layui-btn-group">
+    <a class="layui-btn  layui-btn-sm" onclick="addData()">
+        <i class="layui-icon">&#xe654;</i>新增
+    </a>
+</div>
+
+<button id="clip" style="display: none;" data-clipboard-text=""></button>
+<table id="docList" lay-filter="docList"></table>
+<script type="text/html" id="switchTpl">
+    <input type="checkbox" name="state" value="{{d.id}}" lay-skin="switch" lay-text="启用|停用" lay-filter="stateFilter" {{ d.state == 1 ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="checkboxTpl">
+    <input type="checkbox" name="is_hot" value="{{d.id}}" title="热门" lay-filter="hotFilter" {{ d.is_hot == 1 ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="checkboxAd">
+    <input type="checkbox" name="is_ad" value="{{d.id}}" title="广告" lay-filter="adFilter" {{ d.is_ad == 1 ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="toolbar">
+    <a class="layui-btn-sm" lay-event="edit">
+        <i class="layui-icon">&#xe642;</i></a>
+    <a class="layui-btn-sm" lay-event="del">
+        <i class="layui-icon">&#xe640;</i></a>
+    <a class="layui-btn-sm" lay-event="url">
+        <i class="layui-icon">&#xe64c;</i></a>
+</script>
+
+<script src="/asset/layui/layui.js" charset="utf-8"></script>
+<script src="/asset/jquery/jquery-2.1.4.min.js"></script>
+<script src="/asset/js/clipboard.min.js"></script>
+<script>
+    var clipboard = new ClipboardJS('#clip');
+    clipboard.on('success', function(e) {
+        layer.msg('链接复制到剪贴板');
+        e.clearSelection();
+    });
+
+    var layer, table, form;
+    layui.use(['layer', 'table', 'form'], function(){
+        layer = layui.layer;
+        table = layui.table;
+        form = layui.form;
+        var $ = layui.$;
+
+        table.render({
+            id:'docList'
+            ,elem: '#docList'
+            ,url: 'getDocList'
+            ,method: 'POST'
+            ,page: true
+            ,request: {
+                pageName: 'pageIndex' //页码的参数名称，默认：page
+                ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+             }
+            ,response: {
+                countName: 'totalRow' //数据总数的字段名称，默认：count
+            }
+            ,limit: 10
+            ,cols: [[
+                {field:'id', title:'ID', width:60, fixed: 'left', unresize: true, sort: true}
+                ,{field:'title', title:'文档名称', width:120}
+                ,{field:'desc', title:'文档描述', width:200}
+                ,{field:'class_title', title:'文档归类', width:100, sort: true}
+                ,{field:'source', title:'来源', width:100, sort: true}
+                ,{field:'page_count', title:'章节数', width:80}
+                ,{field:'create_date', title:'创建日期', width:120}
+                ,{field:'state', title:'状态', width:95, templet: '#switchTpl', unresize: true}
+                ,{field:'is_hot', title:'热门?', width:110, templet: '#checkboxTpl', unresize: true}
+                ,{field:'is_ad', title:'广告?', width:110, templet: '#checkboxAd', unresize: true}
+                ,{fixed: 'right', title:'操作', toolbar: '#toolbar', width:160}
+            ]]
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(docList)', function(obj){
+            console.log(obj)
+        });
+
+        //监听性别操作
+        form.on('switch(stateFilter)', function(obj){
+            // layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+            $.ajax({
+                url: "setProperty",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    doc_id: this.value,
+                    property: obj.elem.checked,
+                    type: 'state'
+                },
+                success: function(data) {
+                    layer.msg(data.msg, {time:1000});
+                }
+            });
+            // layer.close();
+        });
+
+        //监听锁定操作
+        form.on('checkbox(hotFilter)', function(obj){
+            // layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+            $.ajax({
+                url: "setProperty",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    doc_id: this.value,
+                    property: obj.elem.checked,
+                    type: 'hot'
+                },
+                success: function(data) {
+                    layer.msg(data.msg, {time:1000});
+                }
+            });
+            // layer.close();
+        });
+
+        form.on('checkbox(adFilter)', function(obj){
+            // layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+            $.ajax({
+                url: "setProperty",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    doc_id: this.value,
+                    property: obj.elem.checked,
+                    type: 'ad'
+                },
+                success: function(data) {
+                    layer.msg(data.msg, {time:1000});
+                }
+            });
+            // layer.close();
+        });
+
+        //监听单元格编辑
+        table.on('edit(docList)', function(obj){
+            var value = obj.value //得到修改后的值
+            ,data = obj.data //得到所在行所有键值
+            ,field = obj.field; //得到字段
+
+        });
+
+        //监听工具条
+        table.on('tool(docList)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){//删除
+                layer.confirm('确认删除此文档？', function(index){
+                    $.ajax({
+                        url: "delDoc",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            doc_id: data.id
+                        },
+                        success: function(data) {
+                            if(data.code == 1){
+                                table.reload('docList');
+                            }else{
+                                layer.msg(data.msg);
+                            }
+                        }
+                    });
+                    layer.close(index);
+              });
+            } else if(obj.event === 'edit'){//编辑
+                var url = 'editDoc?doc_id='+data.id;
+                layer.open({
+                    title: '编辑文档',
+                    type: 2,
+                    area: ['800px', '410px'],
+                    content: [url, 'no'],
+                    cancel: function () {
+                        table.reload('docList');
+                    },
+                    end: function () {
+                        table.reload('docList');
+                    }
+                });
+            } else if(obj.event == 'url'){
+                var clip = document.getElementById("clip");
+                clip.setAttribute("data-clipboard-text", "/pages/doc-info/doc-info?doc_id="+data.id)
+                clip.click();
+            }
+        });
+
+        //监听排序
+        table.on('sort(docList)', function(obj){
+            console.log(this, obj.field, obj.type)
+            return;
+            //服务端排序
+            // table.reload('docList', {
+            //   initSort: obj
+            //   //,page: {curr: 1} //重新从第一页开始
+            //   ,where: { //重新请求服务端
+            //     key: obj.field //排序字段
+            //     ,order: obj.type //排序方式
+            //   }
+            // });
+        });
+
+    });
+
+    function settting() {
+        var checkStatus = table.checkStatus('docList')
+            ,data = checkStatus.data;
+        var data_string = JSON.stringify(data);
+        layer.alert('选中的数据：'+ data[0].id);
+
+        // var checkStatus = table.checkStatus('docList')
+        //     ,data = checkStatus.data;
+        // layer.msg('选中了：'+ data.length + ' 个');
+    }
+
+    function addData() {
+
+        layer.open({
+            title: '新增文档',
+            type: 2,
+            area: ['720px', '410px'],
+            content: ['addDoc.html', 'no'],
+            yes: function () {
+                table.reload('docList');
+            },
+            end: function () {
+                table.reload('docList');
+            }
+        });
+    }
+
+    function query() {
+        table.reload('docList', {
+            page: {
+                curr: 1 //重新从第 1 页开始
+            }
+            ,where: {
+                key: $("#key").val()
+            }
+        });
+    }
+</script>
+</body>
+</html>

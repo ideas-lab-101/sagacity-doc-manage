@@ -1,121 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="icon" href="/asset/image/cloud_docs.ico">
     <title>魔灯知库</title>
-    <!--<link href="/asset/font-awesome/css/font-awesome.min.css" rel="stylesheet">-->
     <link href="/asset/font-icon/font_icon_sagacity.css" rel="stylesheet">
     <link rel="stylesheet" href="/asset/layui/css/layui.css">
-    <link rel="stylesheet" href="/asset/css/main.css">
+
+    <style>
+        .layui-header {
+            background-color: white !important;
+            border-bottom: solid 1px #dadce0;
+            box-shadow: 0px 2px 10px rgba(0,0,0, .2);
+        }
+        .layui-body {
+            bottom: 0px !important;
+            left: 0px !important;
+        }
+        .layui-logo {
+            color: #2F2F2F !important;
+        }
+        .layui-nav .layui-nav-item a {
+            color: #606060;
+        }
+        .layui-nav .layui-nav-item a:hover {
+            color: #2F2F2F;
+            font-weight: bold;
+        }
+
+    </style>
+
 </head>
 <body class="layui-layout-body">
-  <div class="layui-layout layui-layout-admin">
-    <div class="layui-header">
-      <div class="layui-logo">
-          <img class="logo layui-icon-logo" src="asset/image/logo_docs.png" alt=""/><label style="color: white; font-size: 20px;">魔灯知库</label>
-          <i class="admin-side-toggle iconfont icon-view-sequential" aria-hidden="true"></i>
-      </div>
-      <!-- 头部区域（可配合layui已有的水平导航） -->
-      <ul style="margin-left: 30px;" class="layui-nav layui-layout-left">
-          #for(menu : menuList)
-              <li class="layui-nav-item">
-                  <a href="javascript:;" onclick="loadMenu(this)" data-id="#(menu.FuncID)">
-                      <i class="#(menu.FuncCSS)"></i>#(menu.FuncName)
-                  </a>
-              </li>
-          #end
-      </ul>
-      <ul class="layui-nav layui-layout-right">
-        <li class="layui-nav-item">
-          <a href="javascript:;">
-            <img src="#(userInfo.AvatarURL)" onerror="this.src='/asset/image/user_default.png'" class="layui-nav-img">
-            #(userInfo.Caption)
-          </a>
-          <dl class="layui-nav-child">
-            <dd><a href=""><i class="iconfont icon-accountcircle" aria-hidden="true"></i> 用户信息</a></dd>
-            <dd><a href=""><i class="iconfont icon-settings1" aria-hidden="true"></i> 系统设置</a></dd>
-            <dd><a href="/logout"><i class="iconfont icon-exit-to-app" aria-hidden="true"></i> 账号退出</a></dd>
-          </dl>
-        </li>
-      </ul>
-    </div>
 
-    <div id="admin-side" class="layui-side layui-bg-black">
-        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-        <div class="layui-side-scroll" id="menuTree" lay-filter="navbar"></div>
-    </div>
-
-    <div id="admin-body" class="layui-body" style="bottom: 0;border-left: solid 2px #1AA094;" id="admin-body">
-        <div class="layui-tab layui-tab-brief" lay-filter="main" lay-allowclose="true">
-          <ul class="layui-tab-title"></ul>
-          <div class="layui-tab-content" style="padding: 5px 0 0 0;"></div>
+    <div class="layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo">
+                <img class="layui-icon-logo" style="width: 30px; height: auto; padding-right: 15px;" src="/asset/image/logo_docs.png" alt=""/>
+                <label style="font-size: 20px;">魔灯知库</label>
+            </div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul style="margin-left: 30px;" class="layui-nav layui-layout-left">
+                <li class="layui-nav-item">
+                    <a href="javascript:;" onclick="">
+                        <i class="iconfont icon-lightbulb-on"> 热门</i>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" onclick="">
+                        <i class="iconfont icon-drivedocument"> 文档库</i>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" onclick="">
+                        <i class="iconfont icon-camcorder-box"> 视频库</i>
+                    </a>
+                </li>
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="javascript:;" onclick="search()">
+                        <i style="font-size: 16px;" class="iconfont icon-search">检索</i>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="/admin">
+                        <i style="font-size: 16px;" class="iconfont icon-accountcircle">登陆</i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="layui-body">
+            <div style="height: 300px;">
+                滚动页
+            </div>
+            <div style="height: 500px;">
+                分类页
+            </div>
+            <div style="height: 700px;">
+                数据流
+            </div>
         </div>
     </div>
 
-    <div id="admin-footer" class="layui-footer">
-      <!-- 底部固定区域 -->
-      © linestorm.ltd - sagacity group
-    </div>
+    <script src="/asset/layui/layui.js" charset="utf-8"></script>
+    <script>
+        var element, layer;
+        layui.config({
+            base: '/asset/layui/extend/' //这是自定义模块的路径了
+        }).use(['element','layer'], function(){
+            element = layui.element; //弹层
+            layer = layui.layer;
 
-  </div>
-
-  <ul class="rightmenu">
-      <li class="fa fa-close" data-type="close-this"> 关闭当前</li>
-      <hr>
-      <li class="fa fa-window-close" data-type="close-all"> 关闭所有</li>
-  </ul>
-
-  <script src="/asset/layui/layui.js"></script>
-  <script src="/asset/jquery/jquery-2.1.4.min.js"></script>
-  <script src="/asset/js/main.js"></script>
-  <script>
-      var element, layer, navbar;
-      layui.config({
-          base: '/asset/layui/extend/' //这是自定义模块的路径了
-      }).use(['element','layer','navbar'], function(){
-          element = layui.element; //弹层
-          layer = layui.layer;
-          navbar = layui.navbar();
-
-          //加载第一个节点
-          $this = $('.layui-nav.layui-layout-left').find('li:first-child');
-          loadMenu($this.find("a"));
-          $this.addClass("layui-this");
-      })
-
-
-      function loadMenu(obj){
-          //先关闭所有tabs
-          delAllTabs();
-          //加载菜单
-          navbar.set({
-              elem: '#menuTree',
-              url: 'loadMenuTree?moduleID='+$(obj).attr("data-id")
-          });
-          navbar.render();
-          navbar.on('click(navbar)', function(data) {
-              if(data.field.href){
-                  if ($(".layui-tab-title li[lay-id]").length <= 0) {
-                      active.tabAdd(data.field.title, data.field.href, data.field.id);
-                  } else {
-                      var isData = false;
-                      $.each($(".layui-tab-title li[lay-id]"), function () {
-                          if ($(this).attr("lay-id") == data.field.id) {
-                              isData = true;
-                          }
-                      })
-                      if (isData == false) {
-                          active.tabAdd(data.field.title, data.field.href, data.field.id);
-                      }
-                  }
-                  active.tabChange(data.field.id);
-              }else{
-                  return false;
-              }
-          });
-      }
-  </script>
+        })
+    </script>
 </body>
 </html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="icon" href="/asset/image/cloud_docs.ico">
+    <title>page</title>
+    <link href="/asset/font-icon/font_icon_sagacity.css" rel="stylesheet">
+    <link rel="stylesheet" href="/asset/editor-md/css/editormd.preview.css" />
+    <link rel="stylesheet" href="/asset/layui/css/layui.css">
+
+    <style>
+        body{
+            background-color: white;
+            padding: 3px; /*overflow-y: scroll;*/
+        }
+    </style>
+
+</head>
+<body style="overflow: auto; height: 100%">
+
+    <div class="layui-row">
+        <div class="layui-col-md10" style="background: white;" id="content-view">
+            <textarea style="display:none;">#(page.content)</textarea>
+        </div>
+        <div class="layui-col-md2" style="background-color:#F8F8F8; display:flex; align-items: center; justify-content: center; right:0px; top:0px; position: fixed; height: 100%;">
+            <div class="layui-form-pane">
+                <div class="layui-btn layui-form-item">
+                    <i style="font-size: 16px;" class="iconfont icon-thumbup"> 点赞</i>
+                </div>
+                <br/>
+                <div class="layui-btn layui-form-item">
+                    <i style="font-size: 16px;" class="iconfont icon-star1"> 收藏</i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/asset/layui/layui.js" charset="utf-8"></script>
+    <script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
+    <script src="/asset/editor-md/editormd.min.js"></script>
+    <script src="/asset/editor-md/lib/marked.min.js"></script>
+    <script src="/asset/editor-md/lib/prettify.min.js"></script>
+    <script>
+        var page_id = '#(page.id)';
+
+        $(function() {
+            var pageView = editormd.markdownToHTML("content-view", {
+                // htmlDecode : true,  // Enable / disable HTML tag encode.
+                // htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
+            });
+        });
+    </script>
+</body>
+</html>

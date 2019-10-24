@@ -19,7 +19,7 @@
                 <div class="layui-row">
                     <div class="layui-col-md2" style="text-align:center; border-right:1px dashed #000; height:260px;">
                         <h1 style="margin-top: 20px;">魔灯知库</h1>
-                        <img class="logo layui-icon-logo" src="asset/image/logo_docs.png" alt=""/>
+                        <img class="logo layui-icon-logo" src="/asset/image/logo_docs.png" alt=""/>
                     </div>
                     <div class="layui-col-md5" style="margin-left: 15px; margin-right: 15px;">
                         <div class="layui-tab layui-tab-brief" lay-filter="mode">
@@ -99,7 +99,7 @@
         function login() {
             setCookie();
             $.ajax({
-                url: "login",
+                url: "admin/login",
                 type: "GET",
                 dataType: "json",
                 data: {
@@ -108,7 +108,7 @@
                 },
                 success: function(data) {
                     if (data.result) {
-                        window.open("index", "_self", "");
+                        window.open("admin/", "_self", "");
                     }else{
                         layer.msg(data.msg, {time:2000, offset: '100px'});
                     }
@@ -123,7 +123,7 @@
         var checkScan = function() {
             if (is_close) return false;
             $.ajax({
-                url: "scanLogin",
+                url: "admin/scanLogin",
                 type: "GET",
                 dataType: "json",
                 data: {
@@ -141,7 +141,7 @@
                             },
                             success: function (data) {
                                 if (data.result) {
-                                    window.open("index", "_self", "");
+                                    window.open("admin/", "_self", "");
                                 } else {
                                     layer.msg(data.msg, {time: 2000, offset: '100px'});
                                 }
@@ -159,62 +159,6 @@
                 }
             });
         }
-
-        // function qrScan() {
-        //     var timer;
-        //
-        //     if(document.getElementById("qrCode").innerHTML != ""){
-        //         window.clearInterval(timer);
-        //         document.getElementById("qrCode").innerHTML="";
-        //         return;
-        //     }
-        //     //key值
-        //     var key = Date.parse( new Date());
-        //     //二维码字符串
-        //     var qrCodeString = '{ "type":"login", "key":"'+key+'"}';
-        //
-        //     jQuery('#qrCode').qrcode({
-        //         render   : "canvas",
-        //         text     :  qrCodeString,
-        //         width : 180,
-        //         height : 180
-        //     });
-        //
-        //     //启动timer
-        //     timer = window.setInterval(function(){
-        //         $.ajax({
-        //             url: "scanLogin",
-        //             type: "GET",
-        //             dataType: "json",
-        //             data: {
-        //                 key: key
-        //             },
-        //             success: function(data) {
-        //                 if (data.result) {
-        //                     window.clearInterval(timer);
-        //                     $.ajax({
-        //                         url: "login",
-        //                         type: "POST",
-        //                         dataType: "json",
-        //                         data: {
-        //                             username : data.user.LoginName,
-        //                             password : data.user.Password
-        //                         },
-        //                         success: function(data) {
-        //                             if (data.result) {
-        //                                 window.open("index", "_self", "");
-        //                             }else{
-        //                                 layer.msg(data.msg, {time:2000, offset: '100px'});
-        //                             }
-        //                         }
-        //                     });
-        //                 }else{
-        //                     // layer.msg(data.msg, {time:2000, offset: '100px'});
-        //                 }
-        //             }
-        //         });
-        //     }, 3000);
-        // }
 
         function setCookie() {
             if ($("#ck_rmbUser").prop("checked")) {

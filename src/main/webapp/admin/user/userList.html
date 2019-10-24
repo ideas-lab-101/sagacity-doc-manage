@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>用户列表</title>
+    <link rel="stylesheet" href="/asset/layui/css/layui.css">
+
+    <style>
+        body{padding: 20px; /*overflow-y: scroll;*/}
+    </style>
+</head>
+<body>
+
+
+<table id="userList" lay-filter="userList"></table>
+<script type="text/html" id="switchTpl">
+    <input type="checkbox" name="state" value="{{d.UserID}}" lay-skin="switch" lay-text="启用|停用" lay-filter="stateFilter" {{ d.intState == 1 ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="toolbar">
+    <a class="layui-btn-sm" lay-event="edit">
+        <i class="layui-icon">&#xe642;</i></a>
+    <a class="layui-btn-sm" lay-event="del">
+        <i class="layui-icon">&#xe640;</i></a>
+</script>
+
+
+<script src="/asset/layui/layui.js" charset="utf-8"></script>
+<script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
+<script>
+    var layer, table, form;
+    layui.use(['layer', 'table', 'form'], function(){
+        layer = layui.layer;
+        table = layui.table;
+        form = layui.form;
+        var $ = layui.$;
+
+        table.render({
+            id:'userList'
+            ,elem: '#userList'
+            ,url: 'getUserList'
+            ,page: true
+            ,request: {
+                pageName: 'pageIndex' //页码的参数名称，默认：page
+                ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            }
+            ,response: {
+                countName: 'totalRow' //数据总数的字段名称，默认：count
+            }
+            ,limit: 10
+            ,cols: [[
+                {field:'UserID', title:'ID', width:100, fixed: 'left', unresize: true, sort: true}
+                ,{field:'Caption', title:'显示名', width:120}
+                ,{field:'LoginName', title:'登陆账号', width:180}
+                ,{field:'Password', title:'登陆密码', width:180}
+                ,{field:'AddTime', title:'创建时间', width:120}
+                ,{field:'dcCount', title:'文档数', width:100}
+                ,{field:'vcCount', title:'视频数', width:100}
+                ,{field:'intState', title:'状态', width:85, templet: '#switchTpl', unresize: true}
+                ,{fixed: 'right', title:'操作', toolbar: '#toolbar', width:150}
+            ]]
+        });
+
+        //监听工具条
+        table.on('tool(userList)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'edit'){//删除
+                layer.msg(data.id);
+            }else if(obj.event === 'del'){
+
+            }
+        });
+
+        //监听排序
+        table.on('sort(tagList)', function(obj){
+            console.log(this, obj.field, obj.type)
+            return;
+            //服务端排序
+            // table.reload('docList', {
+            //   initSort: obj
+            //   //,page: {curr: 1} //重新从第一页开始
+            //   ,where: { //重新请求服务端
+            //     key: obj.field //排序字段
+            //     ,order: obj.type //排序方式
+            //   }
+            // });
+        });
+
+        //监听性别操作
+        form.on('switch(stateFilter)', function(obj){
+            $.ajax({
+                url: "setUserState",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    user_id: this.value,
+                    state: obj.elem.checked
+                },
+                success: function(data) {
+                    layer.msg(data.msg, {time:1000});
+                }
+            });
+            layer.close();
+        });
+
+    });
+</script>
+</body>
+</html>

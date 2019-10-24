@@ -3,7 +3,7 @@ var active = {
         //新增一个Tab项
         element.tabAdd('main', {
             title: name //用于演示
-            , content: '<iframe data-frameid="'+id+'" frameborder="0" name="content" scrolling="auto" width="100%" src="' + url + '"></iframe>'
+            , content: '<iframe data-frameid="'+id+'" frameborder="0" name="content" style="background-color: white;" scrolling="auto" width="100%" src="' + url + '"></iframe>'
             , id: id //实际使用一般是规定好的id，这里以时间戳模拟下
         })
         customRightClick(id);//绑定右键菜单
@@ -77,6 +77,7 @@ $(window).resize(function () {
 $('.admin-side-toggle').on('click', function () {
     var sideWidth = $('#admin-side').width();
     if (sideWidth === 200) {
+        $(this).html("&#xe66b;");
         $('#admin-body').animate({
             left: '0'
         }); //admin-footer
@@ -87,6 +88,7 @@ $('.admin-side-toggle').on('click', function () {
             width: '0'
         });
     } else {
+        $(this).html("&#xe668;");
         $('#admin-body').animate({
             left: '200px'
         });
