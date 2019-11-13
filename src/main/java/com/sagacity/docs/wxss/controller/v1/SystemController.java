@@ -70,7 +70,7 @@ public class SystemController extends WXSSBaseController {
         ApiResult apiResult = wxaUserApi.getSessionKey(code);
         openid = apiResult.getStr("openid");
 
-        WXUser wxUser = Duang.duang(WXUser.class).createUser(openid, userInfo);
+        WXUser wxUser = WXUser.dao.createUser(openid, userInfo);
         if(wxUser != null){
             r = true;
         }

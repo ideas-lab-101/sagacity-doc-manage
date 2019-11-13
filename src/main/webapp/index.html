@@ -28,7 +28,10 @@
             color: #2F2F2F;
             font-weight: bold;
         }
-
+        .grid-content {
+            padding: 10px;
+            text-align: center;
+        }
     </style>
 
 </head>
@@ -71,9 +74,15 @@
                 </li>
             </ul>
         </div>
-        <div class="layui-body">
-            <div style="height: 300px;">
-                滚动页
+        <div class="layui-body layui-bg-gray" style="padding: 5px 20px;">
+            <div class="layui-row layui-col-space10" style="height: 300px;">
+                <div class="layui-col-md9">
+                    <div>滚动页</div>
+                </div>
+                <div class="layui-col-md3">
+                    <div class="grid-content layui-bg-green" style="margin: 10px 20px;">学习资源</div>
+                    <div class="grid-content layui-bg-blue" style="margin: 10px 20px;">关于我们</div>
+                </div>
             </div>
             <div style="height: 500px;">
                 分类页

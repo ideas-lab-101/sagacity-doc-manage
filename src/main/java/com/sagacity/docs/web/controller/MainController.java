@@ -25,14 +25,35 @@ public class MainController extends WebBaseController {
         render("index.html");
     }
 
+    /**
+     * 文档主页
+     */
     @Clear(WebLoginInterceptor.class)
-    public void d(){
+    public void b(){
         int docID = getParaToInt("doc_id", 0);
 
         DocInfo dc = DocInfo.dao.findById(docID);
 
         if(dc != null){
             setAttr("doc", dc);
+        }else{
+
+        }
+        render("main/bookMain.html");
+    }
+
+    /**
+     * 文档详情页
+     */
+    @Clear(WebLoginInterceptor.class)
+    public void d(){
+        int docID = getParaToInt("doc_id", 0);
+        int pageID = getParaToInt("page_id", 0);
+        DocInfo dc = DocInfo.dao.findById(docID);
+
+        if(dc != null){
+            setAttr("doc", dc);
+            setAttr("pageID", pageID);
         }else{
 
         }
@@ -80,7 +101,12 @@ public class MainController extends WebBaseController {
         }else{
 
         }
-
         render("main/pageMain.html");
+    }
+
+    @Clear(WebLoginInterceptor.class)
+    public void qr(){
+        int docID = getParaToInt("doc_id");
+        render("main/qrCode.html");
     }
 }

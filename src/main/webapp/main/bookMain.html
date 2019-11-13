@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="icon" href="/asset/image/cloud_docs.ico">
+    <title>#(doc.title)</title>
+    <link href="/asset/font-icon/font_icon_sagacity.css" rel="stylesheet">
+    <link rel="stylesheet" href="/asset/layui/css/layui.css">
+
+    <style>
+        .layui-header {
+            background-color: white !important;
+            border-bottom: solid 1px #dadce0;
+            box-shadow: 0px 2px 10px rgba(0,0,0, .2);
+        }
+        .layui-body {
+            bottom: 0px !important;
+            left: 0px !important;
+        }
+        .layui-logo {
+            color: #2F2F2F !important;
+        }
+        .layui-nav .layui-nav-item a {
+            color: #606060;
+        }
+        .layui-nav .layui-nav-item a:hover {
+            color: #2F2F2F;
+            font-weight: bold;
+        }
+        .b-title {
+            padding: 5px 0px;
+            text-align: left;
+            font-size: 30px;
+            line-height: 35px;
+        }
+        .b-cover {
+            width:150px; height:auto;
+            border: #dadce0 solid 1px;
+        }
+        .b-desc {
+            text-align: left;
+            color: #888888;
+            font-size: 14px;
+            line-height: 200%;
+            text-indent:2em;
+        }
+        .b-intro li {
+            line-height: 250%;
+            border-bottom: 1px dashed #EFEFEF;
+            font-size: 16px;
+        }
+        .b-intro span {
+            color: #888888;
+            margin-right: 8px;
+        }
+        .b-button {
+            margin-top: 8px;
+        }
+    </style>
+
+</head>
+<body class="layui-layout-body">
+
+    <div class="layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo">
+                <img class="layui-icon-logo" style="width: 30px; height: auto; padding-right: 15px;" src="/asset/image/logo_docs.png" alt=""/>
+                <label style="font-size: 20px;">魔灯知库</label>
+            </div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul style="margin-left: 30px;" class="layui-nav layui-layout-left">
+                <li class="layui-nav-item">
+                    <a href="javascript:;" onclick="">
+                        <i class="iconfont icon-lightbulb-on"> 热门</i>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" onclick="">
+                        <i class="iconfont icon-drivedocument"> 文档库</i>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;" onclick="">
+                        <i class="iconfont icon-camcorder-box"> 视频库</i>
+                    </a>
+                </li>
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="javascript:;" onclick="search()">
+                        <i style="font-size: 16px;" class="iconfont icon-search">检索</i>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="admin/">
+                        <i style="font-size: 16px;" class="iconfont icon-accountcircle">登陆</i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="layui-body" style="padding: 5px 20px;">
+            <div class="layui-row layui-col-space10">
+                <div class="layui-col-md12">
+                    <div class="b-title">
+                        #(doc.title)
+                    </div>
+                </div>
+                <div class="layui-col-md2">
+                    <div style="padding: 10px 0px;">
+                        <img class="b-cover" src="#(doc.cover)" onerror="this.src='/asset/image/doc_cover.png'">
+                    </div>
+                </div>
+                <div class="layui-col-md7">
+                    <div class="b-intro layui-form-pane">
+                        <li>
+                            <span>评分:</span>12323
+                        </li>
+                        <li>
+                            <span>章节数:</span>12
+                        </li>
+                        <li>
+                            <span>阅读数:</span>781
+                        </li>
+                        <li>
+                            <span>收藏数:</span>223
+                        </li>
+                    </div>
+                    <div class="b-button layui-btn-group">
+                        <a class="layui-btn layui-btn-sm layui-btn-normal" href="d?doc_id=#(doc.id)&page_id=0">
+                            <i class="iconfont icon-tooltip-text"></i> 阅读</a>
+                        <a class="layui-btn layui-btn-sm layui-btn-primary">
+                            <i class="iconfont icon-favorite"></i> 收藏</a>
+                        <a class="layui-btn layui-btn-sm ">
+                            <i class="iconfont icon-share-variant"></i> 收藏</a>
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    二维码
+                </div>
+            </div>
+            <div class="layui-row">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top:3px;">
+                    <legend>简介</legend>
+                </fieldset>
+                <div class="b-desc">
+                    #(doc.desc)
+                </div>
+            </div>
+            <div class="layui-row">
+                <div class="layui-tab">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">目录</li>
+                        <li>留言</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <div class="layui-tab-item layui-show">
+                            <div class="layui-tree" style="margin-top: 2px;" id="pageTree">
+
+                            </div>
+                        </div>
+                        <div class="layui-tab-item">内容2</div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <script src="/asset/layui/layui.js" charset="utf-8"></script>
+    <script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
+    <script>
+        var sel_item, doc_id = '#(doc.id)';
+        var element, layer, tree;
+        layui.config({
+            base: '/asset/layui/extend/' //这是自定义模块的路径了
+        }).use(['element','layer','tree'], function(){
+            element = layui.element; //弹层
+            layer = layui.layer;
+            tree = layui.tree;
+
+            var loading = layer.msg('正在加载……', {icon: 16, shade: 0.3, time:0});
+            $.ajax({
+                url: "getPageTree",
+                data: {doc_id: doc_id},
+                success: function (data) {
+                    layer.close(loading);
+                    tree.render({
+                        elem: '#pageTree' //指定元素
+                        //,check: 'checkbox' //勾选风格
+                        // , accordion: true //手风琴模式
+                        , onlyIconControl: true
+                        //,target: '_blank' //是否新选项卡打开（比如节点返回href才有效）
+                        , drag: false
+                        , click: function (item) { //点击节点回调
+                            sel_item = item;
+                            window.location.href='d?doc_id='+doc_id+'&page_id='+item.data.id;
+                        }
+                        , data: data.data
+                    });
+                },
+                error: function () {
+                }
+            });
+        })
+    </script>
+</body>
+</html>
