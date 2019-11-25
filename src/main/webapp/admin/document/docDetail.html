@@ -107,8 +107,8 @@
     function addPage() {
         var parent_id, level;
         if(sel_item){
-            parent_id = sel_item.id;
-            level = sel_item.level+1;
+            parent_id = sel_item.data.id;
+            level = sel_item.data.level+1;
         }else{
             parent_id = 0;
             level = 1;
@@ -147,14 +147,14 @@
         layer.prompt({
             title: '修改章节',
             formType: 2
-            ,value: sel_item.name
+            ,value: sel_item.data.title
         }, function(value, index){
             $.ajax({
                 url: "modifyPage",
                 type: "POST",
                 dataType: "json",
                 data: {
-                    page_id: sel_item.id,
+                    page_id: sel_item.data.id,
                     name: value
                 },
                 success: function(data) {
@@ -180,7 +180,7 @@
                 type: "POST",
                 dataType: "json",
                 data: {
-                    page_id: sel_item.id
+                    page_id: sel_item.data.id
                 },
                 success: function(data) {
                     if(data.code == 1){
@@ -212,7 +212,7 @@
             type: "POST",
             dataType: "json",
             data: {
-                page_id: sel_item.id,
+                page_id: sel_item.data.id,
                 adjustType: 'up'
 
             },
@@ -238,7 +238,7 @@
             type: "POST",
             dataType: "json",
             data: {
-                page_id: sel_item.id,
+                page_id: sel_item.data.id,
                 adjustType: 'down'
 
             },
