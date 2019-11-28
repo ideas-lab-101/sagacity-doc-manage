@@ -4,8 +4,11 @@ import com.jfinal.aop.Before;
 import com.jfinal.ext.route.ControllerBind;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.tx.Tx;
+import com.jfinal.weixin.sdk.api.ApiResult;
+import com.jfinal.wxaapp.msg.bean.WxaMsg;
 import com.sagacity.docs.model.comment.Comment;
 import com.sagacity.docs.base.extend.ResponseCode;
+import com.sagacity.docs.wxss.api.ContentCheckApi;
 import com.sagacity.docs.wxss.common.WXSSBaseController;
 import com.sagacity.utility.DateUtils;
 
@@ -39,6 +42,9 @@ public class CommentController extends WXSSBaseController{
                 , data_id, type));
     }
 
+    /**
+     * 需要对content进行合法性检查
+     */
     @Before(Tx.class)
     public void addComment(){
         int data_id = getParaToInt("data_id");
@@ -49,19 +55,24 @@ public class CommentController extends WXSSBaseController{
         String content = getPara("content");
         boolean r = false;
 
-        Comment ac = new Comment().set("refer_id",refer_id).set("source_id", data_id).set("source", type)
-                .set("open_id", token).set("form_id", getPara("form_id"))
-                .set("title", getPara("title", "")).set("content", content)
-                .set("state", 1).set("created_at", DateUtils.nowDateTime());
-        r = ac.save();
-        //推送模板消息
-        if(refer_id >0){
+        ApiResult result = ContentCheckApi.msgCheck(content);
+        if(result.isSucceed()){ //检查成功
+            Comment ac = new Comment().set("refer_id",refer_id).set("source_id", data_id).set("source", type)
+                    .set("open_id", token).set("form_id", getPara("form_id"))
+                    .set("title", getPara("title", "")).set("content", content)
+                    .set("state", 1).set("created_at", DateUtils.nowDateTime());
+            r = ac.save();
+            //推送模板消息
+            if(refer_id >0){
 //            WXMessage.dao.sendCommentReply(Module.Activity, refer_id, ac.getInt("CommentID"));
-        }
-        if(r){
-            responseData.put(ResponseCode.MSG, "留言成功！");
+            }
+            if(r){
+                responseData.put(ResponseCode.MSG, "留言成功！");
+            }else{
+                responseData.put(ResponseCode.MSG, "留言失败！");
+            }
         }else{
-            responseData.put(ResponseCode.MSG, "留言失败！");
+            responseData.put(ResponseCode.MSG, "内容非法！");
         }
         responseData.put(ResponseCode.CODE, r? 1:0);
         renderJson(responseData);
