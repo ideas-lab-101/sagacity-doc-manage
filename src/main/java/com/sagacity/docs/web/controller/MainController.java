@@ -109,4 +109,12 @@ public class MainController extends WebBaseController {
         int docID = getParaToInt("doc_id");
         render("main/qrCode.html");
     }
+
+    /**
+     * 视频主页
+     */
+    @Clear(WebLoginInterceptor.class)
+    public void v(){
+
+    }
 }
