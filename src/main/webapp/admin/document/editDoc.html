@@ -97,12 +97,14 @@
         treeSelect = layui.treeSelect;
         var $ = layui.$;
 
+        var mask = layer.load();
         treeSelect.render({
             elem: '#class_id' //指定元素
             , placeholder: '请选择分类'
             , search: true
             , data: 'getClassTree'
             , success: function(item){
+                layer.close(mask);
                 treeSelect.checkNode('class_id', '#(doc.doc_class_id)');
                 // treeSelect.refresh('class_id');
             }
