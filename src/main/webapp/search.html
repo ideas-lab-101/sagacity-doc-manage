@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <link rel="icon" href="/asset/image/cloud_docs.ico">
+    <title>魔灯知库 - 搜索</title>
+    <link href="/asset/font-icon/font_icon_sagacity.css" rel="stylesheet">
+    <link rel="stylesheet" href="/asset/layui/css/layui.css">
+
+    <style>
+        .layui-header {
+            background-color: white !important;
+            border-bottom: solid 1px #dadce0;
+            box-shadow: 0px 2px 10px rgba(0,0,0, .2);
+        }
+        .layui-body {
+            bottom: 0px !important;
+            left: 0px !important;
+        }
+        .layui-logo {
+            color: #2F2F2F !important;
+        }
+        .layui-nav .layui-nav-item a {
+            color: #606060;
+        }
+        .layui-nav .layui-nav-item a:hover {
+            color: #2F2F2F;
+            font-weight: bold;
+        }
+        .grid-content {
+            padding: 10px;
+            text-align: center;
+        }
+        .no-data-img {
+            display: block;
+            width: 142px;
+            height: 100px;
+            margin: 0 auto;
+            background: url(asset/image/bg_no_data.png) no-repeat;
+        }
+        .b-info li {
+            display: flex;
+            line-height: 250%;
+            border-bottom: 1px dashed #EFEFEF;
+            font-size: 16px;
+        }
+        .b-info-cover {
+            padding: 10px 0px;
+        }
+        .b-info-mid {
+
+        }
+        .b-info-right {
+            position: relative;
+            padding-left: 20px;
+        }
+        .info-title {
+            padding: 5px 0px;
+            text-align: left;
+            font-size: 26px;
+            line-height: 30px;
+        }
+        .info-source {
+            padding: 3px 1px;
+            text-align: left;
+            font-size: 11px;
+            line-height: 16px;
+            color: #8888bb;
+        }
+        .info-cover {
+            width:150px; height:auto;
+            border: #dadce0 solid 1px;
+        }
+        .info-desc {
+            text-align: left;
+            color: #666;
+            font-size: 14px;
+            line-height: 20px;
+            height: 60px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            word-break: break-all;
+        }
+        .b-info-btn {
+            position: absolute;
+            bottom: 10px;
+            left: 20px;
+        }
+    </style>
+
+</head>
+<body class="layui-layout-body" >
+
+    <div class="layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo">
+                <img class="layui-icon-logo" style="width: 30px; height: auto; padding-right: 15px;" src="/asset/image/logo_docs.png" alt=""/>
+                <label style="font-size: 20px;">魔灯知库</label>
+            </div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul style="margin-left: 30px;" class="layui-nav layui-layout-left">
+
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="/">
+                        <i style="font-size: 16px;" class="iconfont icon-home">首页</i>
+                    </a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="admin/">
+                        <i style="font-size: 16px;" class="iconfont icon-accountcircle">登陆</i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="layui-body">
+            <div style="text-align: center; padding: 60px 20px 10px; ">
+                <form class="layui-form">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block layui-inline">
+                            <input style="width: 370px;" type="text" name="kw" id="kw" lay-verify="required" required placeholder="请输入名称或编号" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline">
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="*">搜索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="resultNone" style="text-align: center; padding: 10px 20px 60px; display: none;">
+                <div><span class="no-data-img"></span></div>
+                <div class="layui-text">没有输入有效关键词</div>
+            </div>
+            <div id="resultContent" style="text-align: left; padding: 10px 20px 60px; display: none;">
+                <script id="infoTpl" type="text/html">
+                    <ul>
+                        {{#  layui.each(d.data, function(index, item){ }}
+                        <li class="layui-row layui-col-space10">
+                            <div class="layui-col-md2 b-info-cover">
+                                <img class="info-cover" src="{{ item.cover }}" onerror="this.src='/asset/image/doc_cover.png'">
+                            </div>
+                            <div class="layui-col-md7 b-info-mid">
+                                <div class="layui-row info-title"> {{ item.title }}</div>
+                                <div class="layui-row info-source"> {{ item.Caption }} | {{ item.doc_class }} </div>
+                                <div class="layui-row info-desc"> {{ item.desc }} </div>
+                                <div class="layui-row"> 更新日期 </div>
+                            </div>
+                            <div class="layui-col-md2 b-info-right">
+                                <div class="layui-row">
+                                    <div class="layui-row">章节数</div>
+                                    <div class="layui-row b-info-btn">
+                                        <button onclick="goTo({{ item.id }})" type="button" class="layui-btn layui-btn-primary">查看</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        {{#  }); }}
+                    </ul>
+                </script>
+<!--                列表显示区-->
+                <div id="resultList" class="layui-container b-info"></div>
+<!--                分页按钮区-->
+                <div id="resultPager"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/asset/layui/layui.js" charset="utf-8"></script>
+    <script src="/asset/jquery/jquery-2.1.4.min.js"></script>
+
+    <script>
+        function getQuery(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return decodeURI(r[2]); return null;
+        }
+
+        window.onload=function(){
+            var key = getQuery("kw");
+            if (key !== '') {
+                doSearch(key);
+            }
+        }
+
+        var element, layer, laypage, form, laytpl;
+        layui.config({
+            base: '/asset/layui/extend/' //这是自定义模块的路径了
+        }).use(['element','layer','laypage','form','laytpl'], function(){
+            element = layui.element; //弹层
+            layer = layui.layer;
+            laypage = layui.laypage;
+            form = layui.form;
+            laytpl = layui.laytpl;
+
+            form.on('submit(*)', function(data){
+                // doSearch(data.field.kw);
+                window.location.href = "s?kw="+data.field.kw;
+                // window.open("s?kw="+data.field.kw, "_self", "");
+                return false;
+            });
+
+        })
+
+
+        var pageIndex = 1;
+        function doSearch(key) {
+            //设置搜索的关键词
+            $('#kw').val(key);
+            $.ajax({
+                url: "search",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    pageIndex: pageIndex,
+                    kw: key
+                },
+                success: function(data) {
+                    //根据搜索结果显示
+                    if(data.data.length == 0){
+                        $("#resultNone").show();
+                        $("#resultContent").hide();
+                    }else{
+                        $("#resultNone").hide();
+                        $("#resultContent").show();
+                        //绘制数据
+                        // var arr = [];
+                        // for(var i=0; i<data.data.length; i++){
+                        //     arr.push('<li>'+ data.data[i].title +'</li>');
+                        // }
+                        // $("#resultList").html(arr);
+                        var getTpl = infoTpl.innerHTML
+                            ,view = document.getElementById('resultList');
+                        laytpl(getTpl).render(data, function(html){
+                            view.innerHTML = html;
+                        });
+                        //绘制分页器
+                        setPager(key, data.pageNumber, data.totalRow);
+                    }
+                }
+            });
+        }
+
+        function setPager(key, current, total) {
+            laypage.render({
+                elem: 'resultPager'
+                ,theme: '#1E9FFF'
+                ,limit: 10
+                ,count: total
+                ,curr: current
+                ,jump: function(obj, first){
+                    pageIndex = obj.curr;
+                    if(!first){
+                        doSearch (key);
+                    }
+
+                }
+            });
+        }
+
+        function goTo(id) {
+            window.open("b?doc_id="+id, "_blank", "");
+        }
+
+    </script>
+</body>
+</html>

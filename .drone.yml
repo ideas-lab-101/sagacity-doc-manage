@@ -13,6 +13,8 @@ pipeline:
     repo: hub.cdqidi.cn/sagacity-docs
     dockerfile: ./Dockerfile
     tags: ${DRONE_COMMIT_SHA}
+    insecure: true
+    registry: hub.cdqidi.cn
     secrets: [ docker_username, docker_password ]
   deploy:
     image: hub.cdqidi.cn/drone-k8s

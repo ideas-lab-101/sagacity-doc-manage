@@ -1,4 +1,4 @@
-package com.sagacity.docs.base.openapi;
+package com.sagacity.docs.service;
 
 import com.google.gson.Gson;
 import com.jfinal.kit.PropKit;

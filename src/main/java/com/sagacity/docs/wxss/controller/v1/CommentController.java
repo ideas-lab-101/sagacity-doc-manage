@@ -5,10 +5,9 @@ import com.jfinal.ext.route.ControllerBind;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.tx.Tx;
 import com.jfinal.weixin.sdk.api.ApiResult;
-import com.jfinal.wxaapp.msg.bean.WxaMsg;
 import com.sagacity.docs.model.comment.Comment;
 import com.sagacity.docs.base.extend.ResponseCode;
-import com.sagacity.docs.wxss.api.ContentCheckApi;
+import com.sagacity.docs.service.ContentCheckApi;
 import com.sagacity.docs.wxss.common.WXSSBaseController;
 import com.sagacity.utility.DateUtils;
 

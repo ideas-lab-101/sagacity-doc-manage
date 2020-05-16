@@ -15,7 +15,7 @@ import com.sagacity.docs.model.doc.DocPage;
 import com.sagacity.docs.web.common.WebBaseController;
 import com.sagacity.docs.base.extend.ResponseCode;
 import com.sagacity.docs.base.extend.RoleType;
-import com.sagacity.docs.base.openapi.Qiniu;
+import com.sagacity.docs.service.Qiniu;
 import com.sagacity.utility.DateUtils;
 import com.sagacity.utility.StringTool;
 import net.sf.json.JSONObject;

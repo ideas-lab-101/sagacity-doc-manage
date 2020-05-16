@@ -54,7 +54,7 @@
                 <!--<label style="font-size: 20px;"></label>-->
             <!--</div>-->
             <!-- 头部区域（可配合layui已有的水平导航） -->
-            <ul style="margin-left: 20px;" class="layui-nav" onclick="javascrip:window.location.href='b?doc_id=#(doc.id)';">
+            <ul style="margin-left: 20px;" class="layui-nav" onclick="javascrip:window.location.href='/b?doc_id=#(doc.id)';">
                 <label style="font-size: 20px; color: #2F2F2F; line-height: 60px; cursor:pointer; ">
                     <i style="font-size: 26px; margin-right: 8px;" class="iconfont icon-drivedocument"></i>#(doc.title)
                 </label>
@@ -129,7 +129,7 @@
                     if(Number(page_id)>0){ //打开默认page
                         var node = $(".layui-tree .layui-tree-set[data-id='"+page_id+"']");
                         node.find("span.layui-tree-txt").css('color','#ff2f2f');
-                        console.log(node);
+                        // console.log(node);
                         $('#page').attr("src", 'p?page_id='+page_id) ;
                     }
                 },

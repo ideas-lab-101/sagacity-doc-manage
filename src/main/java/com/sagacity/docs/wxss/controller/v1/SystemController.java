@@ -17,7 +17,7 @@ import com.sagacity.docs.model.doc.DocPage;
 import com.sagacity.docs.base.extend.ConstantValue;
 import com.sagacity.docs.base.extend.ResponseCode;
 import com.sagacity.docs.base.extend.RoleType;
-import com.sagacity.docs.base.openapi.Qiniu;
+import com.sagacity.docs.service.Qiniu;
 import com.sagacity.docs.model.user.UserInfo;
 import com.sagacity.docs.model.user.UserProfile;
 import com.sagacity.docs.model.video.VideoInfo;

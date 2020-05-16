@@ -1,4 +1,4 @@
-package com.sagacity.docs.wxss.api;
+package com.sagacity.docs.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.weixin.sdk.api.AccessTokenApi;

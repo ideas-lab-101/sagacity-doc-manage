@@ -32,10 +32,37 @@
             padding: 10px;
             text-align: center;
         }
+        .site-img img {
+            width: 100%;
+            height: 100%;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        .site-idea {
+            margin: 20px 0;
+            font-size: 14px;
+            text-align: center;
+            font-weight: 300;
+        }
+        .site-idea li {
+            height: 200px;
+            padding: 10px 10px;
+            margin: 10px 10px;
+            line-height: 24px;
+            border: 1px solid #d2d2d2;
+            text-align: center;
+        }
+        .layui-col-md4 {
+            width: 31.33333%;
+        }
+        .site-idea li p{
+            padding: 10px 0;
+            text-align: left;
+        }
     </style>
 
 </head>
-<body class="layui-layout-body">
+<body class="layui-layout-body" >
 
     <div class="layui-layout-admin">
         <div class="layui-header">
@@ -45,26 +72,26 @@
             </div>
             <!-- 头部区域（可配合layui已有的水平导航） -->
             <ul style="margin-left: 30px;" class="layui-nav layui-layout-left">
-                <li class="layui-nav-item">
-                    <a href="javascript:;" onclick="">
-                        <i class="iconfont icon-lightbulb-on"> 热门</i>
-                    </a>
-                </li>
-                <li class="layui-nav-item">
-                    <a href="javascript:;" onclick="">
-                        <i class="iconfont icon-drivedocument"> 文档库</i>
-                    </a>
-                </li>
-                <li class="layui-nav-item">
-                    <a href="javascript:;" onclick="">
-                        <i class="iconfont icon-camcorder-box"> 视频库</i>
-                    </a>
-                </li>
+<!--                <li class="layui-nav-item">-->
+<!--                    <a href="javascript:;" onclick="">-->
+<!--                        <i class="iconfont icon-lightbulb-on"> 热门</i>-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li class="layui-nav-item">-->
+<!--                    <a href="javascript:;" onclick="">-->
+<!--                        <i class="iconfont icon-drivedocument"> 文档库</i>-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--                <li class="layui-nav-item">-->
+<!--                    <a href="javascript:;" onclick="">-->
+<!--                        <i class="iconfont icon-camcorder-box"> 视频库</i>-->
+<!--                    </a>-->
+<!--                </li>-->
             </ul>
             <ul class="layui-nav layui-layout-right">
                 <li class="layui-nav-item">
-                    <a href="javascript:;" onclick="search()">
-                        <i style="font-size: 16px;" class="iconfont icon-search">检索</i>
+                    <a href="s?kw=">
+                        <i style="font-size: 16px;" class="iconfont icon-search">搜索</i>
                     </a>
                 </li>
                 <li class="layui-nav-item">
@@ -74,27 +101,38 @@
                 </li>
             </ul>
         </div>
-        <div class="layui-body layui-bg-gray" style="padding: 5px 20px;">
-            <div class="layui-row layui-col-space10" style="height: 300px;">
-                <div class="layui-col-md9">
-                    <div>滚动页</div>
+        <div class="layui-body" style="padding: 10px 2px; ">
+            <div class="layui-main">
+                <div class="site-img">
+                    <img src="asset/image/bg-reading.jpg">
                 </div>
-                <div class="layui-col-md3">
-                    <div class="grid-content layui-bg-green" style="margin: 10px 20px;">学习资源</div>
-                    <div class="grid-content layui-bg-blue" style="margin: 10px 20px;">关于我们</div>
-                </div>
-            </div>
-            <div style="height: 500px;">
-                分类页
-            </div>
-            <div style="height: 700px;">
-                数据流
+                <ul class="site-idea">
+                    <li class="layui-col-md4">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend>泰戈尔</legend>
+                            <p>只有经历过地狱般的磨砺，才能练就创造天堂的力量；只有流过血的手指，才能弹出世间的绝响。</p>
+                        </fieldset>
+                    </li>
+                    <li class="layui-col-md4">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend>毛姆</legend>
+                            <p>在这个并非尽善尽美的世界上，勤奋会得到报偿，而游手好闲则要受到惩罚。</p>
+                        </fieldset>
+                    </li>
+                    <li class="layui-col-md4">
+                        <fieldset class="layui-elem-field layui-field-title">
+                            <legend>雨果</legend>
+                            <p>让自己的内心藏着一条巨龙，既是一种苦刑，也是一种乐趣。</p>
+                        </fieldset>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 
     <script src="/asset/layui/layui.js" charset="utf-8"></script>
     <script>
+
         var element, layer;
         layui.config({
             base: '/asset/layui/extend/' //这是自定义模块的路径了
@@ -103,6 +141,8 @@
             layer = layui.layer;
 
         })
+
+
     </script>
 </body>
 </html>

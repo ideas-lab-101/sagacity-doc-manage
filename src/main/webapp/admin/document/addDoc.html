@@ -56,7 +56,7 @@
     var layer, form, treeSelect;
     layui.config({
         base: '/asset/layui/extend/' //这是自定义模块的路径了
-    }).use(['layer','form', 'treeSelect'], function(){
+    }).use(['layer', 'form', 'treeSelect'], function(){
         layer = layui.layer; //弹层
         form = layui.form;
         treeSelect = layui.treeSelect;
@@ -77,7 +77,8 @@
 
         //监听表单提交
         form.on('submit(*)', function(data){
-            console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+            console.log("表单提交！");
+            // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
             doAdd(data.field);
             return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
         });

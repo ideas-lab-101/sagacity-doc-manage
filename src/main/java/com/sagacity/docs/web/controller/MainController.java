@@ -1,18 +1,18 @@
 package com.sagacity.docs.web.controller;
 
 
-import com.jfinal.aop.Before;
 import com.jfinal.aop.Clear;
-import com.jfinal.ext.plugin.sqlinxml.SqlKit;
 import com.jfinal.ext.route.ControllerBind;
 import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.sagacity.docs.base.extend.ResponseCode;
 import com.sagacity.docs.model.doc.DocInfo;
 import com.sagacity.docs.model.doc.DocPage;
+import com.sagacity.docs.service.SearchEngine;
 import com.sagacity.docs.web.common.WebBaseController;
 import com.sagacity.docs.web.common.WebLoginInterceptor;
-import net.sf.json.JSONObject;
+import com.sagacity.utility.StringTool;
 
 import java.util.List;
 
@@ -23,6 +23,35 @@ public class MainController extends WebBaseController {
     @Clear(WebLoginInterceptor.class)
     public void index(){
         render("index.html");
+    }
+
+    @Clear(WebLoginInterceptor.class)
+    public void s(){
+        String kw = getPara("kw");
+        if(StringTool.notNull(kw)){
+            render("search.html");
+        }else{
+            redirect("/");
+        }
+    }
+
+    @Clear(WebLoginInterceptor.class)
+    public void search(){
+        boolean r = true;
+        String kw = getPara("kw");
+
+        String sqlSelect = "select di.id,di.title,di.`desc`,di.cover,di.source,di.is_end,di.updated_at\n" +
+                ",dc.id doc_class_id,dc.title doc_class,u.UserID,u.Caption";
+        String sqlFrom = "from doc_info di\n" +
+                "left join doc_class dc on dc.id=di.doc_class_id\n" +
+                "left join sys_users u on u.UserID=di.user_id\n" +
+                "where di.state=1 and di.title like '%"+kw+"%' or u.Caption like '%"+kw+"%'";;
+        sqlFrom += "\n order by di.updated_at DESC";
+
+        Page<Record> resultList = Db.paginate(getParaToInt("pageIndex", 1),
+                getParaToInt("pageSize", 10), sqlSelect, sqlFrom);
+        renderJson(convertPageData(resultList));
+        renderJson(responseData);
     }
 
     /**

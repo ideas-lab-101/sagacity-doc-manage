@@ -25,12 +25,12 @@
         </div>
         <div class="layui-col-md2" style="background-color:#F8F8F8; display:flex; align-items: center; justify-content: center; right:0px; top:0px; position: fixed; height: 100%;">
             <div class="layui-form-pane">
-                <div class="layui-btn layui-form-item">
-                    <i style="font-size: 16px;" class="iconfont icon-thumbup"> 点赞</i>
+                <div class="layui-btn layui-form-item layui-btn-normal">
+                    <i style="font-size: 16px;" class="iconfont icon-thumbup">点赞</i>
                 </div>
                 <br/>
-                <div class="layui-btn layui-form-item">
-                    <i style="font-size: 16px;" class="iconfont icon-star1"> 收藏</i>
+                <div class="layui-btn layui-form-item layui-btn-normal">
+                    <i style="font-size: 16px;" class="iconfont icon-star1">收藏</i>
                 </div>
             </div>
         </div>
@@ -46,7 +46,7 @@
 
         $(function() {
             var pageView = editormd.markdownToHTML("content-view", {
-                // htmlDecode : true,  // Enable / disable HTML tag encode.
+                htmlDecode : true,  // Enable / disable HTML tag encode.
                 // htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
             });
         });

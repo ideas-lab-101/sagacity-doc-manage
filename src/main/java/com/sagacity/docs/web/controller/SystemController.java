@@ -12,7 +12,7 @@ import com.sagacity.docs.model.system.Music;
 import com.sagacity.docs.model.system.VideoClass;
 import com.sagacity.docs.web.common.WebBaseController;
 import com.sagacity.docs.base.extend.ResponseCode;
-import com.sagacity.docs.base.openapi.Qiniu;
+import com.sagacity.docs.service.Qiniu;
 import com.sagacity.utility.ConvertUtil;
 import com.sagacity.utility.DateUtils;
 import com.sagacity.utility.StringTool;
