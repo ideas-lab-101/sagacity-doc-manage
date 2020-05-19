@@ -37,7 +37,7 @@
             width: 142px;
             height: 100px;
             margin: 0 auto;
-            background: url(asset/image/bg_no_data.png) no-repeat;
+            background: url(../asset/image/bg_no_data.png) no-repeat;
         }
         .b-info li {
             display: flex;
@@ -65,17 +65,19 @@
             padding: 3px 1px;
             text-align: left;
             font-size: 11px;
-            line-height: 16px;
+            line-height: 20px;
             color: #8888bb;
         }
+
         .info-cover {
             width:150px; height:auto;
             border: #dadce0 solid 1px;
         }
         .info-desc {
+            margin: 8px 0px;
             text-align: left;
             color: #666;
-            font-size: 14px;
+            font-size: 15px;
             line-height: 20px;
             height: 60px;
             display: -webkit-box;
@@ -84,7 +86,11 @@
             overflow: hidden;
             word-break: break-all;
         }
-        .b-info-btn {
+        .info-time {
+            color: #866;
+            font-size: 13px;
+        }
+        .info-btn {
             position: absolute;
             bottom: 10px;
             left: 20px;
@@ -111,7 +117,7 @@
                     </a>
                 </li>
                 <li class="layui-nav-item">
-                    <a href="admin/">
+                    <a href="../admin">
                         <i style="font-size: 16px;" class="iconfont icon-accountcircle">登陆</i>
                     </a>
                 </li>
@@ -144,14 +150,15 @@
                             </div>
                             <div class="layui-col-md7 b-info-mid">
                                 <div class="layui-row info-title"> {{ item.title }}</div>
-                                <div class="layui-row info-source"> {{ item.Caption }} | {{ item.doc_class }} </div>
+                                <div class="layui-row info-source"> <a href="a?userId={{item.UserID}}" target="_blank"> {{ item.Caption??('未知') }} </a>
+                                    | <a href="c?classId={{item.doc_class_id}}" target="_blank"> {{ item.doc_class }} </a></div>
                                 <div class="layui-row info-desc"> {{ item.desc }} </div>
-                                <div class="layui-row"> 更新日期 </div>
+                                <div class="layui-row info-time"> 更新于：{{ item.update_date}} </div>
                             </div>
                             <div class="layui-col-md2 b-info-right">
                                 <div class="layui-row">
-                                    <div class="layui-row">章节数</div>
-                                    <div class="layui-row b-info-btn">
+                                    <div class="layui-row"> <i style="font-size: 13px;" class="iconfont icon-format-align-justify"> {{item.page_count}} </i></div>
+                                    <div class="layui-row info-btn">
                                         <button onclick="goTo({{ item.id }})" type="button" class="layui-btn layui-btn-primary">查看</button>
                                     </div>
                                 </div>
@@ -262,7 +269,11 @@
         }
 
         function goTo(id) {
-            window.open("b?doc_id="+id, "_blank", "");
+            window.open("b?docId="+id, "_blank", "");
+        }
+
+        function goAuthor(userId) {
+            window.open("a?userId="+userId, "_blank", "");
         }
 
     </script>

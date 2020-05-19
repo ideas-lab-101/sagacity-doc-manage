@@ -100,20 +100,20 @@
                 <div class="layui-col-md7">
                     <div class="b-intro layui-form-pane">
                         <li>
-                            <span style="font-size: 16px;" class="iconfont icon-thumb-up"> 评分:</span>12323
+                            <span style="font-size: 15px;" class="iconfont icon-thumb-up"> 评分: #(doc.rate??5)</span>
                         </li>
                         <li>
-                            <span style="font-size: 16px;" class="iconfont icon-viewheadline"> 章节数:</span>12
+                            <span style="font-size: 15px;" class="iconfont icon-viewheadline"> 章节数: #(doc.page_count)</span>
                         </li>
                         <li>
-                            <span style="font-size: 16px;" class="iconfont icon-visibility"> 阅读量:</span>781
+                            <span style="font-size: 15px;" class="iconfont icon-visibility"> 阅读量: #(doc.view_count)</span>
                         </li>
                         <li>
-                            <span style="font-size: 16px;" class="iconfont icon-star1"> 收藏量:</span>223
+                            <span style="font-size: 15px;" class="iconfont icon-star1"> 收藏量: #(doc.favor_count)</span>
                         </li>
                     </div>
                     <div class="b-button layui-btn-group">
-                        <a class="layui-btn layui-btn-normal" href="d?doc_id=#(doc.id)&page_id=0">
+                        <a class="layui-btn layui-btn-normal" href="d?docId=#(doc.id)&pageId=0">
                             <i style="font-size: 12px;" class="iconfont icon-tooltip-text"> 阅读</i></a>
                         <a class="layui-btn layui-btn-normal">
                             <i style="font-size: 12px;" class="iconfont icon-favorite"> 收藏</i></a>
@@ -122,7 +122,7 @@
                     </div>
                 </div>
                 <div class="layui-col-md3">
-                    二维码
+                    <i style="font-size: 12px;" class="iconfont icon-phone"> 手机看</i>
                 </div>
             </div>
             <div class="layui-row">
@@ -150,11 +150,12 @@
                 </div>
             </div>
     </div>
+    </div>
 
     <script src="/asset/layui/layui.js" charset="utf-8"></script>
     <script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
     <script>
-        var sel_item, doc_id = '#(doc.id)';
+        var sel_item, docId = '#(doc.id)';
         var element, layer, tree;
         layui.config({
             base: '/asset/layui/extend/' //这是自定义模块的路径了
@@ -166,7 +167,7 @@
             var loading = layer.msg('正在加载……', {icon: 16, shade: 0.3, time:0});
             $.ajax({
                 url: "getPageTree",
-                data: {doc_id: doc_id},
+                data: {docId: docId},
                 success: function (data) {
                     layer.close(loading);
                     tree.render({
@@ -178,7 +179,7 @@
                         , drag: false
                         , click: function (item) { //点击节点回调
                             sel_item = item;
-                            window.location.href='d?doc_id='+doc_id+'&page_id='+item.data.id;
+                            window.location.href='d?docId='+docId+'&pageId='+item.data.id;
                         }
                         , data: data.data
                     });

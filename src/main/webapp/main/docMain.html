@@ -54,7 +54,7 @@
                 <!--<label style="font-size: 20px;"></label>-->
             <!--</div>-->
             <!-- 头部区域（可配合layui已有的水平导航） -->
-            <ul style="margin-left: 20px;" class="layui-nav" onclick="javascrip:window.location.href='/b?doc_id=#(doc.id)';">
+            <ul style="margin-left: 20px;" class="layui-nav" onclick="javascrip:window.location.href='/b?docId=#(doc.id)';">
                 <label style="font-size: 20px; color: #2F2F2F; line-height: 60px; cursor:pointer; ">
                     <i style="font-size: 26px; margin-right: 8px;" class="iconfont icon-drivedocument"></i>#(doc.title)
                 </label>
@@ -95,7 +95,7 @@
     <script src="/asset/layui/layui.js" charset="utf-8"></script>
     <script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
     <script>
-        var sel_item, doc_id = '#(doc.id)', page_id= '#(pageID)';
+        var sel_item, docId = '#(doc.id)', pageId= '#(pageId)';
         var element, layer, tree, $;
         layui.config({
             base: '/asset/layui/extend/' //这是自定义模块的路径了
@@ -108,7 +108,7 @@
             var loading = layer.msg('正在加载……', {icon: 16, shade: 0.3, time:0});
             $.ajax({
                 url: "getPageTree",
-                data: {doc_id: doc_id},
+                data: {docId: docId},
                 success: function (data) {
                     layer.close(loading);
                     tree.render({
@@ -121,16 +121,16 @@
                         , drag: false
                         , click: function (item) { //点击节点回调
                             sel_item = item;
-                            $('#page').attr("src", 'p?page_id='+item.data.id) ;
+                            $('#page').attr("src", 'p?pageId='+item.data.id) ;
                         }
                         , data: data.data
                     });
                     // tree.setChecked('id', Number('10167'));
-                    if(Number(page_id)>0){ //打开默认page
-                        var node = $(".layui-tree .layui-tree-set[data-id='"+page_id+"']");
+                    if(Number(pageId)>0){ //打开默认page
+                        var node = $(".layui-tree .layui-tree-set[data-id='"+pageId+"']");
                         node.find("span.layui-tree-txt").css('color','#ff2f2f');
                         // console.log(node);
-                        $('#page').attr("src", 'p?page_id='+page_id) ;
+                        $('#page').attr("src", 'p?pageId='+pageId) ;
                     }
                 },
                 error: function () {
@@ -148,7 +148,7 @@
                 title: '小程序二维码',
                 type: 2,
                 area: ['610px', '410px'],
-                content: ['qr?doc_id='+doc_id, 'no'],
+                content: ['qr?docId='+docId, 'no'],
                 yes: function () {
 
                 },
