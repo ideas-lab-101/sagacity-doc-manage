@@ -41,8 +41,8 @@
             #(userInfo.Caption)
           </a>
           <dl class="layui-nav-child">
-            <dd><a href=""><i class="iconfont icon-accountcircle" aria-hidden="true"></i> 用户信息</a></dd>
-            <dd><a href=""><i class="iconfont icon-settings1" aria-hidden="true"></i> 系统设置</a></dd>
+            <dd><a href="javascript:void(0)" onclick="userSetting()"><i class="iconfont icon-accountcircle" aria-hidden="true"></i> 用户信息</a></dd>
+            <dd><a href="javascript:void(0)" onclick="systemSetting()"><i class="iconfont icon-settings1" aria-hidden="true"></i> 系统设置</a></dd>
             <dd><a href="logout"><i class="iconfont icon-exit-to-app" aria-hidden="true"></i> 账号退出</a></dd>
           </dl>
         </li>
@@ -79,6 +79,21 @@
   <script src="/asset/jquery/jquery-2.1.4.min.js"></script>
   <script src="/asset/js/main.js"></script>
   <script>
+
+      /**
+       * 浏览器回退提示
+       * @param ev
+       * @returns {string}
+       */
+      window.onbeforeunload = function (ev) {
+          var e = ev || window.event;
+          var showInfo = "SagacityDocs";
+          if (e) {
+              e.returnValue = showInfo;
+          }
+          return showInfo; //for safari and chrome
+      };
+
       var element, layer, navbar;
       layui.config({
           base: '/asset/layui/extend/' //这是自定义模块的路径了
@@ -93,6 +108,23 @@
           $this.addClass("layui-this");
       })
 
+      function userSetting() {
+          layer.open({
+              title: '用户设置',
+              type: 2,
+              area: ['750px', '380px'],
+              content: ['user/editUser', 'no'],
+              yes: function () {
+                  //切换头像
+              },
+              end: function () {
+
+              }
+          });
+      }
+      function systemSetting() {
+
+      }
 
       function loadMenu(obj){
           //先关闭所有tabs
