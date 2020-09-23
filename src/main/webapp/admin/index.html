@@ -20,9 +20,9 @@
   <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
       <div class="layui-logo">
-          <img class="logo layui-icon-logo" src="../asset/image/logo_docs.png" alt=""/>
+          <img class="layui-icon-logo" style="width: 30px; height: auto; padding-right: 15px;" src="../asset/image/logo_docs.png" alt=""/>
           <label style="color: white; font-size: 20px;">魔灯知库</label>
-          <i class="admin-side-toggle layui-icon" aria-hidden="true">&#xe668;</i>
+          <i class="layui-layout-right admin-side-toggle layui-icon" aria-hidden="true">&#xe668;</i>
       </div>
       <!-- 头部区域（可配合layui已有的水平导航） -->
       <ul style="margin-left: 30px;" class="layui-nav layui-layout-left">
@@ -35,17 +35,18 @@
           #end
       </ul>
       <ul class="layui-nav layui-layout-right">
-        <li class="layui-nav-item">
-          <a href="javascript:;">
-            <img src="#(userInfo.AvatarURL)" onerror="this.src='/asset/image/user_default.png'" class="layui-nav-img">
-            #(userInfo.Caption)
-          </a>
-          <dl class="layui-nav-child">
-            <dd><a href="javascript:void(0)" onclick="userSetting()"><i class="iconfont icon-accountcircle" aria-hidden="true"></i> 用户信息</a></dd>
-            <dd><a href="javascript:void(0)" onclick="systemSetting()"><i class="iconfont icon-settings1" aria-hidden="true"></i> 系统设置</a></dd>
-            <dd><a href="logout"><i class="iconfont icon-exit-to-app" aria-hidden="true"></i> 账号退出</a></dd>
-          </dl>
-        </li>
+          <li class="layui-nav-item">
+              <a href="javascript:;">
+                  <img src="#(userInfo.AvatarURL)" onerror="this.src='/asset/image/user_default.png'" class="layui-nav-img">
+                  #(userInfo.Caption)
+              </a>
+              <dl class="layui-nav-child">
+                  <dd><a href="/" target="_blank"><i class="iconfont icon-home" aria-hidden="true"></i> 平台首页</a></dd>
+                  <dd><a href="javascript:void(0)" onclick="userSetting()"><i class="iconfont icon-accountcircle" aria-hidden="true"></i> 用户信息</a></dd>
+                  <dd><a href="javascript:void(0)" onclick="systemSetting()"><i class="iconfont icon-settings1" aria-hidden="true"></i> 系统设置</a></dd>
+                  <dd><a href="logout"><i class="iconfont icon-exit-to-app" aria-hidden="true"></i> 账号退出</a></dd>
+              </dl>
+          </li>
       </ul>
     </div>
 
@@ -105,7 +106,7 @@
           //加载第一个节点
           $this = $('.layui-nav.layui-layout-left').find('li:first-child');
           loadMenu($this.find("a"));
-          $this.addClass("layui-this");
+          // $this.addClass("layui-this"); //高亮
       })
 
       function userSetting() {
