@@ -5,7 +5,7 @@ COPY ./target/sagacity-docs/. /usr/local/tomcat/webapps/ROOT/
 
 # 安装自定义中文字体
 COPY ./src/main/webapp/asset/fonts/simsun.ttc /usr/share/fonts/simsun.ttc
-RUN apk add --update ttf-dejavu fontconfig && rm -rf /var/cache/apk/*
+# RUN apk add --update ttf-dejavu fontconfig && rm -rf /var/cache/apk/*
 # 运行 Tomcat
 WORKDIR /usr/local/tomcat/
 EXPOSE 80
