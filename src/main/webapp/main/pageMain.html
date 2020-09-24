@@ -26,11 +26,11 @@
         <div class="layui-col-md2" style="background-color:#F8F8F8; display:flex; align-items: center; justify-content: center; right:0px; top:0px; position: fixed; height: 100%;">
             <div class="layui-form-pane">
                 <div class="layui-btn layui-form-item layui-btn-normal">
-                    <i style="font-size: 15px;" class="iconfont icon-share-variant"> 分享</i>
+                    <i onclick="pdf_export()" style="font-size: 15px;" class="iconfont icon-arrow-down-bold-circle-outline"> 导出</i>
                 </div>
                 <br/>
                 <div class="layui-btn layui-form-item layui-btn-normal">
-                    <i style="font-size: 15px;" class="iconfont icon-star1"> 收藏</i>
+                    <i id="share" style="font-size: 15px;" class="iconfont icon-star1"> 收藏</i>
                 </div>
             </div>
         </div>
@@ -38,6 +38,7 @@
 
     <script src="/asset/layui/layui.js" charset="utf-8"></script>
     <script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
+    <script src="/asset/js/html2pdf.bundle.min.js" charset="utf-8"></script>
     <script src="/asset/editor-md/editormd.min.js"></script>
     <script src="/asset/editor-md/lib/marked.min.js"></script>
     <script src="/asset/editor-md/lib/prettify.min.js"></script>
@@ -50,6 +51,21 @@
                 // htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
             });
         });
+
+        function pdf_export() {
+            // Get the element.
+            var element = document.getElementById('content-view');
+            // 替换掉特殊字符
+            var doc_name = '#(page.title)'.replace(".","_");;
+            // Generate the PDF.
+            html2pdf().from(element).set({
+                margin: 1,
+                filename: doc_name,
+                image: { type: 'png', quality: 0.98 },
+                html2canvas: { scale: 2 ,  useCORS: true,}, //图片跨域
+                jsPDF: {orientation: 'portrait', unit: 'in', format: 'letter', compressPDF: true}
+            }).save();
+        }
     </script>
 </body>
 </html>
