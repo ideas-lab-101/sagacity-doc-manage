@@ -23,6 +23,9 @@
         <div class="layui-row">
             <div class="layui-col-md3">
                 <div class="layui-btn-group">
+                    <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="addNode()">
+                        <i class="layui-icon">&#xe60a;</i>
+                    </a>
                     <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="addPage()">
                         <i class="layui-icon">&#xe61f;</i>
                     </a>
@@ -31,9 +34,6 @@
                     </a>
                     <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="delPage()">
                         <i class="layui-icon">&#xe640;</i>
-                    </a>
-                    <a class="layui-btn layui-btn-primary layui-btn-sm" onclick="exportPage()">
-                        <i class="layui-icon">&#xe601;</i>
                     </a>
                 </div>
                 <div class="layui-btn-group">
@@ -104,15 +104,30 @@
         $(this).css('color','#ff2f2f')
     })
 
+    /**
+     * 增加一级结构（pid=0）
+    **/
+    function addNode() {
+        var parent_id, level;
+        parent_id = 0;
+        level = 1;
+        newPage(parent_id, level);
+    }
+
     function addPage() {
         var parent_id, level;
-        if(sel_item){
+        if(sel_item == null){
+            layer.msg("请选择上级章节！");
+            return ;
+        }else{
             parent_id = sel_item.data.id;
             level = sel_item.data.level+1;
-        }else{
-            parent_id = 0;
-            level = 1;
+            newPage(parent_id, level);
         }
+
+    }
+
+    function newPage(parent_id, level){
         layer.prompt({
             title: '新章节',
             formType: 2
