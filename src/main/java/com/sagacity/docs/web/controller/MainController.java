@@ -1,18 +1,24 @@
 package com.sagacity.docs.web.controller;
 
-
+import com.alibaba.fastjson.JSONArray;
+import com.jfinal.aop.Before;
 import com.jfinal.aop.Clear;
 import com.jfinal.ext.plugin.sqlinxml.SqlKit;
 import com.jfinal.ext.route.ControllerBind;
+import com.jfinal.kit.JsonKit;
+import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.activerecord.tx.Tx;
 import com.sagacity.docs.base.extend.ResponseCode;
 import com.sagacity.docs.model.doc.DocInfo;
 import com.sagacity.docs.model.doc.DocPage;
+import com.sagacity.docs.service.MindGenerator;
 import com.sagacity.docs.service.SearchEngine;
 import com.sagacity.docs.web.common.WebBaseController;
 import com.sagacity.docs.web.common.WebLoginInterceptor;
+import com.sagacity.utility.ConvertUtil;
 import com.sagacity.utility.StringTool;
 
 import java.util.List;
@@ -110,6 +116,34 @@ public class MainController extends WebBaseController {
 
         }
         render("main/docMain.html");
+    }
+
+    /**
+     * 生成思维图
+     */
+    @Clear(WebLoginInterceptor.class)
+    public void exportBook(){
+        boolean r = true;
+
+        int docId = getParaToInt("docId");
+        DocInfo doc = DocInfo.dao.findById(docId);
+        String sql = "select dp.id,dp.menu_title title,dp.order,dp.level,dp.parent_id\n" +
+                ",case when level<=2 then true else false end spread\n" +
+                "from doc_page dp\n" +
+                "where dp.doc_id=? and dp.parent_id=?\n" +
+                "order by dp.order";
+        List<Record> ms = Db.find(sql, docId, 0);
+        addSubPageTree(ms, docId);
+        String bookName = doc.getStr("title");
+        r = MindGenerator.dao.generateMindMap(docId, bookName, JsonKit.toJson(ms));
+        if(r){
+            responseData.put(ResponseCode.CODE, 1);
+            responseData.put(ResponseCode.DATA, PropKit.get("resource.url") + "mind_map/" + bookName + ".xmind");
+        }else{
+            responseData.put(ResponseCode.CODE, 0);
+            responseData.put(ResponseCode.MSG, "操作失败！");
+        }
+        renderJson(responseData);
     }
 
     @Clear(WebLoginInterceptor.class)

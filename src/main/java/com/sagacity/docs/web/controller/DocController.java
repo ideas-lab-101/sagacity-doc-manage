@@ -420,7 +420,6 @@ public class DocController extends WebBaseController {
         renderJson(responseData);
     }
 
-//    @Before(Tx.class)
 //    public void setEnd(){
 //        boolean r = false;
 //        int is_end = getParaToBoolean("is_end")? 1:0;

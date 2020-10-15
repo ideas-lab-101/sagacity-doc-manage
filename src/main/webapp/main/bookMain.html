@@ -154,6 +154,8 @@
                             <i style="font-size: 12px;" class="iconfont icon-tooltip-text"> 阅读</i></a>
                         <a class="layui-btn layui-btn-normal">
                             <i style="font-size: 12px;" class="iconfont icon-favorite"> 收藏</i></a>
+                        <a class="layui-btn layui-btn-normal" href="javascript:void(0)" onclick="book_export()">
+                            <i style="font-size: 12px;" class="iconfont icon-arrow-down-bold-circle-outline"> 导出</i></a>
                         <a class="layui-btn layui-btn-normal">
                             <i style="font-size: 12px;" class="iconfont icon-share-variant"> 分享</i></a>
                     </div>
@@ -174,7 +176,7 @@
                 <div class="layui-tab">
                     <ul class="layui-tab-title">
                         <li class="layui-this">目录</li>
-                        <li>留言</li>
+                        <li>评论</li>
                     </ul>
                     <div class="layui-tab-content">
                         <div class="layui-tab-item layui-show">
@@ -225,6 +227,24 @@
                 }
             });
         })
+
+        function book_export(){
+            var loading = layer.msg('请稍后……', {icon: 16, shade: 0.3, time:0});
+            $.ajax({
+                url: "exportBook",
+                data: {docId: docId},
+                success: function (data) {
+                    layer.close(loading);
+                    if(data.code==0){
+                        layer.msg(data.msg);
+                    }else{
+                        window.open(data.data);
+                    }
+                },
+                error: function () {
+                }
+            });
+        }
     </script>
 </body>
 </html>
