@@ -45,8 +45,10 @@
         <i class="layui-icon">&#xe642;</i></a>
     <a class="layui-btn-sm" lay-event="del">
         <i class="layui-icon">&#xe640;</i></a>
-    <a class="layui-btn-sm" lay-event="url">
-        <i class="layui-icon">&#xe64c;</i></a>
+    <a class="layui-btn-sm" lay-event="preview">
+        <i class="layui-icon">&#xe609;</i></a>
+<!--    <a class="layui-btn-sm" lay-event="url">-->
+<!--        <i class="layui-icon">&#xe64c;</i></a>-->
 </script>
 
 <script src="/asset/layui/layui.js" charset="utf-8"></script>
@@ -186,8 +188,8 @@
                     });
                     layer.close(index);
               });
-            } else if(obj.event === 'edit'){//编辑
-                var url = 'editDoc?doc_id='+data.id;
+            } else if(obj.event === 'edit') {//编辑
+                var url = 'editDoc?doc_id=' + data.id;
                 layer.open({
                     title: '编辑文档',
                     type: 2,
@@ -200,6 +202,8 @@
                         table.reload('docList');
                     }
                 });
+            } else if(obj.event == 'preview'){
+                window.open("/b?docId="+data.id, "_blank");
             } else if(obj.event == 'url'){
                 var clip = document.getElementById("clip");
                 clip.setAttribute("data-clipboard-text", "/pages/doc-info/doc-info?doc_id="+data.id)

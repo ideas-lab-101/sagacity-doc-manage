@@ -68,11 +68,13 @@ public class MainController extends WebBaseController {
     @Clear(WebLoginInterceptor.class)
     public void b(){
         int docId = getParaToInt("docId", 0);
-
+        //文档信息
         Record dc = Db.findFirst(SqlKit.sql("doc.getDocInfo"), docId);
-
+        Record au = Db.findFirst(SqlKit.sql("user.getAuthorInfo")+
+                " where u.UserID=?", dc.getStr("user_id"));
         if(dc != null){
             setAttr("doc", dc);
+            setAttr("au", au);
         }else{
 
         }
@@ -178,7 +180,6 @@ public class MainController extends WebBaseController {
     @Clear(WebLoginInterceptor.class)
     public void p(){
         int pageId = getParaToInt("pageId");
-
         DocPage dp = DocPage.dao.findById(pageId);
 
         if(dp != null){
