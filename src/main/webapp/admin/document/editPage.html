@@ -10,7 +10,13 @@
         body{
             padding: 0px; /*overflow-y: scroll;*/
         }
-        .editormd-preview li{
+        .editormd-preview ol>li{
+            display: list-item;
+            text-align: -webkit-match-parent;
+            list-style: initial;
+            list-style-type: decimal;
+        }
+        .editormd-preview ul>li{
             display: list-item;
             text-align: -webkit-match-parent;
             list-style: initial;

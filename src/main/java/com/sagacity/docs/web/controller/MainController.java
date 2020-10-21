@@ -43,6 +43,14 @@ public class MainController extends WebBaseController {
     }
 
     @Clear(WebLoginInterceptor.class)
+    public void seg(){
+        String kw = getPara("kw");
+        String result = SearchEngine.dao.seg(kw);
+        responseData.put(ResponseCode.DATA, result);
+        renderJson(responseData);
+    }
+
+    @Clear(WebLoginInterceptor.class)
     public void search(){
         boolean r = true;
         String kw = getPara("kw");
@@ -59,6 +67,7 @@ public class MainController extends WebBaseController {
         Page<Record> resultList = Db.paginate(getParaToInt("pageIndex", 1),
                 getParaToInt("pageSize", 10), sqlSelect, sqlFrom);
         renderJson(convertPageData(resultList));
+        responseData.put("seg", SearchEngine.dao.seg(kw));
         renderJson(responseData);
     }
 

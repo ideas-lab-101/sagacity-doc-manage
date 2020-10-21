@@ -15,6 +15,7 @@ import com.jfinal.plugin.ehcache.EhCachePlugin;
 import com.jfinal.template.Engine;
 import com.jfinal.wxaapp.WxaConfig;
 import com.jfinal.wxaapp.WxaConfigKit;
+import com.sagacity.docs.service.SearchEngine;
 
 /**
  * API引导式配置
@@ -104,13 +105,21 @@ public class SystemConfig extends JFinalConfig {
 		//me.add(new LoginInterceptor());
 	}
 
-	public void afterJFinalStart() {
-
-		//小程序参数
+	@Override
+	public void onStart() {
+		super.onStart();
+		//初始化小程序参数
 		WxaConfig wc = new WxaConfig();
 		wc.setAppId(PropKit.get("wxss.appid"));
 		wc.setAppSecret(PropKit.get("wxss.appsecret"));
 		WxaConfigKit.setWxaConfig(wc);
+		//初始化word分词器
+		SearchEngine.dao.init();
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
 	}
 	
 	/**

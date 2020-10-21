@@ -173,9 +173,10 @@
                     </div>
                 </form>
             </div>
+            <blockquote id="segResult" style="display: none;" class="layui-elem-quote">关键词：<label></label></blockquote>
             <div id="resultNone" style="text-align: center; padding: 10px 20px 60px; display: none;">
                 <div><span class="no-data-img"></span></div>
-                <div class="layui-text">没有输入有效关键词</div>
+                <div class="layui-text">未能找到匹配数据！</div>
             </div>
             <div id="resultContent" style="text-align: left; padding: 10px 20px 60px; display: none;">
                 <script id="infoTpl" type="text/html">
@@ -266,6 +267,8 @@
                 },
                 success: function(data) {
                     //根据搜索结果显示
+                    $("#segResult").show();
+                    $("#segResult").find("label").html(data.seg);
                     if(data.data.length == 0){
                         $("#resultNone").show();
                         $("#resultContent").hide();
