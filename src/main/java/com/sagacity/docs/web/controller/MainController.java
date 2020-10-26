@@ -61,7 +61,7 @@ public class MainController extends WebBaseController {
                 "left join doc_class dc on dc.id=di.doc_class_id\n" +
                 "left join (select count(id) page_count,sum(view_count) view_count, doc_id from doc_page group by doc_id) dp on dp.doc_id=di.id\n" +
                 "left join sys_users u on u.UserID=di.user_id\n" +
-                "where di.state=1 and di.title like '%"+kw+"%' or u.Caption like '%"+kw+"%'";;
+                "where di.state=1 and di.title like '%"+kw+"%' or u.Caption like '%"+kw+"%'";
         sqlFrom += "\n order by di.updated_at DESC";
 
         Page<Record> resultList = Db.paginate(getParaToInt("pageIndex", 1),
@@ -99,7 +99,32 @@ public class MainController extends WebBaseController {
         String sql = SqlKit.sql("user.getAuthorInfo") + " where u.UserID=?";
         Record ui = Db.findFirst(sql, userId);
         setAttr("author", ui);
+        //基于作者的统计
+        String sql1 = "select count(di.id) docCount from doc_info di\n" +
+                "where di.user_id=?";
+        Record st = new Record();
+        st.set("docCount", Db.findFirst(sql1, userId).getInt("docCount"));
+        setAttr("st", st);
         render("main/authorMain.html");
+    }
+
+    @Clear(WebLoginInterceptor.class)
+    public void authorBook(){
+        String userId = getPara("userId");
+
+        String sqlSelect = "select di.id,di.title,di.`desc`,di.cover,di.source,di.is_end,SUBSTR(di.updated_at,1,10) update_date\n" +
+                ",dc.id doc_class_id,dc.title doc_class,u.UserID,u.Caption,dp.view_count,dp.page_count";
+        String sqlFrom = "from doc_info di\n" +
+                "left join doc_class dc on dc.id=di.doc_class_id\n" +
+                "left join (select count(id) page_count,sum(view_count) view_count, doc_id from doc_page group by doc_id) dp on dp.doc_id=di.id\n" +
+                "left join sys_users u on u.UserID=di.user_id\n" +
+                "where di.state=1 and di.user_id ='"+userId+"'";
+        sqlFrom += "\n order by di.updated_at DESC";
+
+        Page<Record> resultList = Db.paginate(getParaToInt("pageIndex", 1),
+                getParaToInt("pageSize", 10), sqlSelect, sqlFrom);
+        renderJson(convertPageData(resultList));
+        renderJson(responseData);
     }
 
     /**

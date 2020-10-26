@@ -7,6 +7,7 @@
     <title>魔灯知库 - 搜索</title>
     <link href="/asset/font-icon/font_icon_sagacity.css" rel="stylesheet">
     <link rel="stylesheet" href="/asset/layui/css/layui.css">
+    <link rel="stylesheet" href="/asset/css/bookCover.css">
 
     <style>
         .layui-header {
@@ -42,7 +43,6 @@
         .b-info li {
             display: flex;
             line-height: 250%;
-            border-bottom: 1px dashed #EFEFEF;
             font-size: 16px;
         }
         .b-info-cover {
@@ -56,7 +56,7 @@
             padding-left: 20px;
         }
         .info-title {
-            padding: 5px 0px;
+            padding: 10px 0px;
             text-align: left;
             font-size: 26px;
             line-height: 30px;
@@ -67,48 +67,6 @@
             font-size: 11px;
             line-height: 20px;
             color: #8888bb;
-        }
-
-        .b-cover{
-            width: 130px;
-            height: 180px;
-            background-color: rgba(0,0,0, 0.1);
-            border-radius: 5px;
-            box-shadow: 0 15px 20px -15px rgba(0, 0, 0, 0.3), 0 3px 5px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-        .b-cover::after{
-            width: 4px;
-            content: "";
-            position: absolute;
-            left: 1px;
-            top: 0px;
-            height: 100%;
-            z-index: 10;
-            background-image: linear-gradient(
-                    to right,
-                    rgba(255,255,255, 0) 0%,
-                    rgba(255,255,255, 0.3) 50%,
-                    rgba(255,255,255, 0) 100%)
-        }
-        .b-cover::before{
-            width: 12%;
-            content: "";
-            position: absolute;
-            left: 0px;
-            top: 0px;
-            height: 100%;
-            z-index: 6;
-            background-image: linear-gradient(
-                    to right,
-                    rgba(0,0,0, 0.1) 0%,
-                    rgba(0,0,0, 0.15) 50%,
-                    rgba(0,0,0, 0) 100%)
-        }
-        .b-cover img{
-            width: 100%;
-            height: 100%;
         }
         .info-desc {
             margin: 8px 0px;
@@ -124,14 +82,15 @@
             word-break: break-all;
         }
         .info-time {
-            color: #866;
-            font-size: 13px;
+            color: #6A6A6A;
+            font-size: 11px;
         }
         .info-btn {
             position: absolute;
             bottom: 10px;
             left: 20px;
         }
+        .elem-quote{margin-bottom:10px;padding:15px;line-height:22px;border-left:5px solid #1E9FFF;border-radius:0 2px 2px 0;background-color:#f2f2f2}
     </style>
 
 </head>
@@ -173,7 +132,8 @@
                     </div>
                 </form>
             </div>
-            <blockquote id="segResult" style="display: none;" class="layui-elem-quote">关键词：<label></label></blockquote>
+            <blockquote id="segResult" style="display: none;" class="elem-quote">
+                关键词：<label></label></blockquote>
             <div id="resultNone" style="text-align: center; padding: 10px 20px 60px; display: none;">
                 <div><span class="no-data-img"></span></div>
                 <div class="layui-text">未能找到匹配数据！</div>
@@ -204,6 +164,7 @@
                                 </div>
                             </div>
                         </li>
+                        <hr class="layui-bg-gray">
                         {{#  }); }}
                     </ul>
                 </script>

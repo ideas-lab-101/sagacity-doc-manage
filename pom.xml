@@ -106,11 +106,15 @@
             <artifactId>flexmark-all</artifactId>
             <version>0.50.16</version>
         </dependency>
+        <!-- xmind open sdk-->
         <dependency>
             <groupId>com.github.eljah</groupId>
             <artifactId>xmindjbehaveplugin</artifactId>
             <version>0.8</version>
         </dependency>
+        <!-- 分词器
+            github addr：https://github.com/ysc/word/
+        -->
         <dependency>
             <groupId>org.apdplat</groupId>
             <artifactId>word</artifactId>

@@ -7,6 +7,7 @@
     <title>魔灯知库 - #(author.Caption)</title>
     <link href="/asset/font-icon/font_icon_sagacity.css" rel="stylesheet">
     <link rel="stylesheet" href="/asset/layui/css/layui.css">
+    <link rel="stylesheet" href="/asset/css/bookCover.css">
 
     <style>
         .layui-header {
@@ -28,7 +29,79 @@
             color: #2F2F2F;
             font-weight: bold;
         }
+        .author-img{
+            width:75px;height:75px;margin-top:20px;margin-right:20px;border-radius:50%
+        }
+        .a-title {
+            padding: 10px 0px;
+            text-align: left;
+            font-size: 25px;
+            line-height: 30px;
+        }
+        .a-intro {
+            margin: 3px 5px;
+        }
+        .a-intro li:not(:last-of-type){
+            border-right: 1px dashed #EFEFEF;
+            margin-right: .5rem;
+            padding-right: .5rem;
+        }
+        .a-label{
+            padding: 3px 10px;
+            font-size: 20px;
+            line-height: 25px;
+        }
 
+        .b-info li {
+            display: flex;
+            line-height: 250%;
+            font-size: 16px;
+        }
+        .b-info-cover {
+            padding: 10px 0px;
+        }
+        .b-info-mid {
+
+        }
+        .b-info-right {
+            position: relative;
+            padding-left: 20px;
+        }
+        .info-title {
+            padding: 10px 0px;
+            text-align: left;
+            font-size: 26px;
+            line-height: 30px;
+        }
+        .info-source {
+            padding: 3px 1px;
+            text-align: left;
+            font-size: 11px;
+            line-height: 20px;
+            color: #8888bb;
+        }
+        .info-desc {
+            margin: 8px 0px;
+            text-align: left;
+            color: #666;
+            font-size: 15px;
+            line-height: 20px;
+            height: 60px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            word-break: break-all;
+        }
+        .info-time {
+            color: #6A6A6A;
+            font-size: 11px;
+        }
+        .info-btn {
+            position: absolute;
+            bottom: 10px;
+            left: 20px;
+        }
     </style>
 
 </head>
@@ -58,14 +131,158 @@
             </ul>
         </div>
         <div class="layui-body" style="padding: 5px 20px;">
-
+            <div class="layui-row">
+                <div class="layui-col-md9">
+                    <div class="layui-row layui-col-space10">
+                        <div class="layui-col-md1">
+                            <img src="#(author.AvatarURL)" onerror="this.src='/asset/image/user_default.png'" class="author-img">
+                        </div>
+                        <div class="layui-col-md7">
+                            <div class="a-title">
+                                #(author.Caption)
+                            </div>
+                            <div class="a-intro layui-form-pane">
+                                <div class="layui-row layui-col-space1">
+                                    <li class="layui-col-md2 grid-intro">
+                                        <div>关注数</div>
+                                        <div class="a-label">#(st.followCount??5)</div>
+                                    </li>
+                                    <li class="layui-col-md2 grid-intro">
+                                        <div>文章数</div>
+                                        <div class="a-label">#(st.docCount??5)</div>
+                                    </li>
+                                    <li class="layui-col-md2 grid-intro">
+                                        <div>总喜欢</div>
+                                        <div class="a-label">#(st.favorCount??5)</div>
+                                    </li>
+                                    <li class="layui-col-md2 grid-intro">
+                                        <div>评分</div>
+                                        <div class="a-label">#(st.rate??5)</div>
+                                    </li>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md4" style="margin-top: 40px;">
+                            <div class="layui-form-item layui-btn layui-btn-radius layui-btn-normal">
+                                <i id="share" style="font-size: 15px;" class="iconfont icon-star1">关注</i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-row">
+                        <div class="layui-tab">
+                            <ul class="layui-tab-title">
+                                <li class="layui-this">列表</li>
+                                <li>评论</li>
+                            </ul>
+                            <div class="layui-tab-content">
+                                <div class="layui-tab-item layui-show" id="resultContent" style="text-align: left;">
+                                    <!--                列表显示区-->
+                                    <div id="resultList" class="b-info"></div>
+                                    <!--                分页按钮区-->
+                                    <div id="resultPager"></div>
+                                </div>
+                                <div class="layui-tab-item">内容2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md3" style="margin-top: 100px; height: 1000px;">
+                    其它推荐
+                </div>
+            </div>
+            <script id="infoTpl" type="text/html">
+                <ul>
+                    {{#  layui.each(d.data, function(index, item){ }}
+                    <li class="layui-row layui-col-space1">
+                        <div class="layui-col-md2 b-info-cover">
+                            <div class="b-cover">
+                                <img src="{{ item.cover }}" onerror="this.src='/asset/image/doc_cover.png'">
+                            </div>
+                        </div>
+                        <div class="layui-col-md6 b-info-mid">
+                            <div class="layui-row info-title"> {{ item.title }}</div>
+                            <div class="layui-row info-source"> <a onclick="javascript:void(0);"> 评分 </a>
+                                | <a href="c?classId={{item.doc_class_id}}" target="_blank"> {{ item.doc_class }} </a></div>
+                            <div class="layui-row info-desc"> {{ item.desc }} </div>
+                            <div class="layui-row info-time"> 更新于：{{ item.update_date??('未知')}} </div>
+                        </div>
+                        <div class="layui-col-md2 b-info-right">
+                            <div class="layui-row">
+                                <div class="layui-row"> <i style="font-size: 13px;" class="iconfont icon-format-align-justify"> {{item.page_count}} </i></div>
+                                <div class="layui-row info-btn">
+                                    <button onclick="goTo({{ item.id }})" type="button" class="layui-btn layui-btn-primary">查看</button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <hr class="layui-bg-gray">
+                    {{#  }); }}
+                </ul>
+            </script>
         </div>
     </div>
 
     <script src="/asset/layui/layui.js" charset="utf-8"></script>
     <script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
     <script>
+        var pageIndex = 1;
+        var userId = '#(author.UserID)';
 
+        var element, layer, laypage, laytpl;
+        layui.config({
+            base: '/asset/layui/extend/' //这是自定义模块的路径了
+        }).use(['element','layer','laypage','laytpl'], function(){
+            element = layui.element; //弹层
+            layer = layui.layer;
+            laypage = layui.laypage;
+            laytpl = layui.laytpl;
+
+            getAuthorBook();
+        })
+
+        function getAuthorBook(){
+            var loading = layer.msg('正在加载……', {icon: 16, shade: 0.3, time:0});
+            $.ajax({
+                url: "authorBook",
+                data: {
+                    userId: userId,
+                    pageIndex: pageIndex
+                },
+                success: function (data) {
+                    layer.close(loading);
+                    var getTpl = infoTpl.innerHTML
+                        ,view = document.getElementById('resultList');
+                    laytpl(getTpl).render(data, function(html){
+                        view.innerHTML = html;
+                    });
+                    //绘制分页器
+                    setPager(data.pageNumber, data.totalRow);
+
+                },
+                error: function () {
+                }
+            });
+        }
+
+        function goTo(id) {
+            window.open("b?docId="+id, "_blank", "");
+        }
+
+        function setPager(current, total) {
+            laypage.render({
+                elem: 'resultPager'
+                ,theme: '#1E9FFF'
+                ,limit: 10
+                ,count: total
+                ,curr: current
+                ,jump: function(obj, first){
+                    pageIndex = obj.curr;
+                    if(!first){
+                        getAuthorBook();
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>
