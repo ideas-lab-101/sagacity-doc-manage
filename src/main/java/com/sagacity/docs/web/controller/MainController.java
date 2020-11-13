@@ -14,6 +14,7 @@ import com.jfinal.plugin.activerecord.tx.Tx;
 import com.sagacity.docs.base.extend.ResponseCode;
 import com.sagacity.docs.model.doc.DocInfo;
 import com.sagacity.docs.model.doc.DocPage;
+import com.sagacity.docs.model.system.DocClass;
 import com.sagacity.docs.service.MindGenerator;
 import com.sagacity.docs.service.SearchEngine;
 import com.sagacity.docs.web.common.WebBaseController;
@@ -108,6 +109,9 @@ public class MainController extends WebBaseController {
         render("main/authorMain.html");
     }
 
+    /**
+     * 作者列表
+     */
     @Clear(WebLoginInterceptor.class)
     public void authorBook(){
         String userId = getPara("userId");
@@ -133,7 +137,36 @@ public class MainController extends WebBaseController {
     @Clear(WebLoginInterceptor.class)
     public void c(){
         int classId = getParaToInt("classId", 0);
+        setAttr("classs", DocClass.dao.findById(classId));
+        String sql = "select dcc.* \n" +
+                "from doc_class dc\n" +
+                "left join doc_class dcc on dcc.parent_id=dc.parent_id\n" +
+                "where dc.id=?";
+        setAttr("relatedList", Db.find(sql, classId));
         render("main/classMain.html");
+    }
+
+    /**
+     * 分类列表
+     */
+    @Clear(WebLoginInterceptor.class)
+    public void classBook(){
+        String classId = getPara("classId");
+
+        responseData.put("classs", DocClass.dao.findById(classId));
+        String sqlSelect = "select di.id,di.title,di.`desc`,di.cover,di.source,di.is_end,SUBSTR(di.updated_at,1,10) update_date\n" +
+                ",dc.id doc_class_id,dc.title doc_class,u.UserID,u.Caption,dp.view_count,dp.page_count";
+        String sqlFrom = "from doc_info di\n" +
+                "left join doc_class dc on dc.id=di.doc_class_id\n" +
+                "left join (select count(id) page_count,sum(view_count) view_count, doc_id from doc_page group by doc_id) dp on dp.doc_id=di.id\n" +
+                "left join sys_users u on u.UserID=di.user_id\n" +
+                "where di.state=1 and di.doc_class_id ='"+classId+"'";
+        sqlFrom += "\n order by di.updated_at DESC";
+
+        Page<Record> resultList = Db.paginate(getParaToInt("pageIndex", 1),
+                getParaToInt("pageSize", 12), sqlSelect, sqlFrom);
+        renderJson(convertPageData(resultList));
+        renderJson(responseData);
     }
 
     /**

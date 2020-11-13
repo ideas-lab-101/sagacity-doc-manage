@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="icon" href="/asset/image/cloud_docs.ico">
-    <title>魔灯知库 - 分类首页</title>
+    <title>魔灯知库 - 分类列表</title>
     <link href="/asset/font-icon/font_icon_sagacity.css" rel="stylesheet">
     <link rel="stylesheet" href="/asset/layui/css/layui.css">
 
@@ -28,7 +28,34 @@
             color: #2F2F2F;
             font-weight: bold;
         }
+        #related li:nth-of-type(odd){ background:#ffffff;}
+        #related li:nth-of-type(even){ background:#F2F2F2;}
 
+        .info-card {
+            cursor: pointer;
+        }
+        .info-title {
+            padding: 8px 0px;
+            background: #fbfbfb;
+            text-align: left;
+            font-size: 16px;
+            line-height: 18px;
+            height: 30px;
+        }
+        .info-desc {
+            background: #fbfbfb;
+            margin: 2px 0px;
+            text-align: left;
+            color: #666;
+            font-size: 13px;
+            line-height: 18px;
+            height: 46px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            word-break: break-all;
+        }
     </style>
 
 </head>
@@ -57,8 +84,58 @@
                 </li>
             </ul>
         </div>
-        <div class="layui-body" style="padding: 5px 20px;">
+        <div class="layui-body" style="padding: 5px 20px; background-color: #F2F2F2;">
+            <div class="layui-row layui-col-space20">
+                <div class="layui-col-md2">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            <i style="font-size: 16px;" class="iconfont icon-format-list-bulleted">相关分类</i>
+                        </div>
+                        <div class="layui-card-body">
+                            <ul id="related">
+                                #for(classs : relatedList)
+                                <li class="layui-nav-item">
+                                    <a href="javascript:;" onclick="loadClasss(this)" data-id="#(classs.id)">
+                                        <i style="font-size: 15px; line-height: 30px;" class="iconfont icon-launch">
+                                            #(classs.title)
+                                        </i>
+                                    </a>
+                                </li>
+                                #end
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md10">
+                    <div class="layui-card">
+                        <div class="layui-card-header" id="classInfo">
 
+                        </div>
+                        <div class="layui-card-body">
+                            <div class="layui-row layui-col-space15" id="classList">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="resultPager"></div>
+                    <script id="infoTpl" type="text/html">
+                        <i style="font-size: 18px;" class="iconfont icon-viewmodule">{{ d.title }}</i>
+                    </script>
+                    <script id="listTpl" type="text/html">
+                        {{#  layui.each(d, function(index, item){ }}
+                            <div class="layui-col-md4" onclick="goTo({{ item.id }})">
+                                <div class="layui-card info-card">
+                                    <div class="layui-card-header info-title">
+                                        【{{item.title}}】
+                                    </div>
+                                    <div class="layui-card-body info-desc">
+                                        {{item.desc}}
+                                    </div>
+                                </div>
+                            </div>
+                        {{#  }); }}
+                    </script>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -66,6 +143,74 @@
     <script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
     <script>
 
+        var pageIndex = 1;
+        var classsId = '#(classs.id)';
+
+        var element, layer, laypage, laytpl;
+        layui.config({
+            base: '/asset/layui/extend/' //这是自定义模块的路径了
+        }).use(['element','layer','laypage','laytpl'], function(){
+            element = layui.element; //弹层
+            layer = layui.layer;
+            laypage = layui.laypage;
+            laytpl = layui.laytpl;
+
+            getClassBook();
+        })
+
+        function getClassBook(){
+            var loading = layer.msg('正在加载……', {icon: 16, shade: 0.3, time:0});
+            $.ajax({
+                url: "classBook",
+                data: {
+                    classId: classsId,
+                    pageIndex: pageIndex
+                },
+                success: function (data) {
+                    layer.close(loading);
+                    var getTpl = infoTpl.innerHTML
+                        ,view = document.getElementById('classInfo');
+                    laytpl(getTpl).render(data.classs, function(html){
+                        view.innerHTML = html;
+                    });
+                    var getList = listTpl.innerHTML
+                        ,view = document.getElementById('classList');
+                    laytpl(getList).render(data.data, function(html){
+                        view.innerHTML = html;
+                    });
+                    //绘制分页器
+                    setPager(data.pageNumber, data.totalRow);
+                },
+                error: function () {
+                }
+            });
+        }
+
+        function loadClasss(obj) {
+            pageIndex = 1;
+            classsId = $(obj).attr("data-id");
+            getClassBook();
+        }
+
+        function setPager(current, total) {
+            laypage.render({
+                elem: 'resultPager'
+                ,theme: '#1E9FFF'
+                ,limit: 12
+                ,count: total
+                ,curr: current
+                ,jump: function(obj, first){
+                    pageIndex = obj.curr;
+                    if(!first){
+                        getClassBook();
+                    }
+                }
+            });
+        }
+
+        function goTo(id) {
+            window.open("b?docId="+id, "_blank", "");
+        }
     </script>
 </body>
 </html>

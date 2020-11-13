@@ -141,7 +141,7 @@
             <div id="resultContent" style="text-align: left; padding: 10px 20px 60px; display: none;">
                 <script id="infoTpl" type="text/html">
                     <ul>
-                        {{#  layui.each(d.data, function(index, item){ }}
+                        {{#  layui.each(d, function(index, item){ }}
                         <li class="layui-row layui-col-space10">
                             <div class="layui-col-md2 b-info-cover">
                                 <div class="b-cover">
@@ -244,7 +244,7 @@
                         // $("#resultList").html(arr);
                         var getTpl = infoTpl.innerHTML
                             ,view = document.getElementById('resultList');
-                        laytpl(getTpl).render(data, function(html){
+                        laytpl(getTpl).render(data.data, function(html){
                             view.innerHTML = html;
                         });
                         //绘制分页器

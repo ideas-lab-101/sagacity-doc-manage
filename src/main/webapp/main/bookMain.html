@@ -131,9 +131,9 @@
                     </div>
                 </div>
                 <div class="layui-col-md3">
-                    <a class="auth-info" href="a?userId=#(au.UserID)" target="_blank">
-                        <img src="#(au.AvatarURL)" onerror="this.src='/asset/image/user_default.png'" class="layui-nav-img">
-                        #(au.Caption)
+                    <a class="auth-info" href="a?userId=#(au.UserID??'')" target="_blank">
+                        <img src="#(au.AvatarURL??)" onerror="this.src='/asset/image/user_default.png'" class="layui-nav-img">
+                        #(au.Caption??('未知作者'))
                     </a>
                     <div class="ex-btn">
                         <i style="font-size: 12px;" class="iconfont icon-phone"> 手机阅读</i>

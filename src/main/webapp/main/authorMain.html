@@ -164,7 +164,7 @@
                         </div>
                         <div class="layui-col-md4" style="margin-top: 40px;">
                             <div class="layui-form-item layui-btn layui-btn-radius layui-btn-normal">
-                                <i id="share" style="font-size: 15px;" class="iconfont icon-star1">关注</i>
+                                <i id="share" style="font-size: 15px;" class="iconfont icon-unknown3">关注</i>
                             </div>
                         </div>
                     </div>
@@ -192,7 +192,7 @@
             </div>
             <script id="infoTpl" type="text/html">
                 <ul>
-                    {{#  layui.each(d.data, function(index, item){ }}
+                    {{#  layui.each(d, function(index, item){ }}
                     <li class="layui-row layui-col-space1">
                         <div class="layui-col-md2 b-info-cover">
                             <div class="b-cover">
@@ -252,12 +252,11 @@
                     layer.close(loading);
                     var getTpl = infoTpl.innerHTML
                         ,view = document.getElementById('resultList');
-                    laytpl(getTpl).render(data, function(html){
+                    laytpl(getTpl).render(data.data, function(html){
                         view.innerHTML = html;
                     });
                     //绘制分页器
                     setPager(data.pageNumber, data.totalRow);
-
                 },
                 error: function () {
                 }
