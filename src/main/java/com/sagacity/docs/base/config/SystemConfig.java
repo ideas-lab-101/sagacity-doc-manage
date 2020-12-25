@@ -21,7 +21,8 @@ import com.sagacity.docs.service.SearchEngine;
  * API引导式配置
  */
 public class SystemConfig extends JFinalConfig {
-	
+
+	boolean dev = true;
 	/**
 	 * 配置常量
 	 */
@@ -31,7 +32,7 @@ public class SystemConfig extends JFinalConfig {
 //		me.setDevMode(getPropertyToBoolean("devMode", false));
 
         PropKit.use("application.properties");
-        boolean dev = PropKit.getBoolean("devMode");
+        dev = PropKit.getBoolean("devMode");
         PropKit.useless("application.properties");
         PropKit.use(dev ? "application-dev.properties" : "application-pro.properties");
 		me.setDevMode(dev);
@@ -82,7 +83,7 @@ public class SystemConfig extends JFinalConfig {
 		autoTableBindPlugin.setShowSql(true);//显示sql查询语句
 		me.add(autoTableBindPlugin);
 		
-		//配置EHcache缓存插件
+		//配置Ehcache缓存插件
 		EhCachePlugin cachePlugin=new EhCachePlugin(SystemConfig.class.getResource("ehcache.xml"));
 		me.add(cachePlugin);
 		
@@ -114,7 +115,9 @@ public class SystemConfig extends JFinalConfig {
 		wc.setAppSecret(PropKit.get("wxss.appsecret"));
 		WxaConfigKit.setWxaConfig(wc);
 		//初始化word分词器
-		SearchEngine.dao.init();
+		if(!dev){
+			SearchEngine.dao.init();
+		}
 	}
 
 	@Override

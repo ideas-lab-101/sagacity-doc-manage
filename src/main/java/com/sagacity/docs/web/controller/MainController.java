@@ -270,4 +270,22 @@ public class MainController extends WebBaseController {
     public void v(){
 
     }
+
+    @Clear(WebLoginInterceptor.class)
+    public void soul(){
+        render("main/soul.html");
+    }
+
+    /**
+     * 毒鸡汤
+     */
+    @Clear(WebLoginInterceptor.class)
+    public void getSoul(){
+        String sql = "SELECT * from soul \n" +
+                "ORDER BY RAND() LIMIT 1\n";
+        Record s = Db.findFirst(sql);
+        Db.update("update soul set hits=hits+1 where id=?", s.getInt("id"));
+        responseData.put(ResponseCode.DATA, s);
+        renderJson(responseData);
+    }
 }

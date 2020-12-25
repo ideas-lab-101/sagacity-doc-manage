@@ -182,7 +182,7 @@
                     // tree.setChecked('id', Number('10167'));
                     if(Number(pageId)>0){ //打开默认page
                         var node = $(".layui-tree .layui-tree-set[data-id='"+pageId+"']");
-                        node.find("span.layui-tree-txt").css('color','#ff2f2f');
+                        node.find("span.layui-tree-txt").eq(0).css('color','#ff2f2f');
                         // console.log(node);
                         $('#page').attr("src", 'p?pageId='+pageId) ;
                     }
