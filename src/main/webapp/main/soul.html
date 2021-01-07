@@ -70,21 +70,30 @@
                     <div class="layui-form-item">
                         <div class="layui-inline">
                             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="*">再来一WAN</button>
+                            <a class="layui-btn layui-btn-primary" onclick="copy()">复制到剪贴板</a>
                         </div>
                     </div>
                 </form>
             </div>
-
         </div>
+        <button id="clip" style="display: none;" data-clipboard-text=""></button>
     </div>
 
     <script src="/asset/layui/layui.js" charset="utf-8"></script>
     <script src="/asset/jquery/jquery-2.1.4.min.js"></script>
+    <script src="/asset/js/clipboard.min.js"></script>
 
     <script>
+        var soulText = "";
 
         window.onload=function(){
             getSoul();
+
+            var clipboard = new ClipboardJS('#clip');
+            clipboard.on('success', function(e) {
+                layer.msg('内容已复制到剪贴板');
+                e.clearSelection();
+            });
         }
 
         var element, layer, form;
@@ -102,6 +111,11 @@
 
         })
 
+        function copy(){
+            var clip = document.getElementById("clip");
+            clip.setAttribute("data-clipboard-text", soulText);
+            clip.click();
+        }
 
         function getSoul() {
             $.ajax({
@@ -112,7 +126,8 @@
                 },
                 success: function(data) {
                     console.log(data)
-                    $("#soulResult").find("label").html(data.data.title);
+                    soulText = data.data.title;
+                    $("#soulResult").find("label").html(soulText);
                 }
             });
         }
