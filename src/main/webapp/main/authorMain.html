@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="icon" href="/asset/image/cloud_docs.ico">
-    <title>魔灯知库 - #(author.Caption)</title>
+    <title>魔灯知库 - #(author.nick_name)</title>
     <link href="/asset/font-icon/font_icon_sagacity.css" rel="stylesheet">
     <link rel="stylesheet" href="/asset/layui/css/layui.css">
     <link rel="stylesheet" href="/asset/css/bookCover.css">
@@ -135,11 +135,11 @@
                 <div class="layui-col-md9">
                     <div class="layui-row layui-col-space10">
                         <div class="layui-col-md1">
-                            <img src="#(author.AvatarURL)" onerror="this.src='/asset/image/user_default.png'" class="author-img">
+                            <img src="#(author.avatar_url)" onerror="this.src='/asset/image/user_default.png'" class="author-img">
                         </div>
                         <div class="layui-col-md7">
                             <div class="a-title">
-                                #(author.Caption)
+                                #(author.nick_name)
                             </div>
                             <div class="a-intro layui-form-pane">
                                 <div class="layui-row layui-col-space1">
@@ -226,7 +226,7 @@
     <script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
     <script>
         var pageIndex = 1;
-        var userId = '#(author.UserID)';
+        var userId = '#(author.user_id)';
 
         var element, layer, laypage, laytpl;
         layui.config({
@@ -248,15 +248,15 @@
                     userId: userId,
                     pageIndex: pageIndex
                 },
-                success: function (data) {
+                success: function (resp) {
                     layer.close(loading);
                     var getTpl = infoTpl.innerHTML
                         ,view = document.getElementById('resultList');
-                    laytpl(getTpl).render(data.data, function(html){
+                    laytpl(getTpl).render(resp.data.list, function(html){
                         view.innerHTML = html;
                     });
                     //绘制分页器
-                    setPager(data.pageNumber, data.totalRow);
+                    setPager(resp.data.pageNumber, resp.data.totalRow);
                 },
                 error: function () {
                 }

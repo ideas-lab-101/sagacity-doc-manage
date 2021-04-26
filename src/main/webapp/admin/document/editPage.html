@@ -76,7 +76,7 @@
             flowChart : true,
             imageUpload : true,
             imageFormats : [ "jpg", "jpeg", "gif", "png", "bmp", "webp" ],
-            imageUploadURL : "uploadImg?doc_id=#(page.doc_id)",
+            imageUploadURL : "uploadImg?docId=#(page.doc_id)",
             toolbarIcons : function() {
                 // Or return editormd.toolbarModes[name]; // full, simple, mini
                 // Using "||" set icons align right.
@@ -109,12 +109,12 @@
                         type: "POST",
                         dataType: "json",
                         data: {
-                            page_id: '#(page.id)',
+                            pageId: '#(page.id)',
                             content: content
                         },
-                        success: function(data) {
-                            if(data.code == 1){
-                                layer.msg(data.msg);
+                        success: function(resp) {
+                            if(resp.code == 1){
+                                layer.msg(resp.msg);
                             }
                         }
                     });
@@ -138,7 +138,7 @@
                         ,
                         btn:['确认', '取消'],
                         yes: function (index,layero) {
-                            var video_url = '<video src="'+$("#video_url").val()+'" controls="controls">'+'</video>';
+                            var video_url = '<video width=\"100%\" src="'+$("#video_url").val()+'" controls="controls">'+'</video>';
                             if(video_url == ''){
                                 layer.msg('请输入有效的视频URL');
                             }else{
@@ -164,7 +164,7 @@
                         , area: ['400px', '380px']
                         , shade: 0
                         , maxmin: false
-                        , content: 'musicSelect?page_id=#(page.id)'
+                        , content: 'musicSelect?pageId=#(page.id)'
                         , btn: ['确定', '关闭'] //只是为了演示
                         , yes: function (index, layero) {
                             var iframeWin = window[layero.find('iframe')[0]['name']];

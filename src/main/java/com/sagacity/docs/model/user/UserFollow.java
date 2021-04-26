@@ -1,4 +1,4 @@
-package com.sagacity.docs.model.weixin;
+package com.sagacity.docs.model.user;
 
 import com.jfinal.ext.plugin.tablebind.TableBind;
 import com.jfinal.plugin.activerecord.Model;

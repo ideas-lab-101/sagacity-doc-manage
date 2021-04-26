@@ -94,12 +94,10 @@
                         <div class="layui-card-body">
                             <ul id="related">
                                 #for(classs : relatedList)
-                                <li class="layui-nav-item">
-                                    <a href="javascript:;" onclick="loadClasss(this)" data-id="#(classs.id)">
-                                        <i style="font-size: 15px; line-height: 30px;" class="iconfont icon-launch">
-                                            #(classs.title)
-                                        </i>
-                                    </a>
+                                <li style="cursor:pointer;" class="layui-nav-item" onclick="loadClasss(this)" data-id="#(classs.id)">
+                                    <i style="font-size: 15px; line-height: 30px;" class="iconfont icon-launch">
+                                        #(classs.title)
+                                    </i>
                                 </li>
                                 #end
                             </ul>
@@ -166,20 +164,20 @@
                     classId: classsId,
                     pageIndex: pageIndex
                 },
-                success: function (data) {
+                success: function (resp) {
                     layer.close(loading);
                     var getTpl = infoTpl.innerHTML
                         ,view = document.getElementById('classInfo');
-                    laytpl(getTpl).render(data.classs, function(html){
+                    laytpl(getTpl).render(resp.data.classs, function(html){
                         view.innerHTML = html;
                     });
                     var getList = listTpl.innerHTML
                         ,view = document.getElementById('classList');
-                    laytpl(getList).render(data.data, function(html){
+                    laytpl(getList).render(resp.data.page.list, function(html){
                         view.innerHTML = html;
                     });
                     //绘制分页器
-                    setPager(data.pageNumber, data.totalRow);
+                    setPager(resp.data.page.pageNumber, resp.data.page.totalRow);
                 },
                 error: function () {
                 }
@@ -189,6 +187,9 @@
         function loadClasss(obj) {
             pageIndex = 1;
             classsId = $(obj).attr("data-id");
+            //改变选中的样式
+            $(obj).siblings().find('i').css("color", "#2f2f2f");
+            $(obj).find('i').css("color", "#ff2f2f");
             getClassBook();
         }
 

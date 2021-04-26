@@ -6,6 +6,7 @@ import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.*;
 import com.jfinal.plugin.activerecord.tx.Tx;
 import com.jfinal.upload.UploadFile;
+import com.sagacity.docs.model.UserDao;
 import com.sagacity.docs.model.system.DocClass;
 import com.sagacity.docs.model.system.MainInfo;
 import com.sagacity.docs.model.system.Music;
@@ -16,13 +17,34 @@ import com.sagacity.docs.service.Qiniu;
 import com.sagacity.utility.ConvertUtil;
 import com.sagacity.utility.DateUtils;
 import com.sagacity.utility.StringTool;
-import net.sf.json.JSONObject;
 
 import java.io.File;
 import java.util.List;
 
 @ControllerBind(controllerKey = "/admin/system", viewPath = "/admin/system")
 public class SystemController extends WebBaseController{
+
+//    @Clear(WebLoginInterceptor.class)
+//    @Before(Tx.class)
+//    public void mergerUser(){
+//        boolean r = false;
+//        String sql = "select  wxa.*\n" +
+//                "from wxapp_user wxa ";
+//
+//        for (Record wxa : Db.find(sql)){
+//            String uid = UUID.randomUUID().toString();
+//            r = new UserInfo().set("user_id", uid).set("_OpenID",wxa.getStr("open_id")).set("role_id", RoleType.USER)
+//                    .set("account", PinyinUtil.getFirstLettersLo(wxa.getStr("nick_name")))
+//                    .set("password", StringTool.generateMixString(6)).set("caption", wxa.getStr("nick_name"))
+//                    .set("level", wxa.getInt("level_id")).set("created_at", wxa.get("created_at"))
+//                    .set("creator_id", ConstantValue.DEFAULT_ADMINID).set("state", 1).save();
+//            //附表
+//            r = new UserProfile().set("user_id", uid).set("mobile_phone", wxa.get("mobile_phone"))
+//                    .set("gender", wxa.get("gender")).set("nick_name", wxa.get("nick_name"))
+//                    .set("avatar_url", wxa.get("avatar_url")).save();
+//        }
+//        renderJson(ResponseCode.RESULT, r);
+//    }
 
     @Override
     public void index(){
@@ -41,7 +63,9 @@ public class SystemController extends WebBaseController{
                 "order by dc.order DESC";
         List<Record> ms = Db.find(sql, 0);
         addSubMenu(ms, treeLevel);
-        renderJson(ResponseCode.DATA, ms);
+        data.put(ResponseCode.LIST, ms);
+        rest.success().setData(data);
+        renderJson(rest);
     }
 
     private void addSubMenu(List<Record> ms, int tl){
@@ -63,8 +87,8 @@ public class SystemController extends WebBaseController{
     }
 
     public void getClassInfo(){
-        int classID = getParaToInt("id");
-        renderJson(ResponseCode.DATA, DocClass.dao.findById(classID));
+        int classId = getParaToInt("id");
+        renderJson(ResponseCode.DATA, DocClass.dao.findById(classId));
     }
 
     @Before(Tx.class)
@@ -80,12 +104,11 @@ public class SystemController extends WebBaseController{
             r = Db.update("doc_class", form);
         }
         if(r){
-            responseData.put(ResponseCode.MSG, "目录操作成功！");
+            rest.success("目录操作成功！");
         }else{
-            responseData.put(ResponseCode.MSG, "目录操作失败！");
+            rest.error("目录操作失败！");
         }
-        responseData.put(ResponseCode.CODE,r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
@@ -93,19 +116,18 @@ public class SystemController extends WebBaseController{
         boolean r = false;
         int id = getParaToInt("id");
         if(Db.find("select * from doc_info where doc_class_id=?",id).size()>0){
-            responseData.put(ResponseCode.MSG, "目录包含文档数据，不允许删除！");
+            rest.error("目录包含文档数据，不允许删除！");
         }else if(Db.find("select * from doc_class where parent_id=?",id).size()>0){
-            responseData.put(ResponseCode.MSG, "目录包含下级目录，不允许删除！");
+            rest.error("目录包含下级目录，不允许删除！");
         }else {
             r = DocClass.dao.deleteById(id);
             if(r){
-                responseData.put(ResponseCode.MSG, "目录删除成功！");
+                rest.success("目录删除成功！");
             }else{
-                responseData.put(ResponseCode.MSG, "目录删除失败！");
+                rest.error("目录删除失败！");
             }
         }
-        responseData.put(ResponseCode.CODE,r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     /**
@@ -118,9 +140,9 @@ public class SystemController extends WebBaseController{
                 "from main m \n" +
                 "left join main_type mt on mt.id=m.type_id\n" +
                 "order by m.type_id\n";
-        responseData.put(ResponseCode.CODE, 0);
-        responseData.put(ResponseCode.DATA, Db.find(sql));
-        renderJson(responseData);
+        data.put(ResponseCode.LIST, Db.find(sql));
+        rest.success().setData(data);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
@@ -130,26 +152,24 @@ public class SystemController extends WebBaseController{
                 .set("updated_at", DateUtils.nowDateTime()).remove("main_type").remove("create_date");
         boolean r = Db.update("main", data);
         if(r){
-            responseData.put(ResponseCode.MSG, "更新成功！");
+            rest.success("更新成功！");
         }else{
-            responseData.put(ResponseCode.MSG, "更新失败！");
+            rest.error("更新失败！");
         }
-        responseData.put(ResponseCode.CODE,r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
     public void setMainState(){
         boolean r = false;
         int state = getParaToBoolean("state")? 1:0;
-        r = Db.update("update main set state=? where id=?", state, getPara("main_id"))>0? true:false;
+        r = Db.update("update main set state=? where id=?", state, getPara("mainId"))>0? true:false;
         if(r){
-            responseData.put(ResponseCode.MSG, "设置成功！");
+            rest.success("设置成功！");
         }else{
-            responseData.put(ResponseCode.MSG, "设置失败！");
+            rest.error("设置失败！");
         }
-        responseData.put(ResponseCode.CODE, r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
@@ -170,7 +190,7 @@ public class SystemController extends WebBaseController{
             //向7牛上传
             filePath = Qiniu.dao.uploadFile(nFile, upToken, "main/cover/");
             if(filePath != ""){
-                r = MainInfo.dao.findById(getPara("main_id")).set("cover", qiniu_url+filePath).update();
+                r = MainInfo.dao.findById(getPara("mainId")).set("cover", qiniu_url+filePath).update();
             }else{
                 r = false;
             }
@@ -179,13 +199,12 @@ public class SystemController extends WebBaseController{
         }
         nFile.delete();
         if (r) {
-            responseData.put("url", qiniu_url+filePath);
-            responseData.put(ResponseCode.MSG, "cover设置成功！");
+            data.put("url", qiniu_url+filePath);
+            rest.success("cover设置成功！").setData(data);
         }else{
-            responseData.put(ResponseCode.MSG, "cover设置失败！");
+            rest.error("cover设置失败！");
         }
-        responseData.put(ResponseCode.CODE, r?1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
 
@@ -194,38 +213,39 @@ public class SystemController extends WebBaseController{
      */
     public void getTagList(){
         String sql = "select tag.id,tag.title,tag.desc,tag.css,tag.is_hot,tag.state from video_class tag\n" +
-                "where 1=1";
-        responseData.put(ResponseCode.CODE, 0);
-        responseData.put(ResponseCode.DATA, Db.find(sql));
-        renderJson(responseData);
+                "where 1=1\n" +
+                "order by tag.created_at DESC";
+        data.put(ResponseCode.LIST, Db.find(sql));
+        rest.success().setData(data);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
     public void setTagState(){
         boolean r = false;
         int state = getParaToBoolean("state")? 1:0;
-        r = Db.update("update video_class set state=? where id=?", state, getPara("tag_id"))>0? true:false;
+        int tagId = getParaToInt("tagId");
+        r = Db.update("update video_class set state=? where id=?", state, tagId)>0? true:false;
         if(r){
-            responseData.put(ResponseCode.MSG, "设置成功！");
+            rest.success("设置成功！");
         }else{
-            responseData.put(ResponseCode.MSG, "设置失败！");
+            rest.error("设置失败！");
         }
-        responseData.put(ResponseCode.CODE, r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
     public void setTagHot(){
         boolean r = false;
         int is_hot = getParaToBoolean("is_hot")? 1:0;
-        r = Db.update("update video_class set is_hot=? where id=?", is_hot, getPara("tag_id"))>0? true:false;
+        int tagId = getParaToInt("tagId");
+        r = Db.update("update video_class set is_hot=? where id=?", is_hot, tagId)>0? true:false;
         if(r){
-            responseData.put(ResponseCode.MSG, "设置成功！");
+            rest.success("设置成功！");
         }else{
-            responseData.put(ResponseCode.MSG, "设置失败！");
+            rest.error("设置失败！");
         }
-        responseData.put(ResponseCode.CODE, r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
@@ -237,12 +257,11 @@ public class SystemController extends WebBaseController{
         }
         boolean r = Db.update("video_class", data);
         if(r){
-            responseData.put(ResponseCode.MSG, "更新成功！");
+            rest.success("更新成功！");
         }else{
-            responseData.put(ResponseCode.MSG, "更新失败！");
+            rest.error("更新失败！");
         }
-        responseData.put(ResponseCode.CODE,r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
@@ -253,30 +272,28 @@ public class SystemController extends WebBaseController{
                 .set("order", 1).set("created_at", DateUtils.nowDateTime())
                 .set("is_hot", 0).set("state", 1).save();
         if(r){
-            responseData.put(ResponseCode.MSG, "新增成功！");
+            rest.success("新增成功！");
         }else{
-            responseData.put(ResponseCode.MSG, "新增失败！");
+            rest.error("新增失败！");
         }
-        responseData.put(ResponseCode.CODE,r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
     public void delTag(){
         boolean r = false;
-        int id = getParaToInt("tag_id");
-        if(Db.find("select * from video_info where video_class_id=?",id).size()>0){
-            responseData.put(ResponseCode.MSG, "分类包含视频数据，不允许删除！");
+        int tagId = getParaToInt("tagId");
+        if(Db.find("select * from video_info where video_class_id=?",tagId).size()>0){
+            rest.error("分类包含视频数据，不允许删除！");
         }else {
-            r = VideoClass.dao.deleteById(id);
+            r = VideoClass.dao.deleteById(tagId);
             if(r){
-                responseData.put(ResponseCode.MSG, "分类删除成功！");
+                rest.success("分类删除成功！");
             }else{
-                responseData.put(ResponseCode.MSG, "分类删除失败！");
+                rest.error("分类删除失败！");
             }
         }
-        responseData.put(ResponseCode.CODE,r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     /**
@@ -284,9 +301,10 @@ public class SystemController extends WebBaseController{
      */
 
     public void getMusicList(){
-        String sql_select = "select id,title,cover_url,resource_url,state,created_at,u.Caption\n";
+        String sql_select = "select m.id,m.title,m.cover_url,m.resource_url,m.state,m.created_at,up.nick_name\n";
         String sql_from = "from music m\n" +
-                "left join sys_users u on u.UserID=m.user_id\n" +
+                "left join sys_users u on u.user_id=m.user_id\n" +
+                "left join user_profile up on up.user_id=u.user_id\n" +
                 "where 1=1";
 
         if (StringTool.notNull(getPara("state")) && !StringTool.isBlank(getPara("state"))){
@@ -294,26 +312,27 @@ public class SystemController extends WebBaseController{
         }
         sql_from += " order by created_at DESC";
         if (StringTool.notNull(getPara("pageIndex")) && !StringTool.isBlank(getPara("pageIndex"))){
-            Page<Record> noticeList = Db.paginate(getParaToInt("pageIndex", 1),
+            Page<Record> dataList = Db.paginate(getParaToInt("pageIndex", 1),
                     getParaToInt("pageSize", 10), sql_select, sql_from);
-            renderJson(convertPageData(noticeList));
+            rest.success().setData(dataList);
         }else {
-            renderJson(ResponseCode.LIST, Db.find(sql_select + "\n" + sql_from));
+            data.put(ResponseCode.LIST, Db.find(sql_select + "\n" + sql_from));
+            rest.success().setData(data);
         }
+        renderJson(rest);
     }
 
     @Before(Tx.class)
     public void setMusicState(){
         boolean r = false;
         int state = getParaToBoolean("state")? 1:0;
-        r = Db.update("update music set state=? where id=?", state, getPara("music_id"))>0? true:false;
+        r = Db.update("update music set state=? where id=?", state, getPara("musicId"))>0? true:false;
         if(r){
-            responseData.put(ResponseCode.MSG, "设置成功！");
+            rest.success("设置成功！");
         }else{
-            responseData.put(ResponseCode.MSG, "设置失败！");
+            rest.error("设置失败！");
         }
-        responseData.put(ResponseCode.CODE, r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
@@ -323,54 +342,51 @@ public class SystemController extends WebBaseController{
         data.remove("Caption");
         boolean r = Db.update("music", data);
         if(r){
-            responseData.put(ResponseCode.MSG, "更新成功！");
+            rest.success("更新成功！");
         }else{
-            responseData.put(ResponseCode.MSG, "更新失败！");
+            rest.error("更新失败！");
         }
-        responseData.put(ResponseCode.CODE,r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
     public void addMusic(){
         boolean r = false;
-        JSONObject jo = getCurrentUser();
+        UserDao userInfo = getCurrentUser();
 
         r = new Music().set("title", getPara("name")).set("cover_url", "/assets/images/music_cover.png")
                 .set("created_at", DateUtils.nowDateTime()).set("state", 0)
-                .set("user_id", jo.get("UserID")).save();
+                .set("user_id", userInfo.getUser_id()).save();
         if(r){
-            responseData.put(ResponseCode.MSG, "新增成功！");
+            rest.success("新增成功！");
         }else{
-            responseData.put(ResponseCode.MSG, "新增失败！");
+            rest.error("新增失败！");
         }
-        responseData.put(ResponseCode.CODE,r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
     public void delMusic(){
         boolean r = false;
-        JSONObject jo = getCurrentUser();
+        UserDao userInfo = getCurrentUser();
 
-        Music m =  Music.dao.findById(getParaToInt("music_id"));
-        if(m.getStr("user_id").equals(jo.getString("UserID"))){
+        Music m =  Music.dao.findById(getParaToInt("musicId"));
+        if(!m.getStr("user_id").equals(userInfo.getUser_id())){
+            rest.error("非创建人不能删除！");
+        }else{
             r = m.delete();
             if(r){
-                responseData.put(ResponseCode.MSG, "删除成功！");
+                rest.success("删除成功！");
             }else{
-                responseData.put(ResponseCode.MSG, "删除失败！");
+                rest.error("删除失败！");
             }
-        }else{
-            responseData.put(ResponseCode.MSG, "非创建人不能删除！");
         }
-        responseData.put(ResponseCode.CODE,r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
     public void uploadMusicFile(){
-        JSONObject jo = getCurrentUser();
+        UserDao userInfo = getCurrentUser();
 
         String filePath = "";
         String upToken = Qiniu.dao.getUploadToken(); //7牛上传token
@@ -391,7 +407,7 @@ public class SystemController extends WebBaseController{
                 //取文件名为默认音乐名
                 r = new Music().set("title", nFile.getName()).set("cover_url", "")
                         .set("created_at", DateUtils.nowDateTime()).set("state", 0)
-                        .set("user_id", jo.get("UserID")).set("resource_url", qiniu_url+filePath).save();
+                        .set("user_id", userInfo.getUser_id()).set("resource_url", qiniu_url+filePath).save();
             }else{
                 r = false;
             }
@@ -400,18 +416,17 @@ public class SystemController extends WebBaseController{
         }
         nFile.delete();
         if (r) {
-            responseData.put("url", qiniu_url+filePath);
-            responseData.put(ResponseCode.MSG, "文件上传成功！");
+            data.put("url", qiniu_url+filePath);
+            rest.success("文件上传成功！").setData(data);
         }else{
-            responseData.put(ResponseCode.MSG, "文件上传失败！");
+            rest.error("文件上传失败！");
         }
-        responseData.put(ResponseCode.CODE, r?1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     public void playMusic(){
-        int music_id = getParaToInt("music_id");
-        setAttr("audio", Music.dao.findById(music_id));
+        int musicId = getParaToInt("musicId");
+        setAttr("audio", Music.dao.findById(musicId));
         render("audioPlayer.html");
     }
 

@@ -1,4 +1,4 @@
-package com.sagacity.docs.wxss.controller.v1;
+package com.sagacity.docs.wxapp.controller.v1;
 
 import com.jfinal.aop.Before;
 import com.jfinal.ext.route.ControllerBind;
@@ -14,9 +14,10 @@ import com.jfinal.wxaapp.api.WxaOrder;
 import com.jfinal.wxaapp.api.WxaPayApi;
 import com.sagacity.docs.base.extend.OrderState;
 import com.sagacity.docs.base.extend.ResponseCode;
+import com.sagacity.docs.model.UserDao;
 import com.sagacity.docs.model.order.OrderInfo;
 import com.sagacity.docs.model.order.PayInfo;
-import com.sagacity.docs.wxss.common.WXSSBaseController;
+import com.sagacity.docs.wxapp.common.WXSSBaseController;
 import com.sagacity.utility.DateUtils;
 import com.sagacity.utility.IPUtil;
 
@@ -43,21 +44,24 @@ public class PayController extends WXSSBaseController{
      */
     public void getPayItem(){
 
-        renderJson(ResponseCode.LIST, Db.find("select * from pay_item where state=1"));
+        data.put(ResponseCode.LIST, Db.find("select * from pay_item where state=1"));
+        rest.success().setData(data);
+
+        renderJson(rest);
     }
 
     @Before(Tx.class)
     public void genOrder(){
         boolean r = false;
-        String msg = "";
+        StringBuilder msg = new StringBuilder();
 
-        String token = getPara("token");
-        int data_id = getParaToInt("id");
+        UserDao userInfo = getCurrentUser(getPara("token"));
+        int dataId = getParaToInt("id");
         String type = getPara("type");
         double cost = getParaToLong("cost").doubleValue();
 
         //
-        PayInfo pi = new PayInfo().set("data_id", data_id).set("data_type", type).set("open_id", token)
+        PayInfo pi = new PayInfo().set("data_id", dataId).set("data_type", type).set("user_id", userInfo.getUser_id())
                 .set("cost", cost).set("created_at", DateUtils.nowDateTime()).set("state", 1);
         r = pi.save();
 
@@ -65,33 +69,31 @@ public class PayController extends WXSSBaseController{
         int orderState = OrderState.PrePay_Confirm;
         String orderCode = OrderInfo.dao.genOrderCode("V");
         if(cost > 0.0f){
-            OrderInfo oi = new OrderInfo().set("pay_id", pi.get("pay_id")).set("orderState", orderState)
-                    .set("orderCode", orderCode).set("orderDate", DateUtils.nowDate()).set("orderTime", DateUtils.getTimeShort())
-                    .set("openid", token).set("totalPrice", Math.round(cost*100));
+            OrderInfo oi = new OrderInfo().set("pay_id", pi.get("pay_id")).set("order_state", orderState)
+                    .set("order_code", orderCode).set("order_date", DateUtils.nowDate()).set("order_time", DateUtils.getTimeShort())
+                    .set("user_id", userInfo.getUser_id()).set("total_price", Math.round(cost*100));
             r = oi.save();
-            responseData.put("order", oi);
+            data.put("order", oi);
         }
         if(r){
-            responseData.put("pay_id", pi.get("pay_id"));
-            msg = "打赏成功！";
+            data.put("pay_id", pi.get("pay_id"));
+            rest.success("打赏成功！").setData(data);
         }else{
-            msg = "打赏失败！";
+            rest.error("打赏失败！");
         }
-        responseData.put(ResponseCode.MSG, msg);
-        responseData.put(ResponseCode.CODE, r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Before(Tx.class)
     public void wxPay(){
-        String openid = getPara("token");
+        UserDao userInfo = getCurrentUser(getPara("token"));
 
         WxaOrder order = new WxaOrder(appid, partner, partnerKey);
         order.setBody(getPara("body","enroll cost"));
         order.setNotifyUrl(notify_url);
         order.setOutTradeNo(getPara("out_trade_no"));
         order.setTotalFee(getPara("total_fee"));
-        order.setOpenId(openid);
+        order.setOpenId(userInfo.getOpen_id());
 
         String ip = IpKit.getRealIp(getRequest()); //IPV6会出现问题
         if (StrKit.isBlank(ip)) {
@@ -109,15 +111,15 @@ public class PayController extends WXSSBaseController{
         WxaPayApi wxaPayApi = new WxaPayApi();
         try{
             Map<String, String> packageParams = wxaPayApi.unifiedOrder(order);
-            String prepay_id = packageParams.get("package").split("=")[1];
-            OrderInfo oi = OrderInfo.dao.findFirst("select * from pay_order where orderCode=?",getPara("out_trade_no"));
-            oi.set("prepayID", prepay_id).update();
-            responseData.put(ResponseCode.DATA, packageParams);
-            responseData.put(ResponseCode.CODE, 1);
+            String prepayId = packageParams.get("package").split("=")[1];
+            OrderInfo oi = OrderInfo.dao.findFirst("select * from pay_order where order_code=?",getPara("out_trade_no"));
+            oi.set("prepay_id", prepayId).update();
+            rest.success().setData(packageParams);
         } catch (PaymentException ex){
-            responseData.put(ResponseCode.MSG, ex.getReturnMsg());
-            responseData.put(ResponseCode.CODE, 0);
+            rest.error(ex.getReturnMsg());
         }
+
+        renderJson(rest);
     }
 
     @Before(Tx.class)

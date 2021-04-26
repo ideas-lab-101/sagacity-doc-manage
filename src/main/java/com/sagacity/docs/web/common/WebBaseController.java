@@ -1,13 +1,12 @@
 package com.sagacity.docs.web.common;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
-import com.jfinal.kit.PathKit;
-import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.ehcache.CacheKit;
 import com.sagacity.docs.base.extend.CacheKey;
-import com.sagacity.docs.base.extend.ResponseCode;
-import net.sf.json.JSONObject;
+import com.sagacity.docs.base.extend.RestResult;
+import com.sagacity.docs.model.UserDao;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,8 +26,8 @@ import java.util.Map;
 public abstract class WebBaseController extends Controller {
 	
 	protected int pageSize = 20;
-	protected static String ROOTPATH = PathKit.getWebRootPath();
-	protected Map<String,Object> responseData = new HashMap<String, Object>();
+	protected Map<String,Object> data = new HashMap<String, Object>();
+	public RestResult rest = new RestResult();
 	
 	public abstract void index();
 	
@@ -37,23 +36,23 @@ public abstract class WebBaseController extends Controller {
 		super.render(view);
 	}
 
-	public JSONObject getCurrentUser(){
-		String uid = getCookie("u_id");
-		JSONObject jo = CacheKit.get(CacheKey.CACHE_WEB, uid);
+	public UserDao getCurrentUser(){
+		String token = getCookie("token");
+		JSONObject jo = CacheKit.get(CacheKey.CACHE_WEB, token);
 		if(jo!= null){
-			return jo.getJSONObject("UserInfo");
+			return (UserDao)jo.get("userInfo");
 		}else{
 			return null;
 		}
 	}
 
-	public Map<String, Object> convertPageData(Page page){
-		responseData.put(ResponseCode.CODE, 0);
-		responseData.put(ResponseCode.DATA, page.getList());
-		responseData.put(ResponseCode.TotalRow, page.getTotalRow());
-		responseData.put(ResponseCode.PageNumber, page.getPageNumber());
-		responseData.put(ResponseCode.PageSize, page.getPageSize());
-		return responseData;
-	}
+//	public Map<String, Object> convertPageData(Page page){
+//		responseData.put(ResponseCode.CODE, 0);
+//		responseData.put(ResponseCode.DATA, page.getList());
+//		responseData.put(ResponseCode.TotalRow, page.getTotalRow());
+//		responseData.put(ResponseCode.PageNumber, page.getPageNumber());
+//		responseData.put(ResponseCode.PageSize, page.getPageSize());
+//		return responseData;
+//	}
 
 }

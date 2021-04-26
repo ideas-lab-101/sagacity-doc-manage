@@ -122,6 +122,7 @@
     </div>
 
     <script src="/asset/layui/layui.js" charset="utf-8"></script>
+    <script src="/asset/js/tools.js" charset="utf-8"></script>
     <script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
     <script>
         $('.admin-side-toggle').on('click', function () {
@@ -175,6 +176,9 @@
                         , drag: false
                         , click: function (item) { //点击节点回调
                             sel_item = item;
+                            //替换url上的参数值
+                            history.replaceState({}, "", replaceParamVal('pageId', item.data.id));
+                            //详情页更新
                             $('#page').attr("src", 'p?pageId='+item.data.id) ;
                         }
                         , data: data.data

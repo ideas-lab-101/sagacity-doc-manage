@@ -1,11 +1,11 @@
 package com.sagacity.docs.web.common;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.ehcache.CacheKit;
 import com.sagacity.docs.base.extend.CacheKey;
-import net.sf.json.JSONObject;
 
 /**
  * @类名字：UserInterceptor
@@ -53,8 +53,8 @@ public class WebLoginInterceptor implements Interceptor {
 	 */
 	public boolean checkUserCache(Controller controller){
 
-		String uid = controller.getCookie("u_id");
-		JSONObject jo = CacheKit.get(CacheKey.CACHE_WEB, uid);
+		String token = controller.getCookie("token");
+		JSONObject jo = CacheKit.get(CacheKey.CACHE_WEB, token);
 		if (jo != null){
 			return true;
 		}

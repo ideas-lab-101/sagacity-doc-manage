@@ -109,8 +109,15 @@
         table.render({
             id:'episodeList'
             ,elem: '#episodeList'
-            ,url: 'getEpisodeList?video_id=#(video.id)'
+            ,url: 'getEpisodeList?videoId=#(video.id)'
             ,page: false
+            ,parseData: function(resp){ //resp 即为原始返回的数据
+                return {
+                    "code": resp.code==1?0:resp.code, //解析接口状态
+                    "msg": resp.msg, //解析提示文本
+                    "data": resp.data.list //解析数据列表
+                };
+            }
             ,cols: [[
                 {field:'id', title:'序号', width:90,edit: 'text',sort: true}
                 ,{field:'episode_title', title:'分集名称', width:200, edit: 'text'}
@@ -131,8 +138,8 @@
                     id: this.value,
                     state: obj.elem.checked
                 },
-                success: function(data) {
-                    layer.msg(data.msg, {time:1000});
+                success: function(resp) {
+                    layer.msg(resp.msg, {time:1000});
                 }
             });
         });
@@ -148,11 +155,11 @@
                         data: {
                             id: data.id
                         },
-                        success: function(data) {
-                            if(data.code == 1){
+                        success: function(resp) {
+                            if(resp.code == 1){
                                 table.reload('episodeList');
                             }else{
-                                layer.msg(data.msg);
+                                layer.msg(resp.msg);
                             }
                         }
                     });
@@ -166,11 +173,11 @@
                     data: {
                         data: JSON.stringify(data)
                     },
-                    success: function (data) {
-                        if (data.code == 1) {
+                    success: function (resp) {
+                        if (resp.code == 1) {
                             table.reload('episodeList');
                         }
-                        layer.msg(data.msg);
+                        layer.msg(resp.msg);
                     }
                 });
                 layer.close();
@@ -184,14 +191,14 @@
             ,accept: 'images'
             ,field: 'coverFile'
             ,data:{
-                video_id: '#(video.id)'
+                videoId: '#(video.id)'
             }
-            ,done: function(data){
+            ,done: function(resp){
                 //上传完毕回调
-                if(data.code ==1){
+                if(resp.code ==1){
                     //修改图片url
-                    $("#video_cover").attr("src",data.url);
-                    layer.msg(data.msg);
+                    $("#video_cover").attr("src",resp.data.url);
+                    layer.msg(resp.msg);
                 }
             }
             ,error: function(){
@@ -205,9 +212,9 @@
         var sel_class_id = '#(video.video_class_id)';
         $.ajax({
             url: "../system/getTagList",
-            success: function (data) {
-                for(var i =0;i<data.data.length;i++){
-                    var opt = data.data[i];
+            success: function (resp) {
+                for(var i =0;i<resp.data.list.length;i++){
+                    var opt = resp.data.list[i];
                     if (opt.id == sel_class_id){
                         $("#class_id").append("<option selected value='"+opt.id+"'>"+opt.title+"</option>");
                     }else{
@@ -227,11 +234,11 @@
             type: "POST",
             dataType: "json",
             data: {
-                video_id: '#(video.id)'
+                videoId: '#(video.id)'
             },
-            success: function(data) {
+            success: function(resp) {
                 table.reload('episodeList');
-                layer.msg(data.msg);
+                layer.msg(resp.msg);
             }
         });
     }
@@ -242,8 +249,8 @@
             type: "POST",
             dataType: "json",
             data: formData,
-            success: function(data) {
-                layer.msg(data.msg);
+            success: function(resp) {
+                layer.msg(resp.msg);
             }
         });
     }

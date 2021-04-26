@@ -12,10 +12,17 @@
 </head>
 <body>
 
-
+<div class="layui-inline">
+    <input style="width:220px;" type="text" id="key" autocomplete="off" placeholder="用户名或昵称" class="layui-input">
+</div>
+<div class="layui-inline">
+    <button class="layui-btn layui-btn-sm layui-btn-primary" onclick="query()" lay-event="query">
+        <i class="layui-icon">&#xe615;</i>查询
+    </button>
+</div>
 <table id="userList" lay-filter="userList"></table>
 <script type="text/html" id="switchTpl">
-    <input type="checkbox" name="state" value="{{d.UserID}}" lay-skin="switch" lay-text="启用|停用" lay-filter="stateFilter" {{ d.intState == 1 ? 'checked' : '' }}>
+    <input type="checkbox" name="state" value="{{d.user_id}}" lay-skin="switch" lay-text="启用|停用" lay-filter="stateFilter" {{ d.state == 1 ? 'checked' : '' }}>
 </script>
 
 <script type="text/html" id="toolbar">
@@ -45,19 +52,24 @@
                 pageName: 'pageIndex' //页码的参数名称，默认：page
                 ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
             }
-            ,response: {
-                countName: 'totalRow' //数据总数的字段名称，默认：count
+            ,parseData: function(resp){ //resp 即为原始返回的数据
+                return {
+                    "code": resp.code==1?0:resp.code, //解析接口状态
+                    "msg": resp.msg, //解析提示文本
+                    "count": resp.data.totalRow, //解析数据长度
+                    "data": resp.data.list //解析数据列表
+                };
             }
             ,limit: 10
             ,cols: [[
-                {field:'UserID', title:'ID', width:100, fixed: 'left', unresize: true, sort: true}
-                ,{field:'Caption', title:'显示名', width:120}
-                ,{field:'LoginName', title:'登陆账号', width:180}
-                ,{field:'Password', title:'登陆密码', width:180}
-                ,{field:'AddTime', title:'创建时间', width:120}
+                {field:'user_id', title:'ID', width:100, fixed: 'left', unresize: true, sort: true}
+                ,{field:'account', title:'登陆账号', width:120}
+                ,{field:'nick_name', title:'昵称', width:120}
+                ,{field:'role_desc', title:'角色', width:120, sort: true}
+                ,{field:'created_at', title:'创建时间', width:120}
                 ,{field:'dcCount', title:'文档数', width:100}
                 ,{field:'vcCount', title:'视频数', width:100}
-                ,{field:'intState', title:'状态', width:85, templet: '#switchTpl', unresize: true}
+                ,{field:'state', title:'状态', width:95, templet: '#switchTpl', unresize: true}
                 ,{fixed: 'right', title:'操作', toolbar: '#toolbar', width:150}
             ]]
         });
@@ -66,7 +78,7 @@
         table.on('tool(userList)', function(obj){
             var data = obj.data;
             if(obj.event === 'edit'){//删除
-                layer.msg(data.id);
+                layer.msg(data.user_id);
             }else if(obj.event === 'del'){
 
             }
@@ -94,17 +106,28 @@
                 type: "POST",
                 dataType: "json",
                 data: {
-                    user_id: this.value,
+                    userId: this.value,
                     state: obj.elem.checked
                 },
-                success: function(data) {
-                    layer.msg(data.msg, {time:1000});
+                success: function(resp) {
+                    layer.msg(resp.msg, {time:1000});
                 }
             });
             layer.close();
         });
 
     });
+
+    function query() {
+        table.reload('userList', {
+            page: {
+                curr: 1 //重新从第 1 页开始
+            }
+            ,where: {
+                key: $("#key").val()
+            }
+        });
+    }
 </script>
 </body>
 </html>

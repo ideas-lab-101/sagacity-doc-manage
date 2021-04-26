@@ -13,23 +13,25 @@
         order by dc.order DESC
 	</sql>
     <sql id="getDocList-select">
-        select doc.id,doc.title,doc.desc,doc.cover,doc.doc_class_id,dc.title class_title,doc.user_id,u.Caption,doc.source
+        select doc.id,doc.title,doc.desc,doc.cover,doc.doc_class_id,dc.title class_title,doc.user_id,up.nick_name,doc.source
         ,IFNULL(dpc.page_count,0) page_count,SUBSTR(doc.created_at,1,10) create_date,doc.state,doc.is_hot,doc.is_ad
     </sql>
     <sql id="getDocList-from">
         from doc_info doc
         left join (select count(id) page_count,doc_id from doc_page group by doc_id) dpc on dpc.doc_id=doc.id
         left join doc_class dc on dc.id=doc.doc_class_id
-        left join sys_users u on u.UserID=doc.user_id
+        left join sys_users u on u.user_id=doc.user_id
+        left join user_profile up on up.user_id=u.user_id
     </sql>
     <sql id="getDocInfo">
         select doc.id,doc.title,doc.is_end,doc.desc,doc.cover,doc.doc_class_id,dc.title class_title,doc.user_id,doc.source
-        ,IFNULL(u.Caption,'未知') Caption,doc.is_ad,dp.page_count,dp.view_count,ifNULL(uf.favor_count,0) favor_count
+        ,up.nick_name,doc.is_ad,dp.page_count,dp.view_count,ifNULL(uf.favor_count,0) favor_count
         from doc_info doc
         left join (select count(id) page_count,sum(view_count) view_count, doc_id from doc_page group by doc_id) dp on dp.doc_id=doc.id
         left join (select count(id) favor_count,data_id from user_favor where type='doc' group by data_id) uf on uf.data_id=doc.id
         left join doc_class dc on dc.id=doc.doc_class_id
-        left join sys_users u on u.UserID=doc.user_id
+        left join sys_users u on u.user_id=doc.user_id
+        left join user_profile up on up.user_id=u.user_id
         where doc.id=?
     </sql>
 </sqlGroup>

@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqlGroup name="account">
 	<sql id="getFollowList">
-        select uf.id,ui.nick_name,ui.avatar_url
+        select uf.id,u.user_id,up.nick_name,up.avatar_url
         from user_follow uf
-        left join wx_user ui on ui.open_id=uf.data_id
-        where uf.open_id=?
+        left join sys_users u on u.user_id=uf.data_id
+        left join user_profile up on up.user_id=u.user_id
+        where uf.user_id=?
         order by uf.created_at DESC
 	</sql>
     <sql id="getFavorDoc">
         select uf.id,di.id doc_id, di.title, di.cover,di.is_end, di.doc_class_id
         from user_favor uf
         left join doc_info di on di.id=uf.data_id
-        where uf.open_id=? and uf.type='doc'
+        where uf.user_id=? and uf.type='doc'
         order by uf.created_at DESC
     </sql>
     <sql id="getFavorPage">
@@ -19,7 +20,14 @@
         from user_favor uf
         left join doc_page dp on dp.id=uf.data_id
         left join doc_info di on di.id=dp.doc_id
-        where uf.open_id=? and uf.type='page'
+        where uf.user_id=? and uf.type='page'
+        order by uf.created_at DESC
+    </sql>
+    <sql id="getFavorVideo">
+        select uf.id,vi.id video_id, vi.title, vi.cover,vi.video_class_id
+        from user_favor uf
+        left join video_info vi on vi.id=uf.data_id
+        where uf.user_id=? and uf.type='video'
         order by uf.created_at DESC
     </sql>
 </sqlGroup>

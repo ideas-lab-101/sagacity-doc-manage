@@ -131,9 +131,9 @@
                     </div>
                 </div>
                 <div class="layui-col-md3">
-                    <a class="auth-info" href="a?userId=#(au.UserID??'')" target="_blank">
-                        <img src="#(au.AvatarURL??)" onerror="this.src='/asset/image/user_default.png'" class="layui-nav-img">
-                        #(au.Caption??('未知作者'))
+                    <a class="auth-info" href="a?userId=#(au.user_id??'')" target="_blank">
+                        <img src="#(au.avatar_url??)" onerror="this.src='/asset/image/user_default.png'" class="layui-nav-img">
+                        #(au.nick_name??('未知作者'))
                     </a>
                     <div class="ex-btn">
                         <i style="font-size: 12px;" class="iconfont icon-phone"> 手机阅读</i>
@@ -209,12 +209,12 @@
             $.ajax({
                 url: "exportBook",
                 data: {docId: docId},
-                success: function (data) {
+                success: function (resp) {
                     layer.close(loading);
-                    if(data.code==0){
-                        layer.msg(data.msg);
+                    if(resp.code==0){
+                        layer.msg(resp.msg);
                     }else{
-                        window.open(data.data);
+                        window.open(resp.data.url);
                     }
                 },
                 error: function () {

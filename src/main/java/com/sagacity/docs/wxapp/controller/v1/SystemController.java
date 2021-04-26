@@ -1,8 +1,11 @@
-package com.sagacity.docs.wxss.controller.v1;
+package com.sagacity.docs.wxapp.controller.v1;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jfinal.aop.Before;
+import com.jfinal.aop.Clear;
 import com.jfinal.aop.Duang;
 import com.jfinal.ext.route.ControllerBind;
+import com.jfinal.kit.HashKit;
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Record;
@@ -12,21 +15,17 @@ import com.jfinal.weixin.sdk.api.ApiResult;
 import com.jfinal.wxaapp.api.WxaQrcodeApi;
 import com.jfinal.wxaapp.api.WxaUserApi;
 import com.sagacity.docs.base.extend.CacheKey;
+import com.sagacity.docs.model.UserDao;
 import com.sagacity.docs.model.doc.DocInfo;
 import com.sagacity.docs.model.doc.DocPage;
-import com.sagacity.docs.base.extend.ConstantValue;
 import com.sagacity.docs.base.extend.ResponseCode;
-import com.sagacity.docs.base.extend.RoleType;
 import com.sagacity.docs.service.Qiniu;
-import com.sagacity.docs.model.user.UserInfo;
-import com.sagacity.docs.model.user.UserProfile;
 import com.sagacity.docs.model.video.VideoInfo;
-import com.sagacity.docs.model.weixin.WXUser;
-import com.sagacity.docs.wxss.common.WXSSBaseController;
+import com.sagacity.docs.model.wxapp.WxaUser;
+import com.sagacity.docs.wxapp.common.WXSSBaseController;
+import com.sagacity.docs.wxapp.common.WXSSLoginInterceptor;
 import com.sagacity.utility.DateUtils;
-import com.sagacity.utility.PinyinUtil;
 import com.sagacity.utility.StringTool;
-import net.sf.json.JSONObject;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -60,31 +59,48 @@ public class SystemController extends WXSSBaseController {
      * 基础调用
      */
     @Before(Tx.class)
+    @Clear(WXSSLoginInterceptor.class)
     public void accountLogin(){
-        boolean r = true;
+        boolean r = false;
         String code = getPara("code"); //获取openid
-        JSONObject userInfo = JSONObject.fromObject(getPara("userInfo"));
-        String openid;
+        JSONObject userData = null;
+
+        if(StringTool.notBlank(getPara("userData")) && StringTool.notNull(getPara("userData"))){
+            userData = JSONObject.parseObject(getPara("userData"));
+        }
+        String openid, session_key;
+        String token = HashKit.md5(DateUtils.getLongDateMilliSecond()+"");
 
         WxaUserApi wxaUserApi = new WxaUserApi();
         ApiResult apiResult = wxaUserApi.getSessionKey(code);
+//        System.out.println(apiResult);
         openid = apiResult.getStr("openid");
+        session_key = apiResult.getStr("session_key");
 
-        WXUser wxUser = WXUser.dao.setUser(openid, userInfo);
-        if(wxUser != null){
+        UserDao user = WxaUser.dao.setWxappUser(openid, userData);
+        if(user != null){
             r = true;
+            //写入缓存
+            JSONObject jo = new JSONObject();
+            jo.put("loginTime", DateUtils.nowDateTime());
+            jo.put("userInfo", user);
+            jo.put("sessionKey", session_key); //缓存session_key，用于取电话号码等操作
+            CacheKit.put(CacheKey.CACHE_WXAPP, token, jo);
         }
         if(r){
-            responseData.put("user", wxUser);
-            responseData.put("token", openid);
+            data.put("user_info", user);
+            data.put("token", token);
+            rest.success().setData(data);
+        }else{
+            rest.error();
         }
-        responseData.put(ResponseCode.CODE, r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     public void getUploadToken(){
-        String token = getPara("token");
-        renderJson("uptoken", Qiniu.dao.getUploadToken());
+        UserDao userInfo = getCurrentUser(getPara("token"));
+        data.put("uptoken", Qiniu.dao.getUploadToken());
+        rest.success().setData(data);
     }
 
     /**
@@ -93,11 +109,11 @@ public class SystemController extends WXSSBaseController {
     public void getWXSSCode(){
         boolean r = false;
         String type = getPara("type"); // d- 文档；c- 课程； p- 单页；
-        String dataID = getPara("data_id");
+        String dataId = getPara("dataId");
         try {
             //生成菊花码
             WxaQrcodeApi wxaQrcodeApi = Duang.duang(WxaQrcodeApi.class);
-            InputStream inputStream = wxaQrcodeApi.getUnLimit(type+"_"+dataID, "pages/index/index", 430);
+            InputStream inputStream = wxaQrcodeApi.getUnLimit(type+"_"+dataId, "pages/index/index", 430);
 
             String fileName = System.currentTimeMillis()+".png";
             File f2 = new File(PropKit.get("resource.dir")+"qr_code/");
@@ -119,30 +135,29 @@ public class SystemController extends WXSSBaseController {
             String message = "";
             String bgImg="", qrCode="";
             if(type.equals("d")){ //文档
-                DocInfo di = DocInfo.dao.findById(dataID);
+                DocInfo di = DocInfo.dao.findById(dataId);
                 message = di.getStr("title").indexOf("《")>=0? di.getStr("title") : "《"+di.getStr("title")+"》";
                 bgImg = di.getStr("cover");
             }else if(type.equals("p")){ //单页
-                DocPage dp = DocPage.dao.findById(dataID);
+                DocPage dp = DocPage.dao.findById(dataId);
                 DocInfo di = DocInfo.dao.findById(dp.get("doc_id"));
                 String t1 = di.getStr("title").indexOf("《")>=0? di.getStr("title") : "《"+di.getStr("title")+"》";
                 message = dp.getStr("title")+" —— " + t1;
                 bgImg = di.getStr("cover");
             }else if(type.equals("v")){ //视频
-                VideoInfo vi = VideoInfo.dao.findById(dataID);
+                VideoInfo vi = VideoInfo.dao.findById(dataId);
                 message = vi.getStr("title");
                 bgImg = vi.getStr("cover");
             }
             qrCode = PropKit.get("resource.url")+"qr_code/"+fileName;
-            responseData.put("qr_code", PropKit.get("resource.url")+"qr_code/"+  mergeImage(bgImg, qrCode, message));
-            r = true;
+            data.put("qr_code", PropKit.get("resource.url")+"qr_code/"+  mergeImage(bgImg, qrCode, message));
+            rest.success().setData(data);
         }catch (Exception ex){
             ex.printStackTrace();
-            r = false;
-            responseData.put(ResponseCode.MSG, "生成二维码出错！");
+            rest.error("生成二维码出错！");
         }
-        responseData.put(ResponseCode.CODE, r? 1:0);
-        renderJson(responseData);
+
+        renderJson(rest);
     }
 
     /**
@@ -194,6 +209,8 @@ public class SystemController extends WXSSBaseController {
      * 扫描二维码登陆网页
      */
     public void scanLogin(){
+        UserDao userInfo = getCurrentUser(getPara("token"));
+
         boolean r = false;
         String msg = "";
 
@@ -202,58 +219,45 @@ public class SystemController extends WXSSBaseController {
         String key = getPara("key");
         String password = StringTool.generateMixString(6);
 
-        //检查此wx号是否创建了创作者账户，如果没有则创建新用户
-        UserInfo userInfo = UserInfo.dao.findFirst("select * from sys_users where OpenID=?", token);
-        if(userInfo == null){
-            WXUser wxUser = WXUser.dao.findFirst("select * from wx_user where open_id=?", token);
-            UserInfo ui = new UserInfo().set("UserID", UUID.randomUUID().toString()).set("RoleID", RoleType.Author).set("OpenID", token)
-                    .set("Caption", wxUser.get("nick_name")).set("LoginName", PinyinUtil.getFirstLettersLo(wxUser.getStr("nick_name"))).set("Password",password)
-                    .set("AddTime", DateUtils.nowDateTime()).set("CreateUserID", ConstantValue.DEFAULT_ADMINID)
-                    .set("intState", 0);
-            r = ui.save(); //此时创建的用户未启用
-            UserProfile up = new UserProfile().set("UserID", ui.get("UserID")).set("Gender", wxUser.get("gender"))
-                    .set("AvatarURL", wxUser.get("avatar_url")).set("UserPoint", 0.0f);
-            r = up.save();
-        }
-        if(userInfo != null && userInfo.getInt("intState") == 1){
+        if(userInfo != null){
             //写入缓存，确认用户扫码验证通过;网页端循循环登陆
-            CacheKit.put(CacheKey.CACHE_ACCOUNT_SCAN, key, userInfo.get("UserID")); //key由网页端生成时传入
-            r = true;
-            msg = "认证已通过，网页即将跳转！";
+            CacheKit.put(CacheKey.CACHE_ACCOUNT_SCAN, key, userInfo.getUser_id()); //key由网页端生成时传入
+            rest.success("认证已通过，网页即将跳转！");
         }else{
-            r = false;
-            msg = "账号未启用，请联系管理员！";
+            rest.error("账号错误，请联系管理员！");
         }
-        responseData.put(ResponseCode.MSG, msg);
-        responseData.put(ResponseCode.CODE, r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     /**
      * 结果搜索，包括doc和video
      */
+    @Clear(WXSSLoginInterceptor.class)
     public void search(){
         String key = getPara("key");
         //文档
         String sql1 = "select dc.id,dc.cover,dc.title from doc_info dc\n" +
                 "where dc.title like '%"+key+"%'";
-        responseData.put("doc", Db.find(sql1));
+        data.put("doc", Db.find(sql1));
         //视频
         String sql2 = "select vi.id,vi.cover,vi.title from video_info vi\n" +
                 "where vi.title like '%"+key+"%'";
-        responseData.put("video", Db.find(sql2));
+        data.put("video", Db.find(sql2));
         //全文检索结果
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("total", 0);
         result.put("searchTime", 0);
         result.put("items", null);
-        responseData.put("result", result);
-        renderJson(responseData);
+        data.put("result", result);
+        rest.success().setData(data);
+
+        renderJson(rest);
     }
 
     /**
      * 提示搜索
      */
+    @Clear(WXSSLoginInterceptor.class)
     public void tipSearch(){
 
     }
@@ -261,18 +265,24 @@ public class SystemController extends WXSSBaseController {
     /**
      * 获得热搜词
      */
+    @Clear(WXSSLoginInterceptor.class)
     public void getHotSearch(){
         String sql = "select name,count(name) searchCount\n" +
                 "from doc_search ds\n" +
                 "group by ds.name\n" +
                 "order by searchCount DESC";
-        renderJson(ResponseCode.LIST, Db.find(sql));
+        data.put(ResponseCode.LIST, Db.find(sql));
+
+        rest.success().setData(data);
+        renderJson(rest);
     }
 
     /**
      * 分类数据，包括文档与视频
      */
+    @Clear(WXSSLoginInterceptor.class)
     public void getClassList(){
+        UserDao userInfo = getCurrentUser(getPara("token"));
 
         //文档分类
         String sqlDoc = "select dc.*\n" +
@@ -287,30 +297,39 @@ public class SystemController extends WXSSBaseController {
             }
             dc.addAll(d1);
         }
-        responseData.put("doc", dc);
+        data.put("doc", dc);
         //视频分类
         String sqlVideo = "select * from video_class";
-        if(StringTool.notNull(getPara("token")) && !StringTool.isBlank(getPara("token"))){
+        if(userInfo != null){
             //传入token,判断用户权限，设置可打开内容，后续优化
-            WXUser user = WXUser.dao.findFirst("select * from wx_user where open_id=?", getPara("token"));
-            if (user != null){
-                switch (user.getInt("level_id")){
-                    case 1: //初级用户
-                        sqlVideo += " where state=1";
-                        break;
-                    case 2: //中级用户
-                        sqlVideo += " where 1=1";
-                    default:
-                        break;
-                }
-            }else{
-                sqlVideo += " where state=1";
+            switch (userInfo.getLevel()){
+                case 1: //初级用户
+                    sqlVideo += " where state=1";
+                    break;
+                case 2: //中级用户
+                    sqlVideo += " where 1=1";
+                default:
+                    break;
             }
         }else{
             sqlVideo += " where state=1";
         }
-        responseData.put("video", Db.find(sqlVideo));
-        renderJson(responseData);
+
+        data.put("video", Db.find(sqlVideo));
+        rest.success().setData(data);
+
+        renderJson(rest);
+    }
+
+    public void userFeedback(){
+        boolean r = true;
+        UserDao userInfo = getCurrentUser(getPara("token"));
+        if(r){
+            rest.success("谢谢反馈！");
+        }else {
+            rest.error("提交失败！");
+        }
+        renderJson(rest);
     }
 
 }

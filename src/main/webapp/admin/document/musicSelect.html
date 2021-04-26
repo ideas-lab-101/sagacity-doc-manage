@@ -68,11 +68,11 @@
             type: "POST",
             dataType: "json",
             data: {
-                page_id: '#(page.id)' ,
-                music_id: $("#music_id").val()
+                pageId: '#(page.id)' ,
+                musicId: $("#music_id").val()
             },
-            success: function(data) {
-                layer.msg(data.msg);
+            success: function(resp) {
+                layer.msg(resp.msg);
             }
         });
     }

@@ -1,10 +1,13 @@
-package com.sagacity.docs.wxss.common;
+package com.sagacity.docs.wxapp.common;
 
+import com.alibaba.fastjson.JSONObject;
+import com.jfinal.aop.Before;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.ehcache.CacheKit;
 import com.sagacity.docs.base.extend.CacheKey;
-import net.sf.json.JSONObject;
+import com.sagacity.docs.base.extend.RestResult;
+import com.sagacity.docs.model.UserDao;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,11 +22,13 @@ import java.util.Map;
  * @版权所有
  *
  */
+@Before(WXSSLoginInterceptor.class)
 public abstract class WXSSBaseController extends Controller {
 	
 	protected int pageSize = 20;
-	protected Map<String,Object> responseData = new HashMap<String, Object>();
+	protected Map<String,Object> data = new HashMap<String, Object>();
 	protected static String ROOTPATH = PathKit.getWebRootPath();
+	public RestResult rest = new RestResult();
 	
 	public abstract void index();
 	
@@ -32,10 +37,10 @@ public abstract class WXSSBaseController extends Controller {
 		super.render(view);
 	}
 
-	public JSONObject getCurrentUser(String token){
+	public UserDao getCurrentUser(String token){
 		JSONObject jo = CacheKit.get(CacheKey.CACHE_WXAPP, token);
 		if(jo!= null){
-			return jo.getJSONObject("UserInfo");
+			return (UserDao)jo.get("userInfo");
 		}else{
 			return null;
 		}

@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqlGroup name="sys">
-	<sql id="getModuleList">
+	<sql id="getModule">
 		select mf.* from sys_function mf
-		inner join sys_roleFunc rf on rf.FuncID = mf.FuncID
-		where mf.FuncType='module' and mf.intState=1 and rf.RoleID=?
-		order by mf.FuncCode
+		inner join sys_roleFunc rf on rf.func_id = mf.func_id
+		where mf.func_type='module' and mf.state=1 and rf.role_id=?
+		order by mf.order
+	</sql>
+	<sql id="getMenu">
+		select mf.func_id id,mf.func_name title,mf.func_css icon,mf.func_url href,true spread from sys_function mf
+		inner join sys_roleFunc rf on rf.func_id = mf.func_id
+		where mf.func_type='menu' and mf.state=1 and mf.p_id =? and rf.role_id=?
+		order by mf.order
 	</sql>
 </sqlGroup>
 

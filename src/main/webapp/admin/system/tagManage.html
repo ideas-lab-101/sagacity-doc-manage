@@ -52,11 +52,18 @@
             ,request: {
 
              }
+            ,parseData: function(resp){ //resp 即为原始返回的数据
+                return {
+                    "code": resp.code==1?0:resp.code, //解析接口状态
+                    "msg": resp.msg, //解析提示文本
+                    "data": resp.data.list //解析数据列表
+                };
+            }
             ,cols: [[
                 {field:'id', title:'ID', width:60, fixed: 'left', unresize: true, sort: true}
                 ,{field:'title', title:'分类名称', width:180,  edit: 'text'}
                 ,{field:'desc', title:'分类描述', width:200,  edit: 'text'}
-                ,{field:'css', title:'分类样式', width:260,  edit: 'text'}
+                ,{field:'css', title:'图标样式', width:260,  edit: 'text'}
                 ,{field:'state', title:'状态', width:110, templet: '#switchTpl', unresize: true}
                 ,{field:'is_hot', title:'热门?', width:110, templet: '#checkboxTpl', unresize: true}
                 ,{fixed: 'right', title:'操作', toolbar: '#toolbar', width:150}
@@ -76,11 +83,11 @@
                 type: "POST",
                 dataType: "json",
                 data: {
-                    tag_id: this.value,
+                    tagId: this.value,
                     state: obj.elem.checked
                 },
-                success: function(data) {
-                    layer.msg(data.msg, {time:1000});
+                success: function(resp) {
+                    layer.msg(resp.msg, {time:1000});
                 }
             });
             layer.close();
@@ -94,11 +101,11 @@
                 type: "POST",
                 dataType: "json",
                 data: {
-                    tag_id: this.value,
+                    tagId: this.value,
                     is_hot: obj.elem.checked
                 },
-                success: function(data) {
-                    layer.msg(data.msg, {time:1000});
+                success: function(resp) {
+                    layer.msg(resp.msg, {time:1000});
                 }
             });
             layer.close();
@@ -122,13 +129,13 @@
                         type: "POST",
                         dataType: "json",
                         data: {
-                            tag_id: data.id
+                            tagId: data.id
                         },
-                        success: function(data) {
-                            if(data.code == 1){
+                        success: function(resp) {
+                            if(resp.code == 1){
                                 table.reload('tagList');
                             }else{
-                                layer.msg(data.msg);
+                                layer.msg(resp.msg);
                             }
                         }
                     });
@@ -142,11 +149,11 @@
                     data: {
                         data: JSON.stringify(data)
                     },
-                    success: function(data) {
-                        if(data.code == 1){
+                    success: function(resp) {
+                        if(resp.code == 1){
                             table.reload('tagList');
                         }
-                        layer.msg(data.msg);
+                        layer.msg(resp.msg);
                     }
                 });
                 // layer.prompt({

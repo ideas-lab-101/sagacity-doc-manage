@@ -150,7 +150,7 @@
                             </div>
                             <div class="layui-col-md7 b-info-mid">
                                 <div class="layui-row info-title"> {{ item.title }}</div>
-                                <div class="layui-row info-source"> <a href="a?userId={{item.UserID}}" target="_blank"> {{ item.Caption??('未知') }} </a>
+                                <div class="layui-row info-source"> <a href="a?userId={{item.user_id??''}}" target="_blank"> {{ item.nick_name??('未知作者')}} </a>
                                     | <a href="c?classId={{item.doc_class_id}}" target="_blank"> {{ item.doc_class }} </a></div>
                                 <div class="layui-row info-desc"> {{ item.desc }} </div>
                                 <div class="layui-row info-time"> 更新于：{{ item.update_date}} </div>
@@ -226,11 +226,11 @@
                     pageIndex: pageIndex,
                     kw: key
                 },
-                success: function(data) {
+                success: function(resp) {
                     //根据搜索结果显示
                     $("#segResult").show();
-                    $("#segResult").find("label").html(data.seg);
-                    if(data.data.length == 0){
+                    $("#segResult").find("label").html(resp.data.segs);
+                    if(resp.data.page.totalRow == 0){
                         $("#resultNone").show();
                         $("#resultContent").hide();
                     }else{
@@ -244,11 +244,11 @@
                         // $("#resultList").html(arr);
                         var getTpl = infoTpl.innerHTML
                             ,view = document.getElementById('resultList');
-                        laytpl(getTpl).render(data.data, function(html){
+                        laytpl(getTpl).render(resp.data.page.list, function(html){
                             view.innerHTML = html;
                         });
                         //绘制分页器
-                        setPager(key, data.pageNumber, data.totalRow);
+                        setPager(key, resp.data.page.pageNumber, resp.data.page.totalRow);
                     }
                 }
             });

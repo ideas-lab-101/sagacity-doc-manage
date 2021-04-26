@@ -8,6 +8,7 @@ import org.apdplat.word.segmentation.SegmentationAlgorithm;
 import org.apdplat.word.segmentation.SegmentationFactory;
 import org.apdplat.word.segmentation.Word;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,12 +32,20 @@ public class SearchEngine {
         return result.toString();
     }
 
+    public List<String> segList(String text){
+        List<String> keys = new ArrayList<String>();
+        for(Word word : WordSegmenter.segWithStopWords(text)){
+            keys.add(word.getText());
+        }
+        return keys;
+    }
+
     public List<Record> doSearch(String key){
         String sql = "select di.id,di.title,di.`desc`,di.cover,di.source,di.is_end\n" +
-                ",dc.id doc_class_id,dc.title doc_class,u.UserID,u.Caption \n" +
+                ",dc.id doc_class_id,dc.title doc_class,u.user_id,u.Caption \n" +
                 "from doc_info di\n" +
                 "left join doc_class dc on dc.id=di.doc_class_id\n" +
-                "left join sys_users u on u.UserID=di.user_id\n" +
+                "left join sys_users u on u.user_id=di.user_id\n" +
                 "where di.title like '%"+key+"%' or u.Caption like '%"+key+"%'";
 
         List<Record> rs = Db.find(sql);

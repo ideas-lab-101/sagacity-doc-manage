@@ -90,13 +90,13 @@
             type: "POST",
             dataType: "json",
             data: formData,
-            success: function(data) {
-                if(data.code ==1){
+            success: function(resp) {
+                if(resp.code ==1){
                     //关闭页面
                     var index = parent.layer.getFrameIndex(window.name);
                     parent.layer.close(index);
                 }else{
-                    layer.msg(data.msg);
+                    layer.msg(resp.msg);
                 }
             }
         });

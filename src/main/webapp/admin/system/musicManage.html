@@ -60,8 +60,13 @@
                 pageName: 'pageIndex' //页码的参数名称，默认：page
                 ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
             }
-            ,response: {
-                countName: 'totalRow' //数据总数的字段名称，默认：count
+            ,parseData: function(resp){ //resp 即为原始返回的数据
+                return {
+                    "code": resp.code==1?0:resp.code, //解析接口状态
+                    "msg": resp.msg, //解析提示文本
+                    "count": resp.data.totalRow, //解析数据长度
+                    "data": resp.data.list //解析数据列表
+                };
             }
             ,limit: 10
             ,cols: [[
@@ -70,7 +75,7 @@
                 ,{field:'cover_url', title:'封面地址', width:180,  edit: 'text'}
                 ,{field:'resource_url', title:'资源地址', width:180, edit: 'text'}
                 ,{field:'created_at', title:'加入日期', width:120}
-                ,{field:'Caption', title:'上传用户', width:120}
+                ,{field:'nick_name', title:'上传用户', width:120}
                 ,{field:'state', title:'状态', width:85, templet: '#switchTpl', unresize: true}
                 ,{fixed: 'right', title:'操作', toolbar: '#toolbar', width:170}
             ]]
@@ -93,11 +98,11 @@
                 type: "POST",
                 dataType: "json",
                 data: {
-                    music_id: this.value,
+                    musicId: this.value,
                     state: obj.elem.checked
                 },
-                success: function(data) {
-                    layer.msg(data.msg, {time:1000});
+                success: function(resp) {
+                    layer.msg(resp.msg, {time:1000});
                 }
             });
             layer.close();
@@ -121,13 +126,13 @@
                         type: "POST",
                         dataType: "json",
                         data: {
-                            music_id: data.id
+                            musicId: data.id
                         },
-                        success: function(data) {
-                            if(data.code == 1){
+                        success: function(resp) {
+                            if(resp.code == 1){
                                 table.reload('musicList');
                             }else{
-                                layer.msg(data.msg);
+                                layer.msg(resp.msg);
                             }
                         }
                     });
@@ -141,11 +146,11 @@
                     data: {
                         data: JSON.stringify(data)
                     },
-                    success: function (data) {
-                        if (data.code == 1) {
+                    success: function (resp) {
+                        if (resp.code == 1) {
                             table.reload('musicList');
                         }
-                        layer.msg(data.msg);
+                        layer.msg(resp.msg);
                     }
                 });
                 layer.close();
@@ -155,7 +160,7 @@
                     title: '音乐播放',
                     type: 2,
                     area: ['420px', '180px'],
-                    content: ['playMusic?music_id='+data.id, 'no']
+                    content: ['playMusic?musicId='+data.id, 'no']
                 });
             }
 
@@ -172,10 +177,10 @@
                     shade: [0.1,'#fff'] //0.1透明度的白色背景
                 });
             }
-            ,done: function(res, index, upload){
+            ,done: function(resp, index, upload){
                 layer.close(loading);
-                layer.alert(res.msg, function(index){
-                    if(res.code ==1) {
+                layer.alert(resp.msg, function(index){
+                    if(resp.code ==1) {
                         table.reload('musicList');
                     }
                 });
@@ -219,11 +224,11 @@
                 data: {
                     name: value
                 },
-                success: function(data) {
-                    if(data.code == 1){
+                success: function(resp) {
+                    if(resp.code == 1){
                         table.reload('musicList');
                     }else{
-                        layer.msg(data.msg);
+                        layer.msg(resp.msg);
                     }
                 }
             });

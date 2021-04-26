@@ -53,8 +53,14 @@
             ,url: 'getMainList'
             ,page: false
             ,request: {
-
             }
+            ,parseData: function(resp){ //resp 即为原始返回的数据
+            return {
+                "code": resp.code==1?0:resp.code, //解析接口状态
+                "msg": resp.msg, //解析提示文本
+                "data": resp.data.list //解析数据列表
+            };
+        }
             ,cols: [[
                 {field:'id', title:'ID', width:60, fixed: 'left', unresize: true, sort: true}
                 ,{field:'name', title:'栏目名称', width:120,  edit: 'text'}
@@ -81,7 +87,7 @@
                 type: "POST",
                 dataType: "json",
                 data: {
-                    main_id: this.value,
+                    mainId: this.value,
                     state: obj.elem.checked
                 },
                 success: function(data) {
@@ -109,13 +115,13 @@
                         type: "POST",
                         dataType: "json",
                         data: {
-                            main_id: data.id
+                            mainId: data.id
                         },
-                        success: function(data) {
-                            if(data.code == 1){
+                        success: function(resp) {
+                            if(resp.code == 1){
                                 table.reload('mainList');
                             }else{
-                                layer.msg(data.msg);
+                                layer.msg(resp.msg);
                             }
                         }
                     });
@@ -129,11 +135,11 @@
                     data: {
                         data: JSON.stringify(data)
                     },
-                    success: function(data) {
-                        if(data.code == 1){
+                    success: function(resp) {
+                        if(resp.code == 1){
                             table.reload('mainList');
                         }
-                        layer.msg(data.msg);
+                        layer.msg(resp.msg);
                     }
                 });
                 layer.close();
@@ -141,10 +147,10 @@
                 upload.render({
                     elem: '#cover' //绑定元素
                     ,accept: 'images'
-                    ,data: {main_id: data.id}
-                    ,done: function(res, index, upload){
-                        layer.alert(res.msg, function(index){
-                            if(res.code ==1) {
+                    ,data: {mainId: data.id}
+                    ,done: function(resp, index, upload){
+                        layer.alert(resp.msg, function(index){
+                            if(resp.code ==1) {
                                 self.location.reload();
                             }
                         });

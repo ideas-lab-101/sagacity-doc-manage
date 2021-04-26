@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sqlGroup name="video">
     <sql id="getVideoList-select">
-        select video.id,video.title,video.desc,video.cover,video.video_class_id,dc.title class_title,video.user_id,u.Caption,video.source
-        ,video.view_count,SUBSTR(video.created_at,1,10) create_date,video.state,video.is_hot,video.is_ad
+        select video.id,video.title,video.desc,video.cover,video.video_class_id,dc.title class_title,video.user_id,up.nick_name
+        ,video.source,video.view_count,SUBSTR(video.created_at,1,10) create_date,video.state,video.is_hot,video.is_ad
     </sql>
     <sql id="getVideoList-from">
         from video_info video
         left join video_class dc on dc.id=video.video_class_id
-        left join sys_users u on u.UserID=video.user_id
+        left join sys_users u on u.user_id=video.user_id
+        left join user_profile up on up.user_id=u.user_id
     </sql>
     <sql id="getVideoInfo">
-        select ci.id,ci.title,ci.desc,ci.cover,ci.video_class_id,ci.user_id,u.Caption,'未知'
-        ,up.AvatarURL,ci.is_live,ci.source,ci.source_url,ci.state,ci.is_ad
+        select ci.id,ci.title,ci.desc,ci.cover,ci.video_class_id,ci.user_id,up.nick_name
+        ,up.avatar_url,ci.is_live,ci.source,ci.source_url,ci.state,ci.is_ad
         from video_info ci
-        left join sys_users u on u.UserID=ci.user_id
-        left join sys_userProfile up on up.UserID=u.UserID
+        left join sys_users u on u.user_id=ci.user_id
+        left join user_profile up on up.user_id=u.user_id
         where ci.id=?
     </sql>
 </sqlGroup>

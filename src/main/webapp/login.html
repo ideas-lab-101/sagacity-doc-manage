@@ -32,7 +32,7 @@
                                     <div class="layui-form">
                                         <div class="layui-form-item">
                                             <span style="display: inline-block;"><i class="iconfont icon-accountcircle"></i></span>
-                                            <input class="layui-input" style="display:inline; width: 80%;" type="text" id="username" lay-verify="required" placeholder="请输入账号" autocomplete="off"  value="">
+                                            <input class="layui-input" style="display:inline; width: 80%;" type="text" id="account" lay-verify="required" placeholder="请输入账号" autocomplete="off"  value="">
                                         </div>
                                         <div class="layui-form-item">
                                             <span style="display: inline-block;"><i class="iconfont icon-lock-open"></i></span>
@@ -74,6 +74,7 @@
             element = layui.element;
 
             element.on('tab(mode)', function(){
+                document.getElementById("qrCode").innerHTML="";
                 mode = this.getAttribute('lay-id');
                 if(mode == 'qrcode'){
                     key = Date.parse( new Date());
@@ -89,7 +90,6 @@
                     //启动timer
                     checkScan();
                 }else{
-                    document.getElementById("qrCode").innerHTML="";
                     is_close = true;
                     clearTimeout(checkTimer);
                 }
@@ -103,14 +103,14 @@
                 type: "GET",
                 dataType: "json",
                 data: {
-                    username : $("#username").val(),
+                    account : $("#account").val(),
                     password : $("#password").val()
                 },
-                success: function(data) {
-                    if (data.result) {
+                success: function(resp) {
+                    if (resp.code == 1) {
                         window.open("admin/", "_self", "");
                     }else{
-                        layer.msg(data.msg, {time:2000, offset: '100px'});
+                        layer.msg(resp.msg, {time:2000, offset: '100px'});
                     }
                 }
             });
@@ -129,18 +129,18 @@
                 data: {
                     key: key
                 },
-                success: function (data) {
-                    if (data.result) {
+                success: function (rest) {
+                    if (rest.code ==1) {
                         $.ajax({
                             url: "admin/login",
                             type: "POST",
                             dataType: "json",
                             data: {
-                                username: data.user.LoginName,
-                                password: data.user.Password
+                                account: rest.data.account,
+                                password: rest.data.password
                             },
                             success: function (data) {
-                                if (data.result) {
+                                if (data.code ==1) {
                                     window.open("admin/", "_self", "");
                                 } else {
                                     layer.msg(data.msg, {time: 2000, offset: '100px'});
@@ -162,14 +162,14 @@
 
         function setCookie() {
             if ($("#ck_rmbUser").prop("checked")) {
-                var username = $("#username").val();
+                var account = $("#account").val();
                 var password = $("#password").val();
                 $.cookie("rmbUser", "true", { expires: 7 }); //存储一个带7天期限的cookie
-                $.cookie("username", username, { expires: 7 });
+                $.cookie("account", account, { expires: 7 });
                 $.cookie("password", password, { expires: 7 });
             }else{
                 $.cookie("rmbUser", "false", { expire: -1 });
-                $.cookie("username", "", { expires: -1 });
+                $.cookie("account", "", { expires: -1 });
                 $.cookie("password", "", { expires: -1 });
             }
         }
@@ -177,10 +177,10 @@
         $(document).ready(function() {
             if ($.cookie("rmbUser") == "true") {
                 $("#ck_rmbUser").prop("checked", true);
-                $("#username").val($.cookie("username"));
-                $("#UserFont").css('display','none');
+                $("#account").val($.cookie("account"));
+                // $("#UserFont").css('display','none');
                 $("#password").val($.cookie("password"));
-                $("#PasswordFont").css('display','none');
+                // $("#PasswordFont").css('display','none');
             }
 
             document.onkeydown = function(e) {

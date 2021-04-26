@@ -1,11 +1,13 @@
-package com.sagacity.docs.wxss.common;
+package com.sagacity.docs.wxapp.common;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.ehcache.CacheKit;
 import com.sagacity.docs.base.extend.CacheKey;
-import net.sf.json.JSONObject;
+import com.sagacity.docs.base.extend.RestResult;
+import com.sagacity.docs.base.extend.ResultCode;
 
 /**
  * @类名字：LoginInterceptor
@@ -17,10 +19,12 @@ import net.sf.json.JSONObject;
  */
 public class WXSSLoginInterceptor implements Interceptor {
 
+	public RestResult rest = new RestResult();
+
 	/**
 	 * 绕过拦截器的方法名(注意:包括命名空间)
 	 */
-	private String[] throughMethods = { "/wxss/system/accountLogin"};
+	private String[] throughMethods = { };
 
 	/**
 	 * @方法名:intercept
@@ -33,11 +37,12 @@ public class WXSSLoginInterceptor implements Interceptor {
 		// TODO Auto-generated method stub
 		// 需要带AuthRedirect
 		Controller controller = arg0.getController();
-        if (checkUserCache(controller) || throughIntercept(arg0.getActionKey())) {
-            arg0.invoke();
-        } else {
-			controller.renderJson("error_code", 200);
-        }
+		if (checkUserCache(controller) || throughIntercept(arg0.getActionKey())) {
+			arg0.invoke();
+		} else {
+			rest.error("token失效，请重新登陆").setCode(ResultCode.TOKEN_INVALID);
+			controller.renderJson(rest);
+		}
 	}
 
 	/**

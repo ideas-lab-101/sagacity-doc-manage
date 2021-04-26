@@ -28,8 +28,8 @@
       <ul style="margin-left: 30px;" class="layui-nav layui-layout-left">
           #for(menu : menuList)
               <li class="layui-nav-item">
-                  <a href="javascript:;" onclick="loadMenu(this)" data-id="#(menu.FuncID)">
-                      <i class="#(menu.FuncCSS)"></i>#(menu.FuncName)
+                  <a href="javascript:;" onclick="loadMenu(this)" data-id="#(menu.func_id)">
+                      <i class="#(menu.func_css)"></i>#(menu.func_name)
                   </a>
               </li>
           #end
@@ -37,8 +37,8 @@
       <ul class="layui-nav layui-layout-right">
           <li class="layui-nav-item">
               <a href="javascript:;">
-                  <img src="#(userInfo.AvatarURL)" onerror="this.src='/asset/image/user_default.png'" class="layui-nav-img">
-                  #(userInfo.Caption)
+                  <img src="#(userInfo.avatar_url)" onerror="this.src='/asset/image/user_default.png'" class="layui-nav-img">
+                  #(userInfo.nick_name)
               </a>
               <dl class="layui-nav-child">
                   <dd><a href="/" target="_blank"><i class="iconfont icon-home" aria-hidden="true"></i> 平台首页</a></dd>
@@ -65,7 +65,8 @@
 
     <div id="admin-footer" class="layui-footer">
       <!-- 底部固定区域 -->
-      © linestorm.ltd - sagacity group
+        © linestorm.ltd - sagacity group
+        <label style="font-size: 12px; margin-left: 20px;">系统版本号：#(version) </label>
     </div>
 
   </div>
@@ -133,7 +134,7 @@
           //加载菜单
           navbar.set({
               elem: '#menuTree',
-              url: 'loadMenuTree?moduleID='+$(obj).attr("data-id")
+              url: 'loadMenuTree?moduleId='+$(obj).attr("data-id")
           });
           navbar.render();
           navbar.on('click(navbar)', function(data) {

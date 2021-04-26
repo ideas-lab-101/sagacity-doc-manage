@@ -6,10 +6,11 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.tx.Tx;
+import com.sagacity.docs.base.extend.Consts;
 import com.sagacity.docs.web.common.WebBaseController;
 import com.sagacity.docs.base.extend.ResponseCode;
+import com.sagacity.docs.model.UserDao;
 import com.sagacity.utility.StringTool;
-import net.sf.json.JSONObject;
 
 @ControllerBind(controllerKey = "/admin/user", viewPath = "/admin/user")
 public class UserController extends WebBaseController{
@@ -20,40 +21,46 @@ public class UserController extends WebBaseController{
     }
 
     public void getUserList(){
-        String sql_select = "select u.*, IFNULL(dc.dCount,0) dcCount, IFNULL(vc.vCount,0) vcCount";
+        String sql_select = "select u.user_id,u.account,u.created_at,u.state,up.nick_name, r.role_desc, IFNULL(dc.dCount,0) dcCount, IFNULL(vc.vCount,0) vcCount";
         String sql_from = "from sys_users u\n" +
-                "left join (select count(*) dCount, user_id from doc_info group by  user_id) dc on dc.user_id=u.UserID\n" +
-                "left join (select count(*) vCount, user_id from video_info group by  user_id) vc on vc.user_id=u.UserID\n" +
+                "left join user_profile up on up.user_id=u.user_id\n" +
+                "left join sys_roles r on r.role_id=u.role_id\n" +
+                "left join (select count(*) dCount, user_id from doc_info group by  user_id) dc on dc.user_id=u.user_id\n" +
+                "left join (select count(*) vCount, user_id from video_info group by  user_id) vc on vc.user_id=u.user_id\n" +
                 "where 1=1 ";
-        sql_from += "order by AddTime DESC";
-        if (StringTool.notNull(getPara("pageIndex")) && !StringTool.isBlank(getPara("pageIndex"))){
-            Page<Record> noticeList = Db.paginate(getParaToInt("pageIndex", 1),
-                    getParaToInt("pageSize", 10), sql_select, sql_from);
-            renderJson(convertPageData(noticeList));
-        }else {
-            renderJson(ResponseCode.LIST, Db.find(sql_select + "\n" + sql_from));
+        if(StringTool.notNull(getPara("key")) && StringTool.notBlank(getPara("key"))){
+            sql_from += " and (u.account like '%"+getPara("key")+"%' or up.nick_name like '%"+getPara("key")+"%') ";
         }
+        sql_from += "order by created_at DESC";
+        if (StringTool.notNull(getPara("pageIndex")) && !StringTool.isBlank(getPara("pageIndex"))){
+            Page<Record> dataList = Db.paginate(getParaToInt("pageIndex", 1),
+                    getParaToInt("pageSize", 10), sql_select, sql_from);
+            rest.success().setData(dataList);
+        }else {
+            data.put(ResponseCode.LIST, Db.find(sql_select + "\n" + sql_from));
+            rest.success().setData(data);
+        }
+        renderJson(rest);
     }
 
     public void setUserState(){
         boolean r = false;
         int state = getParaToBoolean("state")? 1:0;
-        r = Db.update("update sys_users set intState=? where UserID=?", state, getPara("user_id"))>0? true:false;
+        r = Db.update("update sys_users set state=? where user_id=?", state, getPara("userId"))>0? true:false;
         if(r){
-            if(state == 1){
-                responseData.put(ResponseCode.MSG, "用户启用！");
-            }else if(state == 0){
-                responseData.put(ResponseCode.MSG, "用户停用！");
+            if(state == Consts.STATE_VALID){
+                rest.success("用户启用！");
+            }else if(state == Consts.STATE_INVALID){
+                rest.success("用户停用！");
             }
         }else{
-            responseData.put(ResponseCode.MSG, "操作失败！");
+            rest.error("操作失败！");
         }
-        responseData.put(ResponseCode.CODE, r? 1:0);
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     public  void getPayList(){
-        JSONObject jo = getCurrentUser();
+        UserDao userInfo = getCurrentUser();
 
         String sql_select = "select pay.*";
         String sql_from = "from (\n" +
@@ -69,12 +76,13 @@ public class UserController extends WebBaseController{
         sql_from += " order by pay.created_at Desc";
         if (StringTool.notNull(getPara("pageIndex")) && !StringTool.isBlank(getPara("pageIndex"))){
             Page<Record> dataList = Db.paginate(getParaToInt("pageIndex", 1),
-                    getParaToInt("pageSize", 10), sql_select, sql_from, jo.get("UserID"));
-            renderJson(convertPageData(dataList));
+                    getParaToInt("pageSize", 10), sql_select, sql_from, userInfo.getUser_id());
+            rest.success().setData(dataList);
         }else {
-            renderJson(ResponseCode.LIST, Db.find(sql_select + "\n" + sql_from, jo.get("UserID")));
+            data.put(ResponseCode.LIST, Db.find(sql_select + "\n" + sql_from, userInfo.getUser_id()));
+            rest.success().setData(data);
         }
-
+        renderJson(rest);
     }
 
     /**

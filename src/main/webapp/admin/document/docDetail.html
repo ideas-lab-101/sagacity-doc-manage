@@ -72,8 +72,10 @@
         var loading = layer.msg('正在加载……', {icon: 16, shade: 0.3, time:0});
         $.ajax({
             url: "getPageTree",
-            data: {doc_id: doc_id},
-            success: function (data) {
+            data: {
+                docId: doc_id
+            },
+            success: function (resp) {
                 layer.close(loading);
                 tree.render({
                     elem: '#pageTree' //指定元素
@@ -83,9 +85,9 @@
                     , drag: false
                     , click: function (item) { //点击节点回调
                         sel_item = item;
-                        $('#page').attr("src", 'editPage?page_id='+item.data.id);
+                        $('#page').attr("src", 'editPage?pageId='+item.data.id);
                     }
-                    , data: data.data
+                    , data: resp.data
                 });
             },
             error: function () {
@@ -139,13 +141,13 @@
                 dataType: "json",
                 data: {
                     title: value,
-                    doc_id: doc_id,
+                    docId: doc_id,
                     pid: parent_id,
                     level: level
                 },
-                success: function(data) {
+                success: function(resp) {
                     //刷新树
-                    if(data.code ==1){
+                    if(resp.code ==1){
                         location.reload();
                     }
                     layer.close(index);
@@ -169,11 +171,11 @@
                 type: "POST",
                 dataType: "json",
                 data: {
-                    page_id: sel_item.data.id,
+                    pageId: sel_item.data.id,
                     name: value
                 },
-                success: function(data) {
-                    if(data.code == 1){
+                success: function(resp) {
+                    if(resp.code == 1){
                         //修改节点自身
                         location.reload();
                     }
@@ -195,14 +197,14 @@
                 type: "POST",
                 dataType: "json",
                 data: {
-                    page_id: sel_item.data.id
+                    pageId: sel_item.data.id
                 },
-                success: function(data) {
-                    if(data.code == 1){
+                success: function(resp) {
+                    if(resp.code == 1){
                         //删除节点自身
                         location.reload();
                     }else{
-                        layer.msg(data.msg);
+                        layer.msg(resp.msg);
                     }
                 }
             });
@@ -227,12 +229,12 @@
             type: "POST",
             dataType: "json",
             data: {
-                page_id: sel_item.data.id,
+                pageId: sel_item.data.id,
                 adjustType: 'up'
 
             },
-            success: function(data) {
-                if(data.code == 1){
+            success: function(resp) {
+                if(resp.code == 1){
                     //删除节点自身
                     location.reload();
                 }
@@ -253,12 +255,12 @@
             type: "POST",
             dataType: "json",
             data: {
-                page_id: sel_item.data.id,
+                pageId: sel_item.data.id,
                 adjustType: 'down'
 
             },
-            success: function(data) {
-                if(data.code == 1){
+            success: function(resp) {
+                if(resp.code == 1){
                     //删除节点自身
                     location.reload();
                 }

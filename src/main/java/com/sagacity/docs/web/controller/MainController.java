@@ -1,7 +1,5 @@
 package com.sagacity.docs.web.controller;
 
-import com.alibaba.fastjson.JSONArray;
-import com.jfinal.aop.Before;
 import com.jfinal.aop.Clear;
 import com.jfinal.ext.plugin.sqlinxml.SqlKit;
 import com.jfinal.ext.route.ControllerBind;
@@ -10,7 +8,6 @@ import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
-import com.jfinal.plugin.activerecord.tx.Tx;
 import com.sagacity.docs.base.extend.ResponseCode;
 import com.sagacity.docs.model.doc.DocInfo;
 import com.sagacity.docs.model.doc.DocPage;
@@ -19,7 +16,6 @@ import com.sagacity.docs.service.MindGenerator;
 import com.sagacity.docs.service.SearchEngine;
 import com.sagacity.docs.web.common.WebBaseController;
 import com.sagacity.docs.web.common.WebLoginInterceptor;
-import com.sagacity.utility.ConvertUtil;
 import com.sagacity.utility.StringTool;
 
 import java.util.List;
@@ -47,29 +43,43 @@ public class MainController extends WebBaseController {
     public void seg(){
         String kw = getPara("kw");
         String result = SearchEngine.dao.seg(kw);
-        responseData.put(ResponseCode.DATA, result);
-        renderJson(responseData);
+        rest.success().setData(result);
+        renderJson(rest);
     }
 
     @Clear(WebLoginInterceptor.class)
     public void search(){
         boolean r = true;
         String kw = getPara("kw");
+        List<String> segList = SearchEngine.dao.segList(kw);
+        StringBuilder segs = new StringBuilder();
 
         String sqlSelect = "select di.id,di.title,di.`desc`,di.cover,di.source,di.is_end,SUBSTR(di.updated_at,1,10) update_date\n" +
-                ",dc.id doc_class_id,dc.title doc_class,u.UserID,u.Caption,dp.view_count,dp.page_count";
+                ",dc.id doc_class_id,dc.title doc_class,u.user_id,up.nick_name,dp.view_count,ifNULL(dp.page_count,0) page_count";
         String sqlFrom = "from doc_info di\n" +
                 "left join doc_class dc on dc.id=di.doc_class_id\n" +
                 "left join (select count(id) page_count,sum(view_count) view_count, doc_id from doc_page group by doc_id) dp on dp.doc_id=di.id\n" +
-                "left join sys_users u on u.UserID=di.user_id\n" +
-                "where di.state=1 and di.title like '%"+kw+"%' or u.Caption like '%"+kw+"%'";
-        sqlFrom += "\n order by di.updated_at DESC";
+                "left join sys_users u on u.user_id=di.user_id\n" +
+                "left join user_profile up on up.user_id=u.user_id\n" +
+                "where di.state=1 and (";
 
-        Page<Record> resultList = Db.paginate(getParaToInt("pageIndex", 1),
+        for (String key : segList) {
+            if (segs.length() != 0) {
+                sqlFrom += " or ";
+                segs.append(" ");
+            }
+            sqlFrom += "di.title like '%"+key+"%' or up.nick_name like '%"+key+"%'";
+            segs.append(key);
+        }
+        sqlFrom += ") \n order by di.updated_at DESC";
+
+        Page<Record> dataList = Db.paginate(getParaToInt("pageIndex", 1),
                 getParaToInt("pageSize", 10), sqlSelect, sqlFrom);
-        renderJson(convertPageData(resultList));
-        responseData.put("seg", SearchEngine.dao.seg(kw));
-        renderJson(responseData);
+        data.put(ResponseCode.PAGE, dataList);
+        data.put("segs", segs.toString());
+        rest.success().setData(data);
+        //更好的写法
+        renderJson(rest);
     }
 
     /**
@@ -80,8 +90,8 @@ public class MainController extends WebBaseController {
         int docId = getParaToInt("docId", 0);
         //文档信息
         Record dc = Db.findFirst(SqlKit.sql("doc.getDocInfo"), docId);
-        Record au = Db.findFirst(SqlKit.sql("user.getAuthorInfo")+
-                " where u.UserID=?", dc.getStr("user_id"));
+        Record au = Db.findFirst(SqlKit.sql("user.getAccountInfo")+
+                " where u.user_id=?", dc.getStr("user_id"));
         if(dc != null){
             setAttr("doc", dc);
             setAttr("au", au);
@@ -97,7 +107,7 @@ public class MainController extends WebBaseController {
     @Clear(WebLoginInterceptor.class)
     public void a(){
         String userId = getPara("userId");
-        String sql = SqlKit.sql("user.getAuthorInfo") + " where u.UserID=?";
+        String sql = SqlKit.sql("user.getAccountInfo") + " where u.user_id=?";
         Record ui = Db.findFirst(sql, userId);
         setAttr("author", ui);
         //基于作者的统计
@@ -117,18 +127,19 @@ public class MainController extends WebBaseController {
         String userId = getPara("userId");
 
         String sqlSelect = "select di.id,di.title,di.`desc`,di.cover,di.source,di.is_end,SUBSTR(di.updated_at,1,10) update_date\n" +
-                ",dc.id doc_class_id,dc.title doc_class,u.UserID,u.Caption,dp.view_count,dp.page_count";
+                ",dc.id doc_class_id,dc.title doc_class,u.user_id,up.nick_name,dp.view_count,dp.page_count";
         String sqlFrom = "from doc_info di\n" +
                 "left join doc_class dc on dc.id=di.doc_class_id\n" +
                 "left join (select count(id) page_count,sum(view_count) view_count, doc_id from doc_page group by doc_id) dp on dp.doc_id=di.id\n" +
-                "left join sys_users u on u.UserID=di.user_id\n" +
+                "left join sys_users u on u.user_id=di.user_id\n" +
+                "left join user_profile up on up.user_id=u.user_id\n" +
                 "where di.state=1 and di.user_id ='"+userId+"'";
         sqlFrom += "\n order by di.updated_at DESC";
 
-        Page<Record> resultList = Db.paginate(getParaToInt("pageIndex", 1),
+        Page<Record> dataList = Db.paginate(getParaToInt("pageIndex", 1),
                 getParaToInt("pageSize", 10), sqlSelect, sqlFrom);
-        renderJson(convertPageData(resultList));
-        renderJson(responseData);
+        rest.success().setData(dataList);
+        renderJson(rest);
     }
 
     /**
@@ -153,20 +164,22 @@ public class MainController extends WebBaseController {
     public void classBook(){
         String classId = getPara("classId");
 
-        responseData.put("classs", DocClass.dao.findById(classId));
+        data.put("classs", DocClass.dao.findById(classId));
         String sqlSelect = "select di.id,di.title,di.`desc`,di.cover,di.source,di.is_end,SUBSTR(di.updated_at,1,10) update_date\n" +
-                ",dc.id doc_class_id,dc.title doc_class,u.UserID,u.Caption,dp.view_count,dp.page_count";
+                ",dc.id doc_class_id,dc.title doc_class,u.user_id,up.nick_name,dp.view_count,dp.page_count";
         String sqlFrom = "from doc_info di\n" +
                 "left join doc_class dc on dc.id=di.doc_class_id\n" +
                 "left join (select count(id) page_count,sum(view_count) view_count, doc_id from doc_page group by doc_id) dp on dp.doc_id=di.id\n" +
-                "left join sys_users u on u.UserID=di.user_id\n" +
+                "left join sys_users u on u.user_id=di.user_id\n" +
+                "left join user_profile up on up.user_id=u.user_id\n" +
                 "where di.state=1 and di.doc_class_id ='"+classId+"'";
         sqlFrom += "\n order by di.updated_at DESC";
 
-        Page<Record> resultList = Db.paginate(getParaToInt("pageIndex", 1),
+        Page<Record> dataList = Db.paginate(getParaToInt("pageIndex", 1),
                 getParaToInt("pageSize", 12), sqlSelect, sqlFrom);
-        renderJson(convertPageData(resultList));
-        renderJson(responseData);
+        data.put(ResponseCode.PAGE, dataList);
+        rest.success().setData(data);
+        renderJson(rest);
     }
 
     /**
@@ -206,13 +219,12 @@ public class MainController extends WebBaseController {
         String bookName = doc.getStr("title");
         r = MindGenerator.dao.generateMindMap(docId, bookName, JsonKit.toJson(ms));
         if(r){
-            responseData.put(ResponseCode.CODE, 1);
-            responseData.put(ResponseCode.DATA, PropKit.get("resource.url") + "mind_map/" + bookName + ".xmind");
+            data.put("url", PropKit.get("resource.url") + "mind_map/" + bookName + ".xmind");
+            rest.success().setData(data);
         }else{
-            responseData.put(ResponseCode.CODE, 0);
-            responseData.put(ResponseCode.MSG, "操作失败！");
+            rest.error("操作失败！");
         }
-        renderJson(responseData);
+        renderJson(rest);
     }
 
     @Clear(WebLoginInterceptor.class)
@@ -285,7 +297,9 @@ public class MainController extends WebBaseController {
                 "ORDER BY RAND() LIMIT 1\n";
         Record s = Db.findFirst(sql);
         Db.update("update soul set hits=hits+1 where id=?", s.getInt("id"));
-        responseData.put(ResponseCode.DATA, s);
-        renderJson(responseData);
+
+        data.put(ResponseCode.LIST, s);
+        rest.success().setData(data);
+        renderJson(rest);
     }
 }

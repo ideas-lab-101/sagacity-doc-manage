@@ -87,9 +87,9 @@
     function getVideoClass() {
         $.ajax({
             url: "../system/getTagList",
-            success: function (data) {
-                for(var i =0;i<data.data.length;i++){
-                    var opt = data.data[i];
+            success: function (resp) {
+                for(var i =0;i<resp.data.list.length;i++){
+                    var opt = resp.data.list[i];
                     $("#class_id").append("<option value='"+opt.id+"'>"+opt.title+"</option>");
                 }
                 form.render('select');
@@ -105,13 +105,13 @@
             type: "POST",
             dataType: "json",
             data: formData,
-            success: function(data) {
-                if(data.code ==1){
+            success: function(resp) {
+                if(resp.code ==1){
                     //关闭页面
                     var index = parent.layer.getFrameIndex(window.name);
                     parent.layer.close(index);
                 }else{
-                    layer.msg(data.msg);
+                    layer.msg(resp.msg);
                 }
             }
         });
