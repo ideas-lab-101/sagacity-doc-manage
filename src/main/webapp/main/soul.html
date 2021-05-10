@@ -124,9 +124,9 @@
                 dataType: "json",
                 data: {
                 },
-                success: function(data) {
-                    console.log(data)
-                    soulText = data.data.title;
+                success: function(res) {
+                    console.log(res)
+                    soulText = res.data.list.title;
                     $("#soulResult").find("label").html(soulText);
                 }
             });
