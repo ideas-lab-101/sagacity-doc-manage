@@ -18,8 +18,9 @@
     </sql>
     <sql id="getDocList-from">
         from doc_info doc
-        left join (select count(id) page_count,doc_id from doc_page group by doc_id) dpc on dpc.doc_id=doc.id
         left join doc_class dc on dc.id=doc.doc_class_id
+        left join (select count(id) page_count,doc_id from doc_page group by doc_id) dpc on dpc.doc_id=doc.id
+        left join doc_share ss on ss.doc_id=doc.id
         left join sys_users u on u.user_id=doc.user_id
         left join user_profile up on up.user_id=u.user_id
     </sql>

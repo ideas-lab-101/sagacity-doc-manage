@@ -70,6 +70,30 @@ public class DocController extends WebBaseController {
         renderJson(rest);
     }
 
+    /**
+     * 获得分享的文档列表
+     */
+    public void getShareDocList(){
+        UserDao userInfo = getCurrentUser();
+
+        String sqlSelect = SqlKit.sql("doc.getDocList-select");
+        String sqlFrom = SqlKit.sql("doc.getDocList-from");
+        sqlFrom += " where ss.user_id='"+userInfo.getUser_id()+"'";
+        if(StringTool.notNull(getPara("key")) && StringTool.notBlank(getPara("key"))){
+            sqlFrom += " and doc.title like '%"+getPara("key")+"%'";
+        }
+        sqlFrom += " order by doc.updated_at Desc";
+        if (StringTool.notNull(getPara("pageIndex")) && !StringTool.isBlank(getPara("pageIndex"))){
+            Page<Record> dataList = Db.paginate(getParaToInt("pageIndex", 1),
+                    getParaToInt("pageSize", 10), sqlSelect, sqlFrom);
+            rest.success().setData(dataList);
+        }else {
+            data.put(ResponseCode.LIST, Db.find(sqlSelect + "\n" + sqlFrom));
+            rest.success().setData(data);
+        }
+        renderJson(rest);
+    }
+
     public void editDoc(){
         int docId = getParaToInt("docId");
         String sql = SqlKit.sql("doc.getDocInfo");

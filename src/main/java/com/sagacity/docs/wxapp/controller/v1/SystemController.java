@@ -215,7 +215,6 @@ public class SystemController extends WXSSBaseController {
         String msg = "";
 
         String url = PropKit.get("base.url");
-        String token = getPara("token");
         String key = getPara("key");
         String password = StringTool.generateMixString(6);
 
