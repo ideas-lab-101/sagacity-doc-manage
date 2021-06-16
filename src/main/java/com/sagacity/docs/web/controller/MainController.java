@@ -12,6 +12,7 @@ import com.sagacity.docs.base.extend.ResponseCode;
 import com.sagacity.docs.model.doc.DocInfo;
 import com.sagacity.docs.model.doc.DocPage;
 import com.sagacity.docs.model.system.DocClass;
+import com.sagacity.docs.service.BullshitGenerator;
 import com.sagacity.docs.service.MindGenerator;
 import com.sagacity.docs.service.SearchEngine;
 import com.sagacity.docs.web.common.WebBaseController;
@@ -300,6 +301,21 @@ public class MainController extends WebBaseController {
 
         data.put(ResponseCode.LIST, s);
         rest.success().setData(data);
+        renderJson(rest);
+    }
+
+    @Clear(WebLoginInterceptor.class)
+    public void bullshit(){
+        render("main/bullshit.html");
+    }
+
+    @Clear(WebLoginInterceptor.class)
+    public void genBullshit(){
+        String topic = getPara("topic");
+        BullshitGenerator bs = new BullshitGenerator();
+        bs.initData(topic);
+        String article = bs.genArticle();
+        rest.success().setData(article);
         renderJson(rest);
     }
 }

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="icon" href="/asset/image/cloud_docs.ico">
-    <title>魔灯知库 - 毒鸡汤</title>
+    <title>魔灯知库 - 废话机</title>
     <link href="/asset/font-icon/font_icon_sagacity.css" rel="stylesheet">
     <link rel="stylesheet" href="/asset/layui/css/layui.css">
     <link rel="stylesheet" href="/asset/css/bookCover.css">
@@ -29,8 +29,12 @@
             color: #2F2F2F;
             font-weight: bold;
         }
+        .b-content p{
+            text-indent:2em;
+            line-height:1.5em;
+            margin-top:10px;
+        }
 
-        .elem-quote{margin-bottom:10px;padding:15px;line-height:22px;border-left:5px solid #1E9FFF;border-radius:0 2px 2px 0;background-color:#f2f2f2}
     </style>
 
 </head>
@@ -53,8 +57,8 @@
                     </a>
                 </li>
                 <li class="layui-nav-item">
-                    <a href="bullshit">
-                        <i style="font-size: 16px;" class="iconfont icon-emoticon-dead">废话机</i>
+                    <a href="soul">
+                        <i style="font-size: 16px;" class="iconfont icon-drawing">鸡汤</i>
                     </a>
                 </li>
                 <li class="layui-nav-item">
@@ -65,41 +69,29 @@
             </ul>
         </div>
         <div class="layui-body">
-            <div style="text-align: center; padding: 60px 1px; ">
-                <blockquote id="soulResult" class="elem-quote">
-                    <label style="font-size: 21px; font-weight: bold;">来一WAN毒鸡汤……</label></blockquote>
-            </div>
-            <div style="text-align: center; padding: 10px 20px; ">
-
+            <div style="text-align: center; padding: 60px 20px 10px; ">
                 <form class="layui-form">
                     <div class="layui-form-item">
+                        <div class="layui-input-block layui-inline">
+                            <input style="width: 370px;" type="text" name="topic" id="topic" lay-verify="required" required placeholder="请输入一句主题" autocomplete="off" class="layui-input">
+                        </div>
                         <div class="layui-inline">
-                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="*">再来一WAN</button>
-                            <a class="layui-btn layui-btn-primary" onclick="copy()">复制到剪贴板</a>
+                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="*">生成废话</button>
                         </div>
                     </div>
                 </form>
             </div>
+            <div class="b-content" id="content" style="text-align: left; padding: 10px 20px 60px;">
+
+            </div>
+
         </div>
-        <button id="clip" style="display: none;" data-clipboard-text=""></button>
     </div>
 
     <script src="/asset/layui/layui.js" charset="utf-8"></script>
     <script src="/asset/jquery/jquery-2.1.4.min.js"></script>
-    <script src="/asset/js/clipboard.min.js"></script>
 
     <script>
-        var soulText = "";
-
-        window.onload=function(){
-            getSoul();
-
-            var clipboard = new ClipboardJS('#clip');
-            clipboard.on('success', function(e) {
-                layer.msg('内容已复制到剪贴板');
-                e.clearSelection();
-            });
-        }
 
         var element, layer, form;
         layui.config({
@@ -110,31 +102,33 @@
             form = layui.form;
 
             form.on('submit(*)', function(data){
-                getSoul();
+                getBullshit();
                 return false;
             });
 
         })
 
-        function copy(){
-            var clip = document.getElementById("clip");
-            clip.setAttribute("data-clipboard-text", soulText);
-            clip.click();
-        }
 
-        function getSoul() {
+        function getBullshit() {
+            var topic = $('#topic').val();
             $.ajax({
-                url: "getSoul",
-                type: "GET",
+                url: "genBullshit",
+                type: "POST",
                 dataType: "json",
                 data: {
+                    topic: topic
                 },
                 success: function(res) {
-                    console.log(res)
-                    soulText = res.data.list.title;
-                    $("#soulResult").find("label").html(soulText);
+                    var content = res.data;
+                    $("#content").html(highlightKeyWords(content, topic));
                 }
             });
+        }
+
+        function highlightKeyWords(str, key){
+            var reg = new RegExp("(" + key + ")", "g");
+            var newstr = str.replace(reg, "<font style='background:#ff0;'>$1</font>");
+            return newstr;
         }
 
     </script>
