@@ -140,6 +140,7 @@
             return newstr;
         }
 
+        var useragent = navigator.userAgent;
         function onShare(){
             if(bKey == null){
                 layer.msg('请先点击生成！');
@@ -155,7 +156,11 @@
                 success: function(resp) {
                     console.log(resp);
                     if(resp.code == 1){
-                        window.open("/page/"+resp.data, "_blank");
+                        if (useragent.match(/MicroMessenger/i) != 'MicroMessenger') {
+                            window.open("/page/" + resp.data, "_blank");
+                        }else{
+                            location.href = "/page/" + resp.data;
+                        }
                     }else{
                         layer.msg(resp.msg);
                     }
