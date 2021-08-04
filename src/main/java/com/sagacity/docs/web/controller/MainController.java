@@ -1,25 +1,34 @@
 package com.sagacity.docs.web.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jfinal.aop.Clear;
 import com.jfinal.ext.plugin.sqlinxml.SqlKit;
 import com.jfinal.ext.route.ControllerBind;
+import com.jfinal.kit.HashKit;
 import com.jfinal.kit.JsonKit;
+import com.jfinal.kit.PathKit;
 import com.jfinal.kit.PropKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.ehcache.CacheKit;
+import com.sagacity.docs.base.extend.CacheKey;
 import com.sagacity.docs.base.extend.ResponseCode;
 import com.sagacity.docs.model.doc.DocInfo;
 import com.sagacity.docs.model.doc.DocPage;
 import com.sagacity.docs.model.system.DocClass;
 import com.sagacity.docs.service.BullshitGenerator;
 import com.sagacity.docs.service.MindGenerator;
+import com.sagacity.docs.service.PageGenerator;
 import com.sagacity.docs.service.SearchEngine;
 import com.sagacity.docs.web.common.WebBaseController;
 import com.sagacity.docs.web.common.WebLoginInterceptor;
+import com.sagacity.utility.DateUtils;
 import com.sagacity.utility.StringTool;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ControllerBind(controllerKey = "/", viewPath = "/")
 public class MainController extends WebBaseController {
@@ -315,7 +324,40 @@ public class MainController extends WebBaseController {
         BullshitGenerator bs = new BullshitGenerator();
         bs.initData(topic);
         String article = bs.genArticle();
-        rest.success().setData(article);
+        //将内容写入缓存，用于后续的生成静态分享页
+        String key = HashKit.md5(DateUtils.getLongDateMilliSecond()+"");
+        data.put("bKey", key);
+        data.put("bData", article);
+        JSONObject jo = new JSONObject();
+        jo.put("title", topic);
+        jo.put("content", article);
+        CacheKit.put("BullshitCache", key, jo);
+        rest.success().setData(data);
+        renderJson(rest);
+    }
+
+    @Clear(WebLoginInterceptor.class)
+    public void genSharePage(){
+        boolean r = false;
+        String bKey = getPara("bKey");
+        JSONObject jo = CacheKit.get("BullshitCache", bKey);
+        if(null != jo){
+            //静态页地址
+            String pageName = DateUtils.getLongDateMilliSecond()+".html";
+            String pagePath = PathKit.getWebRootPath()+"/page/"+pageName;
+            PageGenerator pg = new PageGenerator();
+            HashMap<String, Object> param = new HashMap<String, Object>();
+            param.put("title", jo.get("title"));
+            param.put("content", jo.get("content"));
+            r = pg.generate( pagePath, param);
+            if(r){
+                rest.success("分享页生成成功！").setData(pageName);
+            }else{
+                rest.error("分享页生成失败！");
+            }
+        }else{
+            rest.error("废话机出错！");
+        }
         renderJson(rest);
     }
 }

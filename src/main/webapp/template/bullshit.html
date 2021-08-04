@@ -1,0 +1,29 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	<title>${title}</title>
+    <link rel="stylesheet" href="/asset/css/article.css"/>
+</head>
+
+<body ontouchstart>
+	<H1>${title}</H1>
+	<H3>written by 废话机</H3>
+	<div class="content" id="content">
+
+	</div>
+
+	<script src="/asset/jquery/jquery-2.1.4.min.js"></script>
+	<script>
+		var topic = '${title}';
+		var content = '${content}';
+		$("#content").html(highlightKeyWords(content, topic));
+
+		function highlightKeyWords(str, key){
+			var reg = new RegExp("(" + key + ")", "g");
+			var newstr = str.replace(reg, "<font style='background:#ff0;'>$1</font>");
+			return newstr;
+		}
+	</script>
+</body>
+</html>

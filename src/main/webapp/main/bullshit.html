@@ -34,7 +34,6 @@
             line-height:1.5em;
             margin-top:10px;
         }
-
     </style>
 
 </head>
@@ -71,12 +70,21 @@
         <div class="layui-body">
             <div style="text-align: center; padding: 60px 20px 10px; ">
                 <form class="layui-form">
-                    <div class="layui-form-item">
-                        <div class="layui-input-block layui-inline">
-                            <input style="width: 370px;" type="text" name="topic" id="topic" lay-verify="required" required placeholder="请输入一句主题" autocomplete="off" class="layui-input">
+<!--                    <div class="layui-form-item">-->
+<!--                        <div class="layui-input-block layui-inline">-->
+<!--                            <input style="width: 370px;" type="text" name="topic" id="topic" lay-verify="required" required placeholder="请输入一句主题" autocomplete="off" class="layui-input">-->
+<!--                        </div>-->
+<!--                        <div class="layui-inline">-->
+<!--                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="*">生成废话</button>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <div class="layui-row">
+                        <div class="layui-col-md4 layui-col-md-offset3">
+                            <input style="width: 99%;" type="text" name="topic" id="topic" lay-verify="required" required placeholder="请输入一句主题" autocomplete="off" class="layui-input">
                         </div>
-                        <div class="layui-inline">
+                        <div class="layui-col-md2">
                             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="*">生成废话</button>
+                            <a class="layui-btn layui-btn-primary" onclick="onShare()"><i class="layui-icon">&#xe641;</i></a>
                         </div>
                     </div>
                 </form>
@@ -108,7 +116,7 @@
 
         })
 
-
+        var bKey;
         function getBullshit() {
             var topic = $('#topic').val();
             $.ajax({
@@ -119,7 +127,8 @@
                     topic: topic
                 },
                 success: function(res) {
-                    var content = res.data;
+                    bKey = res.data.bKey;
+                    var content = res.data.bData;
                     $("#content").html(highlightKeyWords(content, topic));
                 }
             });
@@ -129,6 +138,30 @@
             var reg = new RegExp("(" + key + ")", "g");
             var newstr = str.replace(reg, "<font style='background:#ff0;'>$1</font>");
             return newstr;
+        }
+
+        function onShare(){
+            if(bKey == null){
+                layer.msg('请先点击生成！');
+                return false;
+            }
+            $.ajax({
+                url: "genSharePage",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    bKey: bKey
+                },
+                success: function(resp) {
+                    console.log(resp);
+                    if(resp.code == 1){
+                        window.open("/page/"+resp.data, "_blank");
+                    }else{
+                        layer.msg(resp.msg);
+                    }
+                }
+            });
+
         }
 
     </script>

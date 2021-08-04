@@ -27,6 +27,10 @@
 	<cache name="SystemCache" maxElementsInMemory="10000"
 		   maxElementsOnDisk="100000" eternal="true" overflowToDisk="true" />
 
+	<cache name="BullshitCache" maxElementsInMemory="10000" maxElementsOnDisk="100000" eternal="false"
+		   overflowToDisk="true" timeToIdleSeconds="600" timeToLiveSeconds="0"
+		   diskPersistent="true" memoryStoreEvictionPolicy="LFU"/>
+
 	<cache name="SMSIdentifyCache" maxElementsInMemory="10000" maxElementsOnDisk="100000" eternal="false"
 		   overflowToDisk="true" timeToIdleSeconds="600" timeToLiveSeconds="0"
 		   diskPersistent="true" memoryStoreEvictionPolicy="LFU" />
