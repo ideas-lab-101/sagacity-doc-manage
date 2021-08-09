@@ -1,5 +1,6 @@
 package com.sagacity.docs.web.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.aop.Clear;
 import com.jfinal.ext.plugin.sqlinxml.SqlKit;
@@ -25,6 +26,11 @@ import com.sagacity.docs.web.common.WebBaseController;
 import com.sagacity.docs.web.common.WebLoginInterceptor;
 import com.sagacity.utility.DateUtils;
 import com.sagacity.utility.StringTool;
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +43,30 @@ public class MainController extends WebBaseController {
     @Clear(WebLoginInterceptor.class)
     public void index(){
         render("index.html");
+    }
+
+    @Clear(WebLoginInterceptor.class)
+    public void test(){
+        String result = "";
+        //测试汉字转拼音
+        HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
+        format.setToneType(HanyuPinyinToneType.WITH_TONE_MARK);
+        format.setVCharType(HanyuPinyinVCharType.WITH_U_UNICODE);
+        try{
+            char[ ] strArr = "硬是要的".toCharArray();
+            for(char c : strArr){
+                String[] rs = PinyinHelper.toHanyuPinyinStringArray(c, format);
+                for(String s : rs){
+                    System.out.println(s);
+                }
+                System.out.println("===============");
+            }
+            result = PinyinHelper.toHanyuPinyinString("硬是要的", format, " ");
+        }catch (BadHanyuPinyinOutputFormatCombination ex){
+            ex.printStackTrace();
+        }
+        rest.success().setData(result);
+        renderJson(rest);
     }
 
     @Clear(WebLoginInterceptor.class)
@@ -329,8 +359,8 @@ public class MainController extends WebBaseController {
         data.put("bKey", key);
         data.put("bData", article);
         JSONObject jo = new JSONObject();
-        jo.put("title", topic);
-        jo.put("content", article);
+        jo.put("topic", topic);
+        jo.put("article", article);
         CacheKit.put("BullshitCache", key, jo);
         rest.success().setData(data);
         renderJson(rest);
@@ -347,13 +377,33 @@ public class MainController extends WebBaseController {
             String pagePath = PathKit.getWebRootPath()+"/page/"+pageName;
             PageGenerator pg = new PageGenerator();
             HashMap<String, Object> param = new HashMap<String, Object>();
-            param.put("title", jo.get("title"));
-            param.put("content", jo.get("content"));
-            r = pg.generate( pagePath, param);
-            if(r){
-                rest.success("分享页生成成功！").setData(pageName);
-            }else{
-                rest.error("分享页生成失败！");
+            String topic = jo.getString("topic");
+            param.put("topic", topic);
+            param.put("article", jo.get("article"));
+            //拆成拼音与汉字
+            char topicList[] = topic.toCharArray();
+            HanyuPinyinOutputFormat format = new HanyuPinyinOutputFormat();
+            format.setToneType(HanyuPinyinToneType.WITH_TONE_MARK);
+            format.setVCharType(HanyuPinyinVCharType.WITH_U_UNICODE);
+            JSONArray phArray = new JSONArray();
+            try{
+                for(char c : topicList){
+                    String[] rs = PinyinHelper.toHanyuPinyinStringArray(c, format);
+                    JSONObject ph = new JSONObject();
+                    ph.put("py", rs[0]);
+                    ph.put("han", c);
+                    phArray.add(ph);
+                }
+                param.put("phList", phArray);
+                r = pg.generate( pagePath, param);
+                if(r){
+                    rest.success("分享页生成成功！").setData(pageName);
+                }else{
+                    rest.error("分享页生成失败！");
+                }
+            }catch (BadHanyuPinyinOutputFormatCombination ex){
+                ex.printStackTrace();
+                rest.error("废话机出错!");
             }
         }else{
             rest.error("废话机出错！");

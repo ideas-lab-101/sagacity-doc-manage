@@ -3,12 +3,92 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<link rel="icon" href="/asset/image/cloud_docs.ico">
-	<title>${title}</title>
+	<title>${topic}</title>
     <link rel="stylesheet" href="/asset/css/article.css"/>
+	<style>
+		.tf {
+			float: left;
+		}
+		.pinyin {
+			border: 1px solid #ff4242;
+			border-bottom: none;
+			margin-right: 1px;
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-color: #ffffff;
+			letter-spacing: normal;
+			width: 48px;
+			height: 23px;
+			font-family: "pinyin";
+			font-size: 16px;
+			position: relative;
+		}
+		/*.pinyin:not(:last-child) {*/
+		/*	border-right: none;*/
+		/*}*/
+		.pinyindiv {
+			position: absolute;
+			left: 50%;
+			top: 44%;
+			transform: translate(-50%, -50%);
+			-webkit-transform: translate(-50%, -50%);
+		}
+		.zige {
+			border: 1px solid #ff4242;
+			margin-right: 1px;
+			background-repeat: no-repeat;
+			background-size: cover;
+			letter-spacing: normal;
+			width: 48px;
+			height: 48px;
+			line-height: 48px;
+			position: relative;
+		}
+		/*.zige:not(:last-child) {*/
+		/*	border-right: none;*/
+		/*}*/
+		.fontdiv {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			text-align: center;
+			transform: translate(-50%, -50%);
+			-webkit-transform: translate(-50%, -50%);
+			width: 48px;
+			height: 48px;
+		}
+		.cb {
+			clear: both;
+		}
+	</style>
 </head>
 
 <body ontouchstart>
-	<H1>${title}</H1>
+	<div style="width: 100%;; height: 75px; position: relative; margin: 0px auto;">
+		<#list phList as ph>
+		<div class="tf">
+			<div class="pinyin">
+				<svg viewBox="0 0 48 23" style="width:48px; height:23px;">
+					<path d="M0,7 L48,7 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+						  stroke-dasharray="2,6"></path>
+					<path d="M0,16 L48,16 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+						  stroke-dasharray="2,6"></path>
+				</svg>
+				<div class="pinyindiv"><span style="color:#000;">${ph.py!''}</span></div>
+			</div>
+			<div class="zige">
+				<svg viewBox="0 0 96 96" style="width:48px; height:48px;" class="svglattice">
+					<path d="M0,48 L96,48 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+						  stroke-dasharray="2,5"></path>
+					<path d="M48,0 L48,96 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+						  stroke-dasharray="2,5"></path>
+				</svg>
+				<div class="fontdiv"><span style="font-size: 38px;">${ph.han!''}</span></div>
+			</div>
+		</div>
+		</#list>
+		<div class="cb"></div>
+	</div>
 	<H3>written by 废话机</H3>
 	<div class="content" id="content">
 
@@ -16,9 +96,9 @@
 
 	<script src="/asset/jquery/jquery-2.1.4.min.js"></script>
 	<script>
-		var topic = '${title}';
-		var content = '${content}';
-		$("#content").html(highlightKeyWords(content, topic));
+		var topic = '${topic}';
+		var article = '${article}';
+		$("#content").html(highlightKeyWords(article, topic));
 
 		function highlightKeyWords(str, key){
 			var reg = new RegExp("(" + key + ")", "g");

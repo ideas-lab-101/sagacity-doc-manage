@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <link rel="icon" href="/asset/image/cloud_docs.ico">
     <title>魔灯知库 - 废话机</title>
     <link href="/asset/font-icon/font_icon_sagacity.css" rel="stylesheet">
@@ -13,162 +14,304 @@
         .layui-header {
             background-color: white !important;
             border-bottom: solid 1px #dadce0;
-            box-shadow: 0px 2px 10px rgba(0,0,0, .2);
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, .2);
         }
+
         .layui-body {
             bottom: 0px !important;
             left: 0px !important;
         }
+
         .layui-logo {
             color: #2F2F2F !important;
         }
+
         .layui-nav .layui-nav-item a {
             color: #606060;
         }
+
         .layui-nav .layui-nav-item a:hover {
             color: #2F2F2F;
             font-weight: bold;
         }
-        .b-content p{
-            text-indent:2em;
-            line-height:1.5em;
-            margin-top:10px;
+
+        .b-content p {
+            text-indent: 2em;
+            line-height: 1.5em;
+            margin-top: 10px;
         }
+        /**
+        .tf {
+            float: left;
+        }
+        .pinyin {
+            border: 1px solid #ff4242;
+            border-bottom: none;
+            margin-right: 0px;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-color: #ffffff;
+            letter-spacing: normal;
+            width: 48px;
+            height: 23px;
+            font-family: "pinyin";
+            font-size: 16px;
+            position: relative;
+        }
+        .pinyindiv {
+            position: absolute;
+            left: 50%;
+            top: 44%;
+            transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%);
+        }
+        .zige {
+            border: 1px solid #ff4242;
+            margin-right: 0px;
+            background-repeat: no-repeat;
+            background-size: cover;
+            letter-spacing: normal;
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            position: relative;
+        }
+        .fontdiv {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            text-align: center;
+            transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+        }
+         */
     </style>
 
 </head>
-<body class="layui-layout-body" >
+<body class="layui-layout-body">
 
-    <div class="layui-layout-admin">
-        <div class="layui-header">
-            <div class="layui-logo">
-                <img class="layui-icon-logo" style="width: 30px; height: auto; padding-right: 15px;" src="/asset/image/logo_docs.png" alt=""/>
-                <label style="font-size: 20px;">魔灯知库</label>
-            </div>
-            <!-- 头部区域（可配合layui已有的水平导航） -->
-            <ul style="margin-left: 30px;" class="layui-nav layui-layout-left">
-
-            </ul>
-            <ul class="layui-nav layui-layout-right">
-                <li class="layui-nav-item">
-                    <a href="/">
-                        <i style="font-size: 16px;" class="iconfont icon-home">首页</i>
-                    </a>
-                </li>
-                <li class="layui-nav-item">
-                    <a href="soul">
-                        <i style="font-size: 16px;" class="iconfont icon-drawing">鸡汤</i>
-                    </a>
-                </li>
-                <li class="layui-nav-item">
-                    <a href="../admin">
-                        <i style="font-size: 16px;" class="iconfont icon-accountcircle">登陆</i>
-                    </a>
-                </li>
-            </ul>
+<div class="layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">
+            <img class="layui-icon-logo" style="width: 30px; height: auto; padding-right: 15px;"
+                 src="/asset/image/logo_docs.png" alt=""/>
+            <label style="font-size: 20px;">魔灯知库</label>
         </div>
-        <div class="layui-body">
-            <div style="text-align: center; padding: 60px 20px 10px; ">
-                <form class="layui-form">
-<!--                    <div class="layui-form-item">-->
-<!--                        <div class="layui-input-block layui-inline">-->
-<!--                            <input style="width: 370px;" type="text" name="topic" id="topic" lay-verify="required" required placeholder="请输入一句主题" autocomplete="off" class="layui-input">-->
-<!--                        </div>-->
-<!--                        <div class="layui-inline">-->
-<!--                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="*">生成废话</button>-->
-<!--                        </div>-->
-<!--                    </div>-->
-                    <div class="layui-row">
-                        <div class="layui-col-md4 layui-col-md-offset3">
-                            <input style="width: 99%;" type="text" name="topic" id="topic" lay-verify="required" required placeholder="请输入一句主题" autocomplete="off" class="layui-input">
-                        </div>
-                        <div class="layui-col-md2">
-                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="*">生成废话</button>
-                            <a class="layui-btn layui-btn-primary" onclick="onShare()"><i class="layui-icon">&#xe641;</i></a>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="b-content" id="content" style="text-align: left; padding: 10px 20px 60px;">
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul style="margin-left: 30px;" class="layui-nav layui-layout-left">
 
-            </div>
-
-        </div>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="/">
+                    <i style="font-size: 16px;" class="iconfont icon-home">首页</i>
+                </a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="soul">
+                    <i style="font-size: 16px;" class="iconfont icon-drawing">鸡汤</i>
+                </a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="../admin">
+                    <i style="font-size: 16px;" class="iconfont icon-accountcircle">登陆</i>
+                </a>
+            </li>
+        </ul>
     </div>
+    <div class="layui-body">
+        <div style="text-align: center; padding: 60px 20px 10px; ">
+            <form class="layui-form">
+                <!--                    <div class="layui-form-item">-->
+                <!--                        <div class="layui-input-block layui-inline">-->
+                <!--                            <input style="width: 370px;" type="text" name="topic" id="topic" lay-verify="required" required placeholder="请输入一句主题" autocomplete="off" class="layui-input">-->
+                <!--                        </div>-->
+                <!--                        <div class="layui-inline">-->
+                <!--                            <button class="layui-btn layui-btn-normal" lay-submit lay-filter="*">生成废话</button>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <div class="layui-row">
+                    <div class="layui-col-md4 layui-col-md-offset3">
+                        <input style="width: 99%;" type="text" name="topic" id="topic" lay-verify="required" required
+                               placeholder="请输入一句主题" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-col-md2">
+                        <button class="layui-btn layui-btn-normal" lay-submit lay-filter="*">生成废话</button>
+                        <a class="layui-btn layui-btn-primary" onclick="onShare()"><i
+                                class="layui-icon">&#xe641;</i></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!--
+        <div style="width: 100%; height: 75px; position: relative; margin: 0px auto;">
+            <div class="tf">
+                <div class="pinyin" style="border-right: none;">
+                    <svg viewBox="0 0 48 23" style="width:48px; height:23px;">
+                        <path d="M0,7 L48,7 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,6"></path>
+                        <path d="M0,16 L48,16 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,6"></path>
+                    </svg>
+                    <div class="pinyindiv"><span style="color:#000;">dà</span></div>
+                </div>
+                <div class="zige" style="border-right: none;">
+                    <svg viewBox="0 0 96 96" style="width:48px; height:48px;" class="svglattice">
+                        <path d="M0,48 L96,48 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,5"></path>
+                        <path d="M48,0 L48,96 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,5"></path>
+                    </svg>
+                    <div class="fontdiv"><span style="font-size: 38px;">大</span></div>
+                </div>
+            </div>
+            <div class="tf">
+                <div class="pinyin" style="border-right: none;">
+                    <svg viewBox="0 0 48 23" style="width:48px; height:23px;">
+                        <path d="M0,7 L48,7 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,6"></path>
+                        <path d="M0,16 L48,16 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,6"></path>
+                    </svg>
+                    <div class="pinyindiv"><span style="color:#000;">wǎn</span></div>
+                </div>
+                <div class="zige" style="border-right: none;">
+                    <svg viewBox="0 0 96 96" style="width:48px; height:48px;" class="svglattice">
+                        <path d="M0,48 L96,48 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,5"></path>
+                        <path d="M48,0 L48,96 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,5"></path>
+                    </svg>
+                    <div class="fontdiv"><span style="font-size: 38px;">碗</span></div>
+                </div>
+            </div>
+            <div class="tf">
+                <div class="pinyin" style="border-right: none;">
+                    <svg viewBox="0 0 48 23" style="width:48px; height:23px;">
+                        <path d="M0,7 L48,7 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,6"></path>
+                        <path d="M0,16 L48,16 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,6"></path>
+                    </svg>
+                    <div class="pinyindiv"><span style="color:#000;">kuān</span></div>
+                </div>
+                <div class="zige" style="border-right: none;">
+                    <svg viewBox="0 0 96 96" style="width:48px; height:48px;" class="svglattice">
+                        <path d="M0,48 L96,48 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,5"></path>
+                        <path d="M48,0 L48,96 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,5"></path>
+                    </svg>
+                    <div class="fontdiv"><span style="font-size: 38px;">宽</span></div>
+                </div>
+            </div>
+            <div class="tf">
+                <div class="pinyin">
+                    <svg viewBox="0 0 48 23" style="width:48px; height:23px;">
+                        <path d="M0,7 L48,7 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,6"></path>
+                        <path d="M0,16 L48,16 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,6"></path>
+                    </svg>
+                    <div class="pinyindiv"><span style="color:#000;">miàn</span></div>
+                </div>
+                <div class="zige">
+                    <svg viewBox="0 0 96 96" style="width:48px; height:48px;" class="svglattice">
+                        <path d="M0,48 L96,48 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,5"></path>
+                        <path d="M48,0 L48,96 Z" fill="#fff" stroke="#ff4242" stroke-width="1"
+                              stroke-dasharray="2,5"></path>
+                    </svg>
+                    <div class="fontdiv"><span style="font-size: 38px;">面</span></div>
+                </div>
+            </div>
+            <div class="cb"></div>
+        </div>
+        !-->
+        <div class="b-content" id="content" style="text-align: left; padding: 10px 20px 60px;">
 
-    <script src="/asset/layui/layui.js" charset="utf-8"></script>
-    <script src="/asset/jquery/jquery-2.1.4.min.js"></script>
+        </div>
 
-    <script>
+    </div>
+</div>
 
-        var element, layer, form;
-        layui.config({
-            base: '/asset/layui/extend/' //这是自定义模块的路径了
-        }).use(['element','layer','form'], function(){
-            element = layui.element; //弹层
-            layer = layui.layer;
-            form = layui.form;
+<script src="/asset/layui/layui.js" charset="utf-8"></script>
+<script src="/asset/jquery/jquery-2.1.4.min.js"></script>
 
-            form.on('submit(*)', function(data){
-                getBullshit();
-                return false;
-            });
+<script>
 
-        })
+    var element, layer, form;
+    layui.config({
+        base: '/asset/layui/extend/' //这是自定义模块的路径了
+    }).use(['element', 'layer', 'form'], function () {
+        element = layui.element; //弹层
+        layer = layui.layer;
+        form = layui.form;
 
-        var bKey;
-        function getBullshit() {
-            var topic = $('#topic').val();
-            $.ajax({
-                url: "genBullshit",
-                type: "POST",
-                dataType: "json",
-                data: {
-                    topic: topic
-                },
-                success: function(res) {
-                    bKey = res.data.bKey;
-                    var content = res.data.bData;
-                    $("#content").html(highlightKeyWords(content, topic));
-                }
-            });
-        }
+        form.on('submit(*)', function (data) {
+            getBullshit();
+            return false;
+        });
 
-        function highlightKeyWords(str, key){
-            var reg = new RegExp("(" + key + ")", "g");
-            var newstr = str.replace(reg, "<font style='background:#ff0;'>$1</font>");
-            return newstr;
-        }
+    })
 
-        var useragent = navigator.userAgent;
-        function onShare(){
-            if(bKey == null){
-                layer.msg('请先点击生成！');
-                return false;
+    var bKey;
+
+    function getBullshit() {
+        var topic = $('#topic').val();
+        $.ajax({
+            url: "genBullshit",
+            type: "POST",
+            dataType: "json",
+            data: {
+                topic: topic
+            },
+            success: function (res) {
+                bKey = res.data.bKey;
+                var content = res.data.bData;
+                $("#content").html(highlightKeyWords(content, topic));
             }
-            $.ajax({
-                url: "genSharePage",
-                type: "POST",
-                dataType: "json",
-                data: {
-                    bKey: bKey
-                },
-                success: function(resp) {
-                    console.log(resp);
-                    if(resp.code == 1){
-                        if (useragent.match(/MicroMessenger/i) != 'MicroMessenger') {
-                            window.open("/page/" + resp.data, "_blank");
-                        }else{
-                            location.href = "/page/" + resp.data;
-                        }
-                    }else{
-                        layer.msg(resp.msg);
-                    }
-                }
-            });
+        });
+    }
 
+    function highlightKeyWords(str, key) {
+        var reg = new RegExp("(" + key + ")", "g");
+        var newstr = str.replace(reg, "<font style='background:#ff0;'>$1</font>");
+        return newstr;
+    }
+
+    var useragent = navigator.userAgent;
+
+    function onShare() {
+        if (bKey == null) {
+            layer.msg('请先点击生成！');
+            return false;
         }
+        $.ajax({
+            url: "genSharePage",
+            type: "POST",
+            dataType: "json",
+            data: {
+                bKey: bKey
+            },
+            success: function (resp) {
+                console.log(resp);
+                if (resp.code == 1) {
+                    if (useragent.match(/MicroMessenger/i) != 'MicroMessenger') {
+                        window.open("/page/" + resp.data, "_blank");
+                    } else {
+                        location.href = "/page/" + resp.data;
+                    }
+                } else {
+                    layer.msg(resp.msg);
+                }
+            }
+        });
 
-    </script>
+    }
+
+</script>
 </body>
 </html>
