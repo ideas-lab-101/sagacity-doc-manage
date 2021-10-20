@@ -7,10 +7,7 @@ import com.jfinal.plugin.activerecord.*;
 import com.jfinal.plugin.activerecord.tx.Tx;
 import com.jfinal.upload.UploadFile;
 import com.sagacity.docs.model.UserDao;
-import com.sagacity.docs.model.system.DocClass;
-import com.sagacity.docs.model.system.MainInfo;
-import com.sagacity.docs.model.system.Music;
-import com.sagacity.docs.model.system.VideoClass;
+import com.sagacity.docs.model.system.*;
 import com.sagacity.docs.web.common.WebBaseController;
 import com.sagacity.docs.base.extend.ResponseCode;
 import com.sagacity.docs.service.Qiniu;
@@ -297,6 +294,76 @@ public class SystemController extends WebBaseController{
     }
 
     /**
+     * 鸡汤库
+     */
+    public void getSoulList(){
+        String sqlSelect = "select s.id,s.title,s.hits,s.state,s.created_at ";
+        String sqlFrom = "from soul s\n";
+        sqlFrom += " order by s.created_at DESC";
+
+        Page<Record> dataList = Db.paginate(getParaToInt("pageIndex", 1),
+                getParaToInt("pageSize", 10), sqlSelect, sqlFrom);
+        rest.success().setData(dataList);
+        renderJson(rest);
+    }
+
+    @Before(Tx.class)
+    public void setSoulState(){
+        boolean r = false;
+        int state = getParaToBoolean("state")? 1:0;
+        r = Db.update("update soul set state=? where id=?", state, getPara("soulId"))>0? true:false;
+        if(r){
+            rest.success("设置成功！");
+        }else{
+            rest.error("设置失败！");
+        }
+        renderJson(rest);
+    }
+
+    @Before(Tx.class)
+    public void addSoul(){
+        boolean r = false;
+
+        Soul s = new Soul();
+        r = s.set("title", getPara("title"))
+                .set("state",1).set("created_at", DateUtils.nowDateTime()).set("hits",0).save();
+        if(r){
+            rest.success("章节增加成功！");
+        }else{
+            rest.error("章节增加失败！");
+        }
+        renderJson(rest);
+    }
+
+    @Before(Tx.class)
+    public void delSoul(){
+        boolean r = false;
+
+        Soul s =  Soul.dao.findById(getParaToInt("soulId"));
+        r = s.delete();
+        if(r){
+            rest.success("删除成功！");
+        }else{
+            rest.error("删除失败！");
+        }
+        renderJson(rest);
+    }
+
+    @Before(Tx.class)
+    public void editSoul(){
+        int soulId = getParaToInt("soulId");
+        Soul s = Soul.dao.findById(soulId).set("title", getPara("title"));
+        boolean r = s.update();
+        if(r){
+            rest.success("修改成功！");
+        }else{
+            rest.error("修改失败！");
+        }
+        renderJson(rest);
+    }
+
+
+    /**
      * 音乐库
      */
 
@@ -339,7 +406,7 @@ public class SystemController extends WebBaseController{
     public void editMusic(){
 
         Record data = new Record().setColumns(ConvertUtil.jsonStrToMap(getPara("data")));
-        data.remove("Caption");
+        data.remove("nick_name");
         boolean r = Db.update("music", data);
         if(r){
             rest.success("更新成功！");

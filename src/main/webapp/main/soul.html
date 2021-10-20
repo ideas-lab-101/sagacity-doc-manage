@@ -76,6 +76,8 @@
                         <div class="layui-inline">
                             <button class="layui-btn layui-btn-normal" lay-submit lay-filter="*">再来一WAN</button>
                             <a class="layui-btn layui-btn-primary" onclick="copy()">复制到剪贴板</a>
+                            <a class="layui-btn layui-btn-primary" onclick="onShare()"><i
+                                    class="layui-icon">&#xe641;</i></a>
                         </div>
                     </div>
                 </form>
@@ -120,6 +122,10 @@
             var clip = document.getElementById("clip");
             clip.setAttribute("data-clipboard-text", soulText);
             clip.click();
+        }
+
+        function onShare(){
+            layer.msg("生成分享图！");
         }
 
         function getSoul() {

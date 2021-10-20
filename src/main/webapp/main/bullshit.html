@@ -297,7 +297,6 @@
                 bKey: bKey
             },
             success: function (resp) {
-                console.log(resp);
                 if (resp.code == 1) {
                     if (useragent.match(/MicroMessenger/i) != 'MicroMessenger') {
                         window.open("/page/" + resp.data, "_blank");

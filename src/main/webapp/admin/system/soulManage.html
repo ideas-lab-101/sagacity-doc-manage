@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>鸡汤库</title>
+    <link rel="stylesheet" href="/asset/layui/css/layui.css">
+
+    <style>
+        body{padding: 20px; /*overflow-y: scroll;*/}
+    </style>
+</head>
+<body>
+
+<div class="layui-btn-group">
+    <div class="layui-btn-group">
+        <a class="layui-btn  layui-btn-sm layui-btn" onclick="addData()">
+            <i class="layui-icon">&#xe654;</i>新增
+        </a>
+    </div>
+</div>
+
+<table id="soulList" lay-filter="soulList"></table>
+<script type="text/html" id="switchTpl">
+    <input type="checkbox" name="state" value="{{d.id}}" lay-skin="switch" lay-text="启用|停用" lay-filter="stateFilter" {{ d.state == 1 ? 'checked' : '' }}>
+</script>
+
+<script type="text/html" id="toolbar">
+    <a class="layui-btn-sm" lay-event="edit">
+        <i class="layui-icon">&#xe642;</i></a>
+    <a class="layui-btn-sm" lay-event="del">
+        <i class="layui-icon">&#xe640;</i></a>
+</script>
+
+<script src="/asset/layui/layui.js" charset="utf-8"></script>
+<script src="/asset/jquery/jquery-2.1.4.min.js" charset="utf-8"></script>
+<script>
+    var loading;
+    var layer, table, form, upload;
+    layui.use(['layer', 'table', 'form', 'upload'], function(){
+        layer = layui.layer;
+        table = layui.table;
+        form = layui.form;
+        upload = layui.upload;
+        var $ = layui.$;
+
+        table.render({
+            id:'soulList'
+            ,elem: '#soulList'
+            ,url: 'getSoulList'
+            ,page: true
+            ,request: {
+                pageName: 'pageIndex' //页码的参数名称，默认：page
+                ,limitName: 'pageSize' //每页数据量的参数名，默认：limit
+            }
+            ,parseData: function(resp){ //resp 即为原始返回的数据
+                return {
+                    "code": resp.code==1?0:resp.code, //解析接口状态
+                    "msg": resp.msg, //解析提示文本
+                    "count": resp.data.totalRow, //解析数据长度
+                    "data": resp.data.list //解析数据列表
+                };
+            }
+            ,limit: 10
+            ,cols: [[
+                {field:'id', title:'ID', width:60, fixed: 'left', unresize: true, sort: true}
+                ,{field:'title', title:'鸡汤内容', width:200,  edit: 'text'}
+                ,{field:'created_at', title:'加入日期', width:120}
+                ,{field:'hits', title:'引用率', width:120}
+                ,{field:'state', title:'状态', width:85, templet: '#switchTpl', unresize: true}
+                ,{fixed: 'right', title:'操作', toolbar: '#toolbar', width:170}
+            ]]
+        });
+
+        //监听表格复选框选择
+        table.on('checkbox(docList)', function(obj){
+            console.log(obj)
+        });
+
+        form.on('click(play)', function (obj) {
+            layer.msg(obj);
+        });
+
+        //监听性别操作
+        form.on('switch(stateFilter)', function(obj){
+            // layer.tips(this.value + ' ' + this.name + '：'+ obj.elem.checked, obj.othis);
+            $.ajax({
+                url: "setSoulState",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    soulId: this.value,
+                    state: obj.elem.checked
+                },
+                success: function(resp) {
+                    layer.msg(resp.msg, {time:1000});
+                }
+            });
+            layer.close();
+        });
+
+        //监听单元格编辑
+        table.on('edit(musicList)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+
+        });
+
+        //监听工具条
+        table.on('tool(soulList)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){//删除
+                layer.confirm('确认删除此项目？', function(index){
+                    $.ajax({
+                        url: "delSoul",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            soulId: data.id
+                        },
+                        success: function(resp) {
+                            if(resp.code == 1){
+                                table.reload('soulList');
+                            }else{
+                                layer.msg(resp.msg);
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit') {//编辑
+                var data = obj.data;
+                layer.prompt({
+                    title: '修改鸡汤',
+                    formType: 2
+                    ,value: data.title
+                }, function(value, index){
+                    $.ajax({
+                        url: "editSoul",
+                        type: "POST",
+                        dataType: "json",
+                        data: {
+                            soulId: data.id,
+                            title: value
+                        },
+                        success: function(data) {
+                            if(data.code == 1){
+                                table.reload('soulList');
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+
+        });
+
+    });
+
+
+    function addData() {
+        layer.prompt({
+            title: '新鸡汤',
+            formType: 2
+        }, function(value, index){
+            //插入doc_page
+            $.ajax({
+                url: "addSoul",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    title: value
+                },
+                success: function(data) {
+                    //刷新树
+                    if(data.code ==1){
+                        table.reload('soulList');
+                    }
+                    layer.close(index);
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>
