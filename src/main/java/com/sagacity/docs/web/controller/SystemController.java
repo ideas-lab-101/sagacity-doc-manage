@@ -299,6 +299,9 @@ public class SystemController extends WebBaseController{
     public void getSoulList(){
         String sqlSelect = "select s.id,s.title,s.hits,s.state,s.created_at ";
         String sqlFrom = "from soul s\n";
+        if(StringTool.notNull(getPara("key")) && StringTool.notBlank(getPara("key"))){
+            sqlFrom += " where s.title like '%"+getPara("key")+"%'";
+        }
         sqlFrom += " order by s.created_at DESC";
 
         Page<Record> dataList = Db.paginate(getParaToInt("pageIndex", 1),

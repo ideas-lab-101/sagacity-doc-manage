@@ -12,6 +12,14 @@
 </head>
 <body>
 
+<div class="layui-inline">
+    <input style="width:220px;" type="text" id="key" autocomplete="off" placeholder="鸡汤内容" class="layui-input">
+</div>
+<div class="layui-inline">
+    <button class="layui-btn layui-btn-sm layui-btn-primary" onclick="query()" lay-event="query">
+        <i class="layui-icon">&#xe615;</i>查询
+    </button>
+</div>
 <div class="layui-btn-group">
     <div class="layui-btn-group">
         <a class="layui-btn  layui-btn-sm layui-btn" onclick="addData()">
@@ -48,6 +56,7 @@
             id:'soulList'
             ,elem: '#soulList'
             ,url: 'getSoulList'
+            ,method: 'POST'
             ,page: true
             ,request: {
                 pageName: 'pageIndex' //页码的参数名称，默认：page
@@ -180,6 +189,17 @@
                     layer.close(index);
                 }
             });
+        });
+    }
+
+    function query() {
+        table.reload('soulList', {
+            page: {
+                curr: 1 //重新从第 1 页开始
+            }
+            ,where: {
+                key: $("#key").val()
+            }
         });
     }
 </script>
