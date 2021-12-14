@@ -38,6 +38,8 @@
         <i class="layui-icon">&#xe642;</i></a>
     <a class="layui-btn-sm" lay-event="del">
         <i class="layui-icon">&#xe640;</i></a>
+    <a class="layui-btn-sm" lay-event="preview">
+        <i class="layui-icon">&#xe609;</i></a>
 </script>
 
 <script src="/asset/layui/layui.js" charset="utf-8"></script>
@@ -76,7 +78,7 @@
                 ,{field:'title', title:'鸡汤内容', width:200,  edit: 'text'}
                 ,{field:'created_at', title:'加入日期', width:120}
                 ,{field:'hits', title:'引用率', width:120}
-                ,{field:'state', title:'状态', width:85, templet: '#switchTpl', unresize: true}
+                ,{field:'state', title:'状态', width:90, templet: '#switchTpl', unresize: true}
                 ,{fixed: 'right', title:'操作', toolbar: '#toolbar', width:170}
             ]]
         });
@@ -161,8 +163,9 @@
                     });
                     layer.close(index);
                 });
-            }
-
+            } else if(obj.event == 'preview'){
+                window.open("/soul?id="+data.id, "_blank");
+            };
         });
 
     });

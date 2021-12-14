@@ -325,6 +325,8 @@ public class MainController extends WebBaseController {
 
     @Clear(WebLoginInterceptor.class)
     public void soul(){
+        int id = getParaToInt("id", 0);
+        setAttr("id", id);
         render("main/soul.html");
     }
 
@@ -333,9 +335,16 @@ public class MainController extends WebBaseController {
      */
     @Clear(WebLoginInterceptor.class)
     public void getSoul(){
-        String sql = "SELECT * from soul \n" +
-                "where state=1 \n" +
-                "ORDER BY RAND() LIMIT 1\n";
+        int id = getParaToInt("id", 0);
+        String sql = "";
+        if (id == 0){
+            sql = "SELECT * from soul \n" +
+                    "where state=1 \n" +
+                    "ORDER BY RAND() LIMIT 1\n";
+        }else{
+            sql = "SELECT * from soul \n" +
+                    "where id="+ id;
+        }
         Record s = Db.findFirst(sql);
         Db.update("update soul set hits=hits+1 where id=?", s.getInt("id"));
 
